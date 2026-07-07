@@ -1,0 +1,27 @@
+id: code-reviewer
+name: Code Reviewer
+category: automation
+version: v1.4.2
+shortDesc: Summarize diffs, surface regressions, and produce a teammate-friendly review brief.
+fullDesc: |
+  ## Why It Exists
+
+  `code-reviewer` turns a messy pull request into a fast scan of risks, hotspots, and open questions.
+
+  ## Example
+
+  ```bash
+  code-reviewer --since HEAD~5 --focus regressions
+  ```
+installCommand: curl -fsSL https://skillhub.dev/install.sh | bash -s code-reviewer@v1.4.2
+usageExamples:
+  - title: 回顾最近改动
+    code: code-reviewer --since HEAD~5 --focus regressions
+tags:
+  - review
+  - git
+  - automation
+status: published
+installCount: 76
+createdAt: 2026-06-20T09:30:00.000Z
+updatedAt: 2026-07-05T14:15:00.000Z

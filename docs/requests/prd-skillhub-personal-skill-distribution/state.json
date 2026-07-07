@@ -1,0 +1,84 @@
+{
+  "request_id": "prd-skillhub-personal-skill-distribution",
+  "source": {
+    "type": "local_file",
+    "path": "/Users/staff/Desktop/testProject/skill-hub/PRD.md",
+    "version": "v1.0.0",
+    "updated_at": "2026-07-07"
+  },
+  "stage": "plan",
+  "status": "in_progress",
+  "artifacts": {
+    "request": "docs/requests/prd-skillhub-personal-skill-distribution/request.md",
+    "prd_snapshot": "docs/requests/prd-skillhub-personal-skill-distribution/artifacts/prd-snapshot.md",
+    "requirement_map": "docs/requests/prd-skillhub-personal-skill-distribution/requirements/requirement-map.md",
+    "split_modules": [
+      "docs/requests/prd-skillhub-personal-skill-distribution/requirements/modules/module-01-platform-foundation.md",
+      "docs/requests/prd-skillhub-personal-skill-distribution/requirements/modules/module-02-public-discovery.md",
+      "docs/requests/prd-skillhub-personal-skill-distribution/requirements/modules/module-03-skill-detail.md",
+      "docs/requests/prd-skillhub-personal-skill-distribution/requirements/modules/module-04-static-delivery.md"
+    ]
+  },
+  "approvals": {},
+  "module_flow": {
+    "execution_mode": "sequential",
+    "current_module_id": "module-03-skill-detail",
+    "pending_module_ids": [
+      "module-03-skill-detail",
+      "module-04-static-delivery"
+    ],
+    "completed_module_ids": [
+      "module-01-platform-foundation",
+      "module-02-public-discovery"
+    ],
+    "modules": {
+      "module-01-platform-foundation": {
+        "source_module_path": "requirements/modules/module-01-platform-foundation.md",
+        "page_design_required": false,
+        "architecture_design_required": true,
+        "approvals": {
+          "spec_approved": true,
+          "plan_approved": true
+        },
+        "status": "completed"
+      },
+      "module-02-public-discovery": {
+        "source_module_path": "requirements/modules/module-02-public-discovery.md",
+        "page_design_required": true,
+        "architecture_design_required": true,
+        "approvals": {
+          "spec_approved": true,
+          "plan_approved": true
+        },
+        "status": "completed"
+      },
+      "module-03-skill-detail": {
+        "source_module_path": "requirements/modules/module-03-skill-detail.md",
+        "page_design_required": true,
+        "architecture_design_required": true,
+        "approvals": {
+          "spec_approved": true,
+          "plan_approved": false
+        },
+        "status": "in_progress"
+      },
+      "module-04-static-delivery": {
+        "source_module_path": "requirements/modules/module-04-static-delivery.md",
+        "page_design_required": false,
+        "architecture_design_required": true,
+        "approvals": {
+          "spec_approved": false,
+          "plan_approved": false
+        },
+        "status": "pending"
+      }
+    }
+  },
+  "loop": {
+    "iteration": 20,
+    "state": "blocked",
+    "last_completed_stage": "plan",
+    "pending_gate": "plan_approval",
+    "reentry_reason": "gate_recovery"
+  }
+}
