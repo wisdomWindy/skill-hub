@@ -1,0 +1,7 @@
+interface:
+  display_name: "Novel Agent Framework"
+  short_description: "Stage-driven novel workflow from idea to finished manuscript"
+  default_prompt: "Use $novel-agent-framework to turn a rough story idea into a staged, reviewable, complete novel project."
+
+policy:
+  allow_implicit_invocation: true
