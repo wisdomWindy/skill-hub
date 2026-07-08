@@ -81,13 +81,21 @@ export function getLatestSkills(limit = 4): SkillSummary[] {
   return loadPublishedSkills({ sort: 'latest' }).slice(0, limit)
 }
 
+export function findRelatedSkillSummaries(
+  currentSkill: SkillSummary,
+  skills: SkillSummary[],
+  limit = 4,
+): SkillSummary[] {
+  return skills
+    .filter((skill) => skill.id !== currentSkill.id && skill.category === currentSkill.category)
+    .slice(0, limit)
+}
+
 export function listRelatedSkills(skillId: string, limit = 4): SkillSummary[] {
   const currentSkill = getSkillById(skillId)
   if (!currentSkill) {
     return []
   }
 
-  return loadPublishedSkills({ category: currentSkill.category })
-    .filter((skill) => skill.id !== skillId)
-    .slice(0, limit)
+  return findRelatedSkillSummaries(currentSkill, loadPublishedSkills({ category: currentSkill.category }), limit)
 }

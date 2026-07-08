@@ -1,6 +1,6 @@
 ---
 name: frontend-agent-framework-requirement-analysis
-description: Stage subskill for requirement analysis. Turn intake artifacts into an explicit scope, risk, ambiguity, and splitting-strategy analysis before requirement splitting.
+description: Use when a PRD-driven frontend request needs developer-facing requirement analysis before requirement splitting, especially when scope, risks, ambiguities, confirmations, systems, fields, states, or workflows may be hidden in the source.
 ---
 
 # Requirement Analysis Subskill
@@ -10,6 +10,18 @@ description: Stage subskill for requirement analysis. Turn intake artifacts into
 - 当主 `frontend-agent-framework` 将 PRD 驱动需求路由到 `stage=requirement-analysis` 时使用。
 - 适用于在正式模块拆分前，先把需求范围、非目标、依赖、风险、歧义和拆分依据显式固化的场景。
 - 适用于需求横跨多个系统、项目、引用文档、外部接口或历史基线，需要先建立“资料来源与阅读口径”“系统职责边界”“阻塞项分级”后，后续阶段才能稳定推进的场景。
+- 适用于用户只给一个原始需求文档，希望产出能让开发者少向产品二次确认的开发向需求细化稿，而不是 PRD 摘要的场景。
+
+## 核心原则
+
+需求分析产物是给开发者用的需求细化和确认稿，不是给读者快速了解 PRD 的摘要。
+
+本阶段要做的是把原始需求中已经出现、被引用、被暗示、存在冲突或会导致实现分歧的内容摊开，形成后续 `requirement-splitting`、`spec`、`plan` 可直接承接的工程输入。所谓“减少二次确认”，不是删除不确定项，也不是替产品拍脑袋，而是：
+
+1. 对已确认内容写得更具体，让开发者不必反复回源文档查字段、状态、流程、权限、边界。
+2. 对隐藏但会影响实现的点显式暴露，写清为什么会影响开发、影响哪个模块、当前可采用什么处理口径。
+3. 对真正未确认的内容分级记录，并给出阻塞影响、建议确认对象、下游承接方式。
+4. 对风险点写清触发条件、影响面和后续阶段必须保护的约束。
 
 ## 必要输入
 
@@ -53,24 +65,48 @@ description: Stage subskill for requirement analysis. Turn intake artifacts into
    - confirmed decisions / invariants
    - system boundaries / ownership
    - source-backed behavior inventory
+   - developer-facing behavior details
+   - implicit requirements / hidden assumptions exposure
    - workflow / dependency assessment
    - ambiguity / clarification register
    - risk / constraint assessment
    - blocker classification and handling stance
+   - confirmation-reduction notes
    - splitting strategy
    - downstream stage signals
 9. 需求分析必须以“理解需求”为目标，而不是提前输出实现方案、文件结构、代码抽象、DDL 细节或测试设计。
 10. 对上游已经明确给出的字段、表格、展示、交互、状态、流程、依赖、审批、外部约束，不得在分析阶段压缩成过于宽泛的口号式总结。
-11. 如果范围内存在多个页面、流程、表格、表单、系统边界或跨模块规则，必须明确记录它们为什么应该在下一阶段被拆开，或为什么应该保持在一个模块内。
-12. 可以在分析阶段给出 `page-design` / `architecture-design` 的 request-level signals，但不能替代 `requirement-splitting` 对具体模块路由的正式判定。
-13. 如果发现源文档存在歧义、冲突、遗漏或无从判断的业务语义，必须记录为开放问题；不能靠常识补全。
-14. 必须对未决事项分级，不允许一律写成“待确认”：
+11. 对开发者会自然追问的内容，必须主动展开；至少检查并记录以下维度是否已明确：
+   - 角色、端、菜单、权限、只读 / 可写边界
+   - 页面、列表、表单、字段、筛选、导出、弹窗、抽屉、详情区块
+   - 创建、编辑、提交、审核、驳回、终止、删除、导入、导出、下载、上传、解析、同步等操作入口和结果
+   - 字段必填、格式、长度、枚举、默认值、只读态、可编辑时机、提交前校验
+   - 状态机、节点、流转触发、锁定规则、逆流程、异常终止、重提规则
+   - 数据来源、主数据归属、跨库 / 跨系统同步、前端消费 DTO、adapter / mapper / fromDetail 边界
+   - 外部接口、异步任务、消息、回调、定时任务、失败重试、幂等和最终一致性
+   - 审核快照、操作日志、审计、历史回放、原因文案、审批意见
+   - 回归敏感区、权限隔离、安全隔离、旧系统兼容或不兼容边界
+12. 如果源文档只写了业务结果但没有写实现会依赖的前置条件、状态来源、失败处理、权限边界或数据归属，必须将其写入“隐含需求 / hidden assumptions”，并标注：
+   - 这是从哪条原文或哪个流程推导出来的
+   - 为什么开发会受影响
+   - 当前能否作为已确认口径
+   - 若不能确认，属于业务阻塞、外部接口待补还是非阻塞
+13. 如果源文档中存在表格、字段清单、状态枚举、流程图、权限矩阵、接口字段、验收条目，必须尽量结构化保留；不能只改写成一句“支持列表 / 支持审核 / 支持同步”。
+14. 如果范围内存在多个页面、流程、表格、表单、系统边界或跨模块规则，必须明确记录它们为什么应该在下一阶段被拆开，或为什么应该保持在一个模块内。
+15. 可以在分析阶段给出 `page-design` / `architecture-design` 的 request-level signals，但不能替代 `requirement-splitting` 对具体模块路由的正式判定。
+16. 如果发现源文档存在歧义、冲突、遗漏或无从判断的业务语义，必须记录为开放问题；不能靠常识补全，也不能为了让文档看起来完整而删掉不确定性。
+17. 必须对未决事项分级，不允许一律写成“待确认”：
    - `业务阻塞`：若不确认会影响业务流程、数据模型、权限、状态机、审核口径或职责边界，则不得静默带入 `spec`
    - `外部接口待补`：仅当缺的是外部系统接口文档、topic、鉴权细节、字段补充，并且需求主口径已稳定，才允许记录为后续通过 adapter / config / 预留 DTO 承接
    - `非阻塞`：不影响主链路 `spec` 起草，可在设计评审或实现前补齐
-15. 保留 `state.json.loop`，不重置、不改写。
-16. 本阶段不写 `requirements/requirement-map.md`，不写 `spec/plan/execution/verification/review` 工件，不写代码。
-17. 只有在核心来源可读、范围和阻塞分级已写清时，才把 `stage` 设为 `requirement-splitting`；若缺失核心需求来源或存在未分级的关键阻塞，必须停在当前阶段并交由主 skill 处理门禁。
+18. 风险必须具体到触发条件和影响面，不能只写“存在风险”；每个高风险项至少写清：
+   - 风险来源
+   - 可能出错的开发点
+   - 影响页面 / 流程 / 系统
+   - 后续 `spec`、`plan` 或实现阶段必须采取的保护方式
+19. 保留 `state.json.loop`，不重置、不改写。
+20. 本阶段不写 `requirements/requirement-map.md`，不写 `spec/plan/execution/verification/review` 工件，不写代码。
+21. 只有在核心来源可读、范围、开发向细化、风险和阻塞分级已写清时，才把 `stage` 设为 `requirement-splitting`；若缺失核心需求来源或存在未分级的关键阻塞，必须停在当前阶段并交由主 skill 处理门禁。
 
 ## 输出格式
 
@@ -84,10 +120,13 @@ description: Stage subskill for requirement analysis. Turn intake artifacts into
   - 已确认口径 / confirmed decisions
   - 系统职责与边界
   - 关键行为簇梳理
+  - 面向开发者的行为细化
+  - 隐含需求 / 隐藏假设暴露
   - 依赖与约束判断
   - 歧义与开放问题
   - 阻塞项分级与处理口径
-  - 风险判断
+  - 风险判断与影响面
+  - 减少二次确认的开发提示
   - 后续 requirement-splitting 的拆分依据
   - `page-design` / `architecture-design` 信号
 
@@ -99,6 +138,9 @@ description: Stage subskill for requirement analysis. Turn intake artifacts into
 - 已把会影响 `spec` 口径的已确认决策显式写清。
 - 已把系统职责边界、项目边界或能力复用边界写清。
 - 上游明确行为约束没有被压缩成无法驱动后续拆分的粗摘要。
+- 产物能让开发者按字段、状态、流程、权限、数据来源、失败处理、回归范围继续写 `spec`，而不是只能知道“需求大概是什么”。
+- 已把源文档中隐藏、不明确、相互冲突或会让开发者二次追问产品的问题显式列出，并说明影响。
+- 已把风险点具体写到触发条件、影响面和后续处理口径。
 - 已记录后续拆分的依据与不应合并的边界。
 - 已记录开放问题、依赖、风险与阻塞项分级。
 - 若核心来源和阻塞门禁满足，`state.json.stage=requirement-splitting`；否则维持当前阶段并明确阻塞原因。
@@ -107,9 +149,13 @@ description: Stage subskill for requirement analysis. Turn intake artifacts into
 ## 安全边界
 
 - 不能把本阶段退化成 intake 摘要复述。
+- 不能写成“PRD 摘要 / 背景总结 / 高层概览”后就进入拆分。
 - 不能跳过范围判断、非目标判断和拆分依据判断。
 - 不能跳过资料来源盘点、阅读口径或系统边界判断。
 - 不能把需求分析直接写成实现设计。
+- 不能因为“减少二次确认”而删除、淡化或合并未确认问题；要把不明确处具体暴露并分级。
+- 不能把源文档中的字段、状态、权限、流程、验收、外部依赖压缩成“支持某功能”。
+- 不能用“后续 spec 再细化”逃避本阶段应完成的需求理解、隐含约束暴露和风险判断。
 - 不能在本阶段生成正式模块工件。
 - 不能写 spec、plan 或代码。
 - 不能在存在歧义时用实现常识替代显式记录。

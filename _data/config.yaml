@@ -7,5 +7,11 @@ categories:
     label: 开发工具
   - key: data
     label: 数据处理
+  - key: devops
+    label: DevOps
+  - key: security
+    label: 安全
   - key: automation
     label: 办公自动化
+  - key: other
+    label: 其他

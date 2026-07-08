@@ -1,7 +1,14 @@
 import { describe, expect, it } from 'vitest'
 
-import { buildPublishedSkillSummaries, filterSkillSummaries, paginateSkills } from '@/features/skills/queries/skill-queries'
+import {
+  buildPublishedSkillSummaries,
+  filterSkillSummaries,
+  findRelatedSkillSummaries,
+  listRelatedSkills,
+  paginateSkills,
+} from '@/features/skills/queries/skill-queries'
 import type { SkillRecord } from '@/types/content'
+import type { SkillSummary } from '@/types/skill'
 
 const records: SkillRecord[] = [
   {
@@ -36,6 +43,23 @@ const records: SkillRecord[] = [
   },
 ]
 
+function createSkillSummary(input: Partial<SkillSummary> & Pick<SkillSummary, 'id' | 'category'>): SkillSummary {
+  return {
+    id: input.id,
+    name: input.name ?? input.id,
+    category: input.category,
+    version: input.version ?? 'v1.0.0',
+    shortDesc: input.shortDesc ?? 'summary',
+    tags: input.tags ?? [],
+    status: input.status ?? 'published',
+    installCount: input.installCount ?? 0,
+    createdAt: input.createdAt ?? '2026-07-01T10:00:00.000Z',
+    updatedAt: input.updatedAt ?? '2026-07-01T10:00:00.000Z',
+    createdAtTimestamp: input.createdAtTimestamp ?? 0,
+    updatedAtTimestamp: input.updatedAtTimestamp ?? 0,
+  }
+}
+
 describe('skill queries', () => {
   it('only keeps published skills in public summaries', () => {
     const result = buildPublishedSkillSummaries(records)
@@ -66,5 +90,31 @@ describe('skill queries', () => {
     expect(paginated.page).toBe(1)
     expect(paginated.totalPages).toBe(1)
     expect(paginated.items).toHaveLength(1)
+  })
+
+  it('finds related skills by category without including the current skill', () => {
+    const current = createSkillSummary({ id: 'current', category: 'devtools' })
+    const related = findRelatedSkillSummaries(current, [
+      current,
+      createSkillSummary({ id: 'related-one', category: 'devtools' }),
+      createSkillSummary({ id: 'other-category', category: 'writing' }),
+    ])
+
+    expect(related.map((skill) => skill.id)).toEqual(['related-one'])
+  })
+
+  it('limits related skills to the requested count', () => {
+    const current = createSkillSummary({ id: 'current', category: 'devtools' })
+    const related = findRelatedSkillSummaries(current, [
+      createSkillSummary({ id: 'related-one', category: 'devtools' }),
+      createSkillSummary({ id: 'related-two', category: 'devtools' }),
+      createSkillSummary({ id: 'related-three', category: 'devtools' }),
+    ], 2)
+
+    expect(related.map((skill) => skill.id)).toEqual(['related-one', 'related-two'])
+  })
+
+  it('returns no related skills when the current skill does not exist', () => {
+    expect(listRelatedSkills('missing-skill')).toEqual([])
   })
 })

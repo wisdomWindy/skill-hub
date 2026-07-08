@@ -181,7 +181,7 @@ Workflow-style parallelization is optional horizontal scale.
 - Normalize bugfix inputs into the same request workspace structure used by PRD-driven requests.
 - For PRD-driven requirements, force a durable requirement-splitting pass before any design, specification, or planning work begins.
 - For PRD-driven requirements, force a durable requirement-analysis pass before requirement-splitting so the source scope, hidden constraints, ambiguity set, and split axis are explicit.
-- Requirement analysis must explicitly settle source-of-truth reading scope, confirmed decisions, project and data boundaries, mode-specific flow differences, acceptance/regression baseline, and blocker classification before decomposition starts.
+- Requirement analysis must explicitly settle source-of-truth reading scope, confirmed decisions, project and data boundaries, mode-specific flow differences, acceptance/regression baseline, blocker classification, developer-facing implementation rules, and hidden assumptions before decomposition starts.
 - Treat requirement splitting as source-preserving normalization.
 - After requirement splitting, derive a deterministic downstream ordering from source order, dependency order, and rollout constraints.
 - After requirement splitting, run one module through `architecture-design? -> spec -> plan -> execute -> verify -> review` to acceptance before starting the next module.

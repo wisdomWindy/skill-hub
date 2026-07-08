@@ -89,3 +89,95 @@
 
 - 当前 `installCount` 适配后是 number；执行阶段需按计划中的已批准假设处理“0 是否展示”规则，避免在模板层临时猜测。
 - 若执行阶段发现现有详情页样式与移动端堆叠差距过大，需要在不改变数据边界的前提下回到页面容器布局细化。
+
+---
+
+# Code Context Addendum: module-04-static-delivery
+
+## context requirement
+
+- 需要原因：`module-04-static-delivery` 会改动 GitHub Actions、静态内容样例、构建 base 配置与 README。虽然不涉及复杂运行时代码，但会影响内容读取、静态路由生成和部署链路，需要在计划阶段固定影响范围。
+- 首次要求阶段：`plan`
+- 是否必须依赖 code graph：否。当前模块主要是配置、YAML 内容和少量测试补强；文本搜索与入口文件阅读足够。
+
+## graph availability check
+
+- repository graph status：`missing`
+- detection method：沿用前序检查，仓库内未发现可用 `.codegraph` 或 codegraph 产物。
+- tool or runtime found：未发现现成 code graph 配置或产物。
+- check timestamp or iteration context：`loop.iteration=27`
+
+## installation or bootstrap record
+
+- attempted：`no`
+- installer or bootstrap method：未执行。
+- result：`not_needed`
+- output summary：当前模块不需要跨大量符号调用关系追踪；影响面可由 workflow、Vite config、YAML 读取入口和现有测试直接恢复。
+- next step：执行阶段继续使用 `rg` / 局部文件阅读确认最终改动点。
+
+## fallback record
+
+- fallback used：`yes`
+- fallback method：读取 `.github/workflows/deploy.yml`、`vite.config.ts`、`package.json`、`README.md`、`_data/*`、`src/content/*`、`src/router/index.ts`、相关测试。
+- why fallback was needed：没有现成 code graph，且当前配置与内容影响面较小。
+- residual confidence or remaining blind spots：对 GitHub Actions 与本地构建可验证；真实 GitHub Pages 仓库 Settings 和 workflow token 写权限需要用户在远端确认。
+
+## relevant entrypoints
+
+- 用户/维护者入口：
+  - `README.md`
+  - `_data/config.yaml`
+  - `_data/skills/*.yaml`
+  - `.github/workflows/deploy.yml`
+- 内部执行入口：
+  - `vite.config.ts`
+  - `package.json`
+  - `src/content/config/site-config.ts`
+  - `src/content/skills/load-skill-records.ts`
+  - `src/content/adapters/skill-adapter.ts`
+  - `src/router/index.ts`
+
+## key symbols and modules
+
+- 直接影响模块：
+  - `.github/workflows/deploy.yml`
+  - `_data/config.yaml`
+  - `_data/skills/*.yaml`
+  - `README.md`
+  - 测试文件，如 `src/content/config/site-config.test.ts`、`src/router/router.test.ts` 或同等覆盖点
+- 关键符号：
+  - `loadSiteConfig`
+  - `loadSkillRecords`
+  - `buildPublishedSkillSummaries`
+  - `getSkillById`
+  - `routes`
+
+## dependency and side-effect boundaries
+
+- GitHub Actions 是唯一部署副作用边界。
+- `vite.config.ts` 只负责构建 base，不读取业务 YAML。
+- `_data/*` 是内容事实源，经 `src/content/*` 与 adapter 归一后进入页面。
+- `status: archived` 的过滤规则由查询层和静态路由生成入口拥有，README 只说明维护规则。
+
+## impact scope
+
+- likely changed files or symbol clusters：
+  - `.github/workflows/deploy.yml`
+  - `_data/config.yaml`
+  - `_data/skills/*.yaml`
+  - `README.md`
+  - 内容 / 路由相关测试
+- likely verification surface：
+  - PRD 默认分类可读取
+  - published / archived 示例内容过滤
+  - `BASE_PATH=/skill-hub/ npm run build`
+  - workflow 使用 `npm ci` 并发布 `dist` 到 `gh-pages`
+- likely regression-sensitive neighbors：
+  - 首页 / 列表页分类筛选
+  - 详情页静态路由生成
+  - Vite SSG 构建输出资源路径
+
+## open follow-up checks
+
+- 执行阶段若选用第三方 `gh-pages` 发布 action，必须确保 workflow 权限包含 `contents: write`，且 README 提醒仓库 Pages source 选择 `gh-pages` 分支。
+- 执行阶段不得把 GitHub Token、PAT 或任何密钥写入 `_data`、README 示例命令或前端 bundle。

@@ -15,12 +15,19 @@ Required sections:
 - confirmed decisions and invariants
 - system boundaries and ownership
 - source-backed behavior inventory
+- developer-facing behavior details
+- implicit requirements and hidden assumptions
 - workflow and dependency assessment
 - ambiguity and clarification register
 - risk and constraint assessment
 - blocker classification and handling stance
+- confirmation-reduction notes
 - splitting strategy
 - downstream stage signals
+
+The artifact must be written as a developer-facing requirement refinement, not a source summary.
+It should preserve enough field, state, workflow, permission, dependency, failure, and risk detail that downstream developers can draft `spec` with fewer product follow-up questions.
+Reducing follow-up questions means exposing hidden or unclear points concretely; it does not mean deleting uncertain content.
 
 ### `source inventory and reading stance`
 
@@ -59,6 +66,39 @@ Preserve the major behavior clusters already present in the source, including wh
 - workflow branches and state transitions
 
 Do not rewrite explicit upstream behavior into abstract summaries that would force downstream stages to rediscover the source.
+
+When the source contains tables, state enums, permission matrices, interface fields, acceptance bullets, or flow diagrams, preserve their execution-relevant detail as tables or structured lists.
+Do not collapse them into generic sentences such as "support list management", "support audit", or "support synchronization".
+
+### `developer-facing behavior details`
+
+Document the execution-relevant details a developer would otherwise need to ask product about:
+
+- roles, ends, menus, permission boundaries, read-only/writeable states
+- list columns, filters, sort rules, pagination, exports, row actions
+- form fields, validation, requiredness, default values, editability, readonly conditions
+- detail-page blocks, tabs, display groups, status blocks, reason entries
+- operation triggers and outcomes for create, edit, submit, audit, reject, terminate, delete, import, export, upload, parse, download, synchronize
+- state machines, node transitions, reverse-flow rules, resubmission rules, locked states
+- error, empty, loading, async, timeout, retry, partial-success, and failure-handling rules when source-backed
+- data source, source of truth, front-end DTO expectations, and adapter / mapper / fromDetail normalization boundaries
+- audit snapshot, log, traceability, history, reason text, and approval comment requirements
+
+This section may be detailed. Its purpose is to reduce downstream rediscovery, not to be a short overview.
+
+### `implicit requirements and hidden assumptions`
+
+Expose requirements that are not written as explicit product bullets but are implied by flows, data dependencies, permissions, or cross-system behavior.
+
+For each item, document:
+
+- source clue: the exact source behavior or dependency that implies the issue
+- hidden question: what a developer would likely need to ask
+- current stance: confirmed, inferred but needs confirmation, external-interface pending, or non-blocking
+- impact: affected page, flow, data model, state machine, permission, adapter, or regression scope
+- handling: how downstream stages should carry it without silently inventing behavior
+
+Do not use this section to invent business behavior. Use it to make uncertainty and implications visible.
 
 ### `confirmed decisions and invariants`
 
@@ -99,6 +139,8 @@ Document:
 - questions that must remain visible to downstream stages
 
 Do not guess missing business semantics just to make the analysis read cleanly.
+Do not remove ambiguous content to make the artifact look more certain.
+Every ambiguity should include why it matters to development and which downstream module or artifact must carry it.
 
 ### `risk and constraint assessment`
 
@@ -109,6 +151,16 @@ Document:
 - source constraints that narrow implementation freedom
 - delivery risks that may influence splitting or later design stages
 
+For each material risk, prefer a table with:
+
+- risk
+- source / trigger
+- affected systems, pages, or modules
+- likely failure mode
+- downstream handling or verification signal
+
+Avoid generic risk entries such as "interface risk" or "status risk" without impact and handling.
+
 ### `blocker classification and handling stance`
 
 Classify unresolved items into:
@@ -118,6 +170,18 @@ Classify unresolved items into:
 - `非阻塞`: items that do not block mainline `spec` drafting and may be resolved in design or pre-implementation
 
 Do not collapse all unresolved items into one generic TODO list.
+
+### `confirmation-reduction notes`
+
+Document how this analysis reduces product follow-up during development:
+
+- confirmed items that downstream `spec` must not reopen
+- concrete hidden questions that have been surfaced instead of left implicit
+- areas where developers can proceed using a stated adapter / config / DTO boundary
+- areas where developers must stop for product or external-system confirmation
+- source-backed risk checks that must become acceptance or regression coverage later
+
+This is not a summary section. It is a handoff checklist for the next stage.
 
 ### `splitting strategy`
 

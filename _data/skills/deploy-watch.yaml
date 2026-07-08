@@ -1,0 +1,34 @@
+id: deploy-watch
+name: Deploy Watch
+category: devops
+version: v0.9.1
+shortDesc: Check static deployment logs and summarize failed GitHub Actions steps.
+fullDesc: |
+  ## What It Does
+
+  `deploy-watch` inspects recent deployment runs and turns noisy CI output into a focused release note.
+
+  ## Best For
+
+  - GitHub Pages release checks
+  - Static site deployment triage
+  - Handoff notes after a failed build
+
+  ```bash
+  deploy-watch --repo wisdomWindy/skill-hub --branch main
+  ```
+installCommand: curl -fsSL https://skillhub.dev/install.sh | bash -s deploy-watch@v0.9.1
+usageExamples:
+  - title: 检查最近一次部署
+    code: deploy-watch --repo wisdomWindy/skill-hub --branch main
+tags:
+  - deploy
+  - github-actions
+  - devops
+changelog: |
+  - Added GitHub Pages deployment summaries
+  - Improved failed-step grouping
+status: published
+installCount: 31
+createdAt: 2026-06-28T11:00:00.000Z
+updatedAt: 2026-07-04T16:20:00.000Z
