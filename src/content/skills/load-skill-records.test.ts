@@ -3,7 +3,7 @@ import { describe, expect, it } from 'vitest'
 import { loadSiteConfig } from '@/content/config/site-config'
 import { loadSkillRecords } from '@/content/skills/load-skill-records'
 
-const realSkillSources = import.meta.glob('../../../_data/real-skills/*.yaml', {
+const realSkillSources = import.meta.glob('../../../_data/real-skills/**/SKILL.yaml', {
   query: '?raw',
   import: 'default',
   eager: true,
@@ -26,5 +26,10 @@ describe('real skill static delivery contract', () => {
     expect(records.every((record) => record.status === 'published')).toBe(true)
     expect(records.some((record) => record.id === 'agent-frontend-agent-framework')).toBe(true)
     expect(records.some((record) => record.id === 'agent-frontend-agent-framework-verify')).toBe(true)
+  })
+
+  it('keeps the generated data directory aligned with the original skill directory shape', () => {
+    expect(realSkillSources).toHaveProperty('../../../_data/real-skills/frontend-agent-framework/SKILL.yaml')
+    expect(realSkillSources).toHaveProperty('../../../_data/real-skills/frontend-agent-framework/subskills/verify/SKILL.yaml')
   })
 })

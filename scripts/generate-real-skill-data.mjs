@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -20,6 +20,7 @@ const stageLabels = {
   'bugfix-intake': '缺陷接收',
   'chapter-planning': '章节规划',
   'character-design': '角色设计',
+  'continuity-review': '连续性审查',
   copyedit: '文案编辑',
   drafting: '正文起草',
   execute: '执行实现',
@@ -74,6 +75,11 @@ function resolveSegments(filePath) {
 
 function buildSkillId(segments) {
   return `agent-${segments.filter((segment) => segment !== 'subskills').join('-')}`
+}
+
+function resolveOutputPath(filePath) {
+  const relativePath = path.relative(sourceRoot, filePath).replace(/\.md$/, '.yaml')
+  return path.join(outputRoot, relativePath)
 }
 
 function resolveDisplayName(segments, fallbackName) {
@@ -171,14 +177,15 @@ function renderSkillRecord(filePath) {
   ].join('\n')
 }
 
+rmSync(outputRoot, { recursive: true, force: true })
 mkdirSync(outputRoot, { recursive: true })
 
 const skillFiles = findSkillFiles(sourceRoot).sort((left, right) => toPosixPath(left).localeCompare(toPosixPath(right)))
 
 for (const filePath of skillFiles) {
-  const segments = resolveSegments(filePath)
-  const id = buildSkillId(segments)
-  writeFileSync(path.join(outputRoot, `${id}.yaml`), renderSkillRecord(filePath), 'utf8')
+  const outputPath = resolveOutputPath(filePath)
+  mkdirSync(path.dirname(outputPath), { recursive: true })
+  writeFileSync(outputPath, renderSkillRecord(filePath), 'utf8')
 }
 
 console.log(`Generated ${skillFiles.length} skill records in ${toPosixPath(outputRoot)}`)
