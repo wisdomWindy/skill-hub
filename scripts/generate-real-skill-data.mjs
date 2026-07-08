@@ -82,6 +82,11 @@ function resolveOutputPath(filePath) {
   return path.join(outputRoot, relativePath)
 }
 
+function resolveInstallPath(filePath, segments) {
+  const installTarget = segments.length === 1 ? path.dirname(filePath) : filePath
+  return toPosixPath(installTarget)
+}
+
 function resolveDisplayName(segments, fallbackName) {
   const [framework, maybeSubskills, stage] = segments
   const frameworkLabel = frameworkLabels[framework] || fallbackName
@@ -141,6 +146,7 @@ function renderSkillRecord(filePath) {
   const displayName = resolveDisplayName(segments, triggerName)
   const shortDesc = resolveShortDesc(segments)
   const sourcePath = toPosixPath(filePath)
+  const installPath = resolveInstallPath(filePath, segments)
   const tags = resolveTags(segments)
   const fullDesc = [
     `## ${displayName}`,
@@ -163,7 +169,7 @@ function renderSkillRecord(filePath) {
     'version: "v1.0.0"',
     `shortDesc: ${quote(shortDesc)}`,
     `fullDesc: ${quote(fullDesc)}`,
-    `installCommand: ${quote(`本地路径：${sourcePath}`)}`,
+    `installCommand: ${quote(`本地路径：${installPath}`)}`,
     'usageExamples:',
     '  - title: "在 Codex 中触发"',
     `    code: ${quote(`$${triggerName}`)}`,

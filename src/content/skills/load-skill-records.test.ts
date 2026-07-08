@@ -32,4 +32,15 @@ describe('real skill static delivery contract', () => {
     expect(realSkillSources).toHaveProperty('../../../_data/real-skills/frontend-agent-framework/SKILL.yaml')
     expect(realSkillSources).toHaveProperty('../../../_data/real-skills/frontend-agent-framework/subskills/verify/SKILL.yaml')
   })
+
+  it('uses directory install commands for main skills and file install commands for subskills', () => {
+    const records = loadSkillRecords()
+
+    expect(records.find((record) => record.id === 'agent-frontend-agent-framework')?.installCommand).toBe(
+      '本地路径：.agents/skills/frontend-agent-framework',
+    )
+    expect(records.find((record) => record.id === 'agent-frontend-agent-framework-verify')?.installCommand).toBe(
+      '本地路径：.agents/skills/frontend-agent-framework/subskills/verify/SKILL.md',
+    )
+  })
 })
