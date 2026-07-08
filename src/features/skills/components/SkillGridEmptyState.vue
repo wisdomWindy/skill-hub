@@ -8,41 +8,22 @@ const props = defineProps<{
 </script>
 
 <template>
-  <div class="surface-card empty-shell">
-    <span class="eyebrow">No Results</span>
-    <h2>{{ props.title }}</h2>
-    <p>{{ props.description }}</p>
-    <RouterLink v-if="props.actionLabel && props.actionTo" class="reset-link" :to="props.actionTo">
+  <div
+    class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-7 text-center shadow-[var(--shadow-soft)] backdrop-blur-[18px]"
+  >
+    <span
+      class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
+    >
+      No Results
+    </span>
+    <h2 class="my-[18px] mb-2.5">{{ props.title }}</h2>
+    <p class="m-0 leading-[1.7] text-[var(--text-muted)]">{{ props.description }}</p>
+    <RouterLink
+      v-if="props.actionLabel && props.actionTo"
+      class="mt-[18px] inline-flex items-center justify-center rounded-full bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 py-3 font-extrabold text-[#04101a]"
+      :to="props.actionTo"
+    >
       {{ props.actionLabel }}
     </RouterLink>
   </div>
 </template>
-
-<style scoped>
-.empty-shell {
-  padding: 28px;
-  text-align: center;
-}
-
-.empty-shell h2 {
-  margin: 18px 0 10px;
-}
-
-.empty-shell p {
-  margin: 0;
-  color: var(--text-muted);
-  line-height: 1.7;
-}
-
-.reset-link {
-  display: inline-flex;
-  margin-top: 18px;
-  align-items: center;
-  justify-content: center;
-  border-radius: 999px;
-  padding: 12px 16px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #04101a;
-  font-weight: 800;
-}
-</style>

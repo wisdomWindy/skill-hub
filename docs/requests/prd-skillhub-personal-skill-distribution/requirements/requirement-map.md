@@ -32,12 +32,14 @@
 | `module-02-public-discovery` | 公开浏览首页与列表页 | page + table/list workflow | 6.1, 9.1 首页/列表页, 7.1, 7.5 | 首页、列表页、搜索、分类、排序、空状态、响应式与结果统计 | 2 | 是 | 是 | 依赖基础模块提供数据装载、路由和全局壳层 | `module-runs/module-02-public-discovery/` |
 | `module-03-skill-detail` | 技能详情与转化区 | detail/display block | 6.2, 8.1, 9.1 详情页 | 详情页展示、Markdown 渲染、安装命令复制、版本历史、相关技能、OG 元信息 | 3 | 是 | 是 | 依赖基础模块与公开浏览共享类型与数据入口 | `module-runs/module-03-skill-detail/` |
 | `module-04-static-delivery` | GitHub Pages 静态交付与内容示例 | cross-module rule | 6.4, 7.1, 7.2, 10.4 | GitHub Actions 构建、gh-pages 发布、示例 YAML 内容、静态交付说明 | 4 | 否 | 是 | 负责把站点从代码与内容仓库交付到 GitHub Pages | `module-runs/module-04-static-delivery/` |
+| `module-05-tailwind-style-refactor` | Tailwind CSS 风格样式迁移 | page + component style system | 用户变更：全页面 Tailwind CSS 风格、禁止 style 标签和行内样式 | 将现有页面和组件的 scoped CSS 迁移为 Tailwind utility-first 类名；接入 Tailwind 构建能力；保留既有功能、主题与响应式体验 | 5 | 是 | 是 | 在已完成静态站点基础上做样式表达层改造，不新增后台或产品行为 | `module-runs/module-05-tailwind-style-refactor/` |
 
 ## Module Dependency and Sequencing Notes
 
 - `module-01-platform-foundation` 是所有后续模块的共同依赖。
 - `module-02-public-discovery` 与 `module-03-skill-detail` 共用公开数据读取、全局导航、主题与 Markdown 能力，但可顺序独立交付。
 - `module-04-static-delivery` 依赖 `module-01-platform-foundation` 建立好的工程与数据结构，并为最终交付补齐 GitHub Pages 发布能力与示例内容。
+- `module-05-tailwind-style-refactor` 依赖前四个模块已完成的页面、组件、数据与静态交付能力；只改样式表达和构建样式依赖，不改变数据模型、路由行为、搜索筛选逻辑、复制逻辑或 GitHub Pages 交付目标。
 - 后续模块在当前流程中必须按顺序完成 `page-design? -> architecture-design? -> spec -> plan -> execute -> verify -> review` 后才能切换。
 
 ## Module Execution Sequence
@@ -48,6 +50,7 @@
 2. `module-02-public-discovery`：从 `page-design` 开始
 3. `module-03-skill-detail`：从 `page-design` 开始
 4. `module-04-static-delivery`：从 `architecture-design` 开始
+5. `module-05-tailwind-style-refactor`：从 `page-design` 开始
 
 首个 `current_module_id` 为 `module-01-platform-foundation`。
 
@@ -56,6 +59,7 @@
 - 需要 `page-design`：
   - `module-02-public-discovery`
   - `module-03-skill-detail`
+  - `module-05-tailwind-style-refactor`
 - 不需要 `page-design`：
   - `module-01-platform-foundation`
   - `module-04-static-delivery`
@@ -88,6 +92,15 @@
 - `_data/config.yaml` 与 `_data/skills/*.yaml` 的示例内容和静态读取方式
 - GitHub Pages 所需 `base`、静态资源路径和构建输出约束
 - README 或文档中的本地开发 / 构建 / 部署说明
+
+### `module-05-tailwind-style-refactor`
+
+- 全站 Vue SFC 中不得保留 `<style>` / `<style scoped>` 块。
+- 模板中不得出现静态或动态 `style` 属性，包括 `style=""`、`:style`、`v-bind:style`。
+- 页面、布局和业务组件的视觉表达应迁移为 Tailwind CSS utility-first 类名。
+- Tailwind 构建能力应进入 Vite 样式链路，保留 GitHub Pages `BASE_PATH` 构建兼容性。
+- 主题 token、Markdown 渲染内容和代码高亮可保留在全局样式层处理，但不得使用组件内 style 标签或行内样式兜底。
+- 改造不得改变搜索、筛选、分页、路由、详情渲染、复制安装命令、主题切换和静态部署行为。
 
 ## Open Questions and Unresolved Ambiguities
 

@@ -18,8 +18,13 @@ function jumpTo(nextPage: number) {
 </script>
 
 <template>
-  <nav v-if="props.totalPages > 1" class="pagination-shell" aria-label="Skill pagination">
-    <button type="button" class="page-button" :disabled="props.page === 1" @click="jumpTo(props.page - 1)">
+  <nav v-if="props.totalPages > 1" class="flex flex-wrap items-center gap-2.5" aria-label="Skill pagination">
+    <button
+      type="button"
+      class="cursor-pointer rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-[14px] py-2.5 text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-45"
+      :disabled="props.page === 1"
+      @click="jumpTo(props.page - 1)"
+    >
       Prev
     </button>
 
@@ -27,8 +32,12 @@ function jumpTo(nextPage: number) {
       v-for="index in props.totalPages"
       :key="index"
       type="button"
-      class="page-button"
-      :class="{ active: index === props.page }"
+      class="cursor-pointer rounded-full border border-[var(--border)] px-[14px] py-2.5"
+      :class="
+        index === props.page
+          ? 'bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] font-extrabold text-[#04101a]'
+          : 'bg-[var(--bg-elevated)] text-[var(--text)]'
+      "
       @click="jumpTo(index)"
     >
       {{ index }}
@@ -36,7 +45,7 @@ function jumpTo(nextPage: number) {
 
     <button
       type="button"
-      class="page-button"
+      class="cursor-pointer rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-[14px] py-2.5 text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-45"
       :disabled="props.page === props.totalPages"
       @click="jumpTo(props.page + 1)"
     >
@@ -44,32 +53,3 @@ function jumpTo(nextPage: number) {
     </button>
   </nav>
 </template>
-
-<style scoped>
-.pagination-shell {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 10px;
-  align-items: center;
-}
-
-.page-button {
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  color: var(--text);
-  border-radius: 999px;
-  padding: 10px 14px;
-  cursor: pointer;
-}
-
-.page-button.active {
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #04101a;
-  font-weight: 800;
-}
-
-.page-button:disabled {
-  cursor: not-allowed;
-  opacity: 0.45;
-}
-</style>

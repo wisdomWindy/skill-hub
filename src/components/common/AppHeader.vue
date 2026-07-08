@@ -23,99 +23,31 @@ const currentLabel = computed(() => {
 </script>
 
 <template>
-  <header class="header-shell">
-    <div class="app-container header-inner">
-      <RouterLink class="brand-mark" to="/">
-        <span class="brand-logo">SH</span>
+  <header class="sticky top-0 z-10 border-b border-[var(--border)] bg-[var(--header-bg)] backdrop-blur-[22px]">
+    <div
+      class="mx-auto flex w-[min(100%_-_32px,var(--page-max-width))] items-center justify-between gap-[18px] py-[18px] max-[960px]:w-[min(100%_-_20px,var(--page-max-width))] max-[960px]:flex-col max-[960px]:items-stretch"
+    >
+      <RouterLink class="flex items-center gap-[14px]" to="/">
+        <span
+          class="inline-flex h-11 w-11 items-center justify-center rounded-[14px] bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] font-extrabold text-[#04101a]"
+        >
+          SH
+        </span>
         <div>
-          <div class="brand-title">{{ siteConfig.site.title }}</div>
-          <div class="brand-subtitle">{{ currentLabel }}</div>
+          <div class="text-lg font-extrabold">{{ siteConfig.site.title }}</div>
+          <div class="text-[13px] text-[var(--text-muted)]">{{ currentLabel }}</div>
         </div>
       </RouterLink>
 
-      <div class="header-actions">
-        <RouterLink class="nav-link" to="/skills">All Skills</RouterLink>
-        <input class="ghost-input search-shell" disabled placeholder="Search wiring arrives in the next module" />
+      <div class="flex items-center gap-3 max-[960px]:w-full max-[960px]:flex-wrap">
+        <RouterLink class="font-bold text-[var(--text-muted)]" to="/skills">All Skills</RouterLink>
+        <input
+          class="w-[280px] rounded-full border border-[var(--border)] bg-white/4 px-[18px] py-[14px] text-[var(--text)] placeholder:text-[var(--text-muted)] max-[960px]:w-full"
+          disabled
+          placeholder="Search wiring arrives in the next module"
+        />
         <ThemeToggle />
       </div>
     </div>
   </header>
 </template>
-
-<style scoped>
-.header-shell {
-  position: sticky;
-  top: 0;
-  z-index: 10;
-  background: var(--header-bg);
-  border-bottom: 1px solid var(--border);
-  backdrop-filter: blur(22px);
-}
-
-.header-inner {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 18px 0;
-}
-
-.brand-mark {
-  display: flex;
-  align-items: center;
-  gap: 14px;
-}
-
-.brand-logo {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 44px;
-  height: 44px;
-  border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #04101a;
-  font-weight: 800;
-}
-
-.brand-title {
-  font-size: 18px;
-  font-weight: 800;
-}
-
-.brand-subtitle {
-  color: var(--text-muted);
-  font-size: 13px;
-}
-
-.header-actions {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.nav-link {
-  color: var(--text-muted);
-  font-weight: 700;
-}
-
-.search-shell {
-  width: 280px;
-}
-
-@media (max-width: 960px) {
-  .header-inner {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-actions {
-    width: 100%;
-    flex-wrap: wrap;
-  }
-
-  .search-shell {
-    width: 100%;
-  }
-}
-</style>

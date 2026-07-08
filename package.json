@@ -26,10 +26,12 @@
     "yaml": "^2.8.1"
   },
   "devDependencies": {
+    "@tailwindcss/vite": "^4.3.2",
     "@types/node": "^24.0.15",
     "@vitejs/plugin-vue": "^6.0.1",
     "@vue/test-utils": "^2.4.6",
     "jsdom": "^26.1.0",
+    "tailwindcss": "^4.3.2",
     "typescript": "^5.8.3",
     "vite": "^7.0.4",
     "vitest": "^3.2.4",

@@ -8,54 +8,30 @@ const props = defineProps<{
 </script>
 
 <template>
-  <section v-if="props.skills.length" class="surface-card related-card" aria-labelledby="related-title">
-    <span class="eyebrow">Related</span>
-    <h2 id="related-title">Similar Skills</h2>
+  <section
+    v-if="props.skills.length"
+    class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-[22px] shadow-[var(--shadow-soft)] backdrop-blur-[18px]"
+    aria-labelledby="related-title"
+  >
+    <span
+      class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
+    >
+      Related
+    </span>
+    <h2 id="related-title" class="mt-[14px] mb-4 text-xl">Similar Skills</h2>
 
-    <div class="related-list">
+    <div class="grid gap-2.5">
       <RouterLink
         v-for="skill in props.skills"
         :key="skill.id"
-        class="related-item"
+        class="grid gap-1.5 rounded-[var(--radius-md)] border border-[var(--border)] bg-[var(--bg-muted)] p-[14px]"
         :to="`/skills/${skill.id}`"
       >
-        <strong>{{ skill.name }}</strong>
-        <span>{{ props.categoryLabels[skill.category] || skill.category }} · {{ skill.version }}</span>
+        <strong class="text-[15px]">{{ skill.name }}</strong>
+        <span class="text-[13px] text-[var(--text-muted)]">
+          {{ props.categoryLabels[skill.category] || skill.category }} · {{ skill.version }}
+        </span>
       </RouterLink>
     </div>
   </section>
 </template>
-
-<style scoped>
-.related-card {
-  padding: 22px;
-}
-
-.related-card h2 {
-  margin: 14px 0 16px;
-  font-size: 20px;
-}
-
-.related-list {
-  display: grid;
-  gap: 10px;
-}
-
-.related-item {
-  display: grid;
-  gap: 6px;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: var(--bg-muted);
-  padding: 14px;
-}
-
-.related-item strong {
-  font-size: 15px;
-}
-
-.related-item span {
-  color: var(--text-muted);
-  font-size: 13px;
-}
-</style>

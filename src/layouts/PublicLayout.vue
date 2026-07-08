@@ -4,7 +4,7 @@ import AppHeader from '@/components/common/AppHeader.vue'
 </script>
 
 <template>
-  <div class="app-shell">
+  <div class="min-h-screen">
     <AppHeader />
     <main>
       <slot />

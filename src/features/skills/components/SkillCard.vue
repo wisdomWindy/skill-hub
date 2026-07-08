@@ -18,112 +18,47 @@ function resolveInitials(name: string) {
 </script>
 
 <template>
-  <RouterLink :to="`/skills/${props.skill.id}`" class="surface-card skill-card">
-    <div class="card-topline">
-      <span class="category-pill">{{ categoryLabel }}</span>
-      <strong class="version-pill">{{ props.skill.version }}</strong>
+  <RouterLink
+    :to="`/skills/${props.skill.id}`"
+    class="flex flex-col gap-[18px] rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-[22px] shadow-[var(--shadow-soft)] backdrop-blur-[18px] transition-[transform,border-color,box-shadow] duration-150 hover:-translate-y-[3px] hover:border-[rgba(0,212,170,0.35)]"
+  >
+    <div class="flex flex-wrap items-center gap-2.5">
+      <span class="rounded-full bg-[var(--accent-soft)] px-2.5 py-1.5 text-[13px] text-[var(--accent)]">
+        {{ categoryLabel }}
+      </span>
+      <strong class="rounded-full bg-[var(--bg-muted)] px-2.5 py-1.5 text-[13px] text-[var(--text-muted)]">
+        {{ props.skill.version }}
+      </strong>
     </div>
 
-    <div class="card-heading">
-      <div v-if="props.skill.icon" class="icon-shell">
-        <img :src="props.skill.icon" :alt="`${props.skill.name} icon`" />
+    <div class="flex items-start gap-4">
+      <div
+        v-if="props.skill.icon"
+        class="h-14 w-14 flex-none overflow-hidden rounded-[18px] bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)]"
+      >
+        <img class="h-full w-full object-cover" :src="props.skill.icon" :alt="`${props.skill.name} icon`" />
       </div>
-      <div v-else class="icon-shell icon-fallback">{{ resolveInitials(props.skill.name) }}</div>
+      <div
+        v-else
+        class="inline-flex h-14 w-14 flex-none items-center justify-center overflow-hidden rounded-[18px] bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] font-extrabold tracking-[0.08em] text-[#04101a]"
+      >
+        {{ resolveInitials(props.skill.name) }}
+      </div>
 
       <div>
-        <h2>{{ props.skill.name }}</h2>
-        <p>{{ props.skill.shortDesc }}</p>
+        <h2 class="mb-2.5 text-[22px]">{{ props.skill.name }}</h2>
+        <p class="m-0 leading-[1.7] text-[var(--text-muted)]">{{ props.skill.shortDesc }}</p>
       </div>
     </div>
 
-    <div class="tag-row">
-      <span v-for="tag in props.skill.tags" :key="tag">{{ tag }}</span>
+    <div class="flex flex-wrap items-center gap-2.5">
+      <span
+        v-for="tag in props.skill.tags"
+        :key="tag"
+        class="rounded-full bg-[var(--bg-muted)] px-2.5 py-1.5 text-[13px] text-[var(--text-muted)]"
+      >
+        {{ tag }}
+      </span>
     </div>
   </RouterLink>
 </template>
-
-<style scoped>
-.skill-card {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 22px;
-  transition:
-    transform 160ms ease,
-    border-color 160ms ease,
-    box-shadow 160ms ease;
-}
-
-.skill-card:hover {
-  transform: translateY(-3px);
-  border-color: rgba(0, 212, 170, 0.35);
-}
-
-.card-topline,
-.tag-row {
-  display: flex;
-  gap: 10px;
-  flex-wrap: wrap;
-  align-items: center;
-}
-
-.category-pill,
-.version-pill,
-.tag-row span {
-  border-radius: 999px;
-  padding: 6px 10px;
-  font-size: 13px;
-}
-
-.category-pill {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.version-pill,
-.tag-row span {
-  background: var(--bg-muted);
-  color: var(--text-muted);
-}
-
-.card-heading {
-  display: flex;
-  gap: 16px;
-  align-items: flex-start;
-}
-
-.card-heading h2 {
-  margin: 0 0 10px;
-  font-size: 22px;
-}
-
-.card-heading p {
-  margin: 0;
-  color: var(--text-muted);
-  line-height: 1.7;
-}
-
-.icon-shell {
-  flex: 0 0 auto;
-  width: 56px;
-  height: 56px;
-  border-radius: 18px;
-  overflow: hidden;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-}
-
-.icon-shell img {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-}
-
-.icon-fallback {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  color: #04101a;
-  font-weight: 800;
-  letter-spacing: 0.08em;
-}
-</style>

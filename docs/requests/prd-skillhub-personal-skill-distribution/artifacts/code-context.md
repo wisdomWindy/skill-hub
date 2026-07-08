@@ -181,3 +181,95 @@
 
 - 执行阶段若选用第三方 `gh-pages` 发布 action，必须确保 workflow 权限包含 `contents: write`，且 README 提醒仓库 Pages source 选择 `gh-pages` 分支。
 - 执行阶段不得把 GitHub Token、PAT 或任何密钥写入 `_data`、README 示例命令或前端 bundle。
+
+---
+
+# Code Context Addendum: module-05-tailwind-style-refactor
+
+## context requirement
+
+- 需要原因：`module-05-tailwind-style-refactor` 是全站样式表达层迁移，触及构建依赖、全局 CSS、页面容器、公共组件和技能业务组件。需要明确影响面，避免把业务行为或数据边界卷入样式迁移。
+- 首次要求阶段：`plan`
+- 是否必须依赖 code graph：否。本模块主要是样式和模板迁移，可由 `rg`、局部文件阅读和现有测试覆盖影响面。
+
+## graph availability check
+
+- repository graph status：`missing`
+- detection method：沿用前序 code context 检查，仓库内未发现可用 `.codegraph` 或 codegraph 产物。
+- tool or runtime found：未发现现成 code graph 配置或产物。
+- check timestamp or iteration context：`loop.iteration=36`
+
+## installation or bootstrap record
+
+- attempted：`no`
+- installer or bootstrap method：未执行。
+- result：`not_needed`
+- output summary：当前模块没有复杂调用关系或未知 side-effect 传播，`rg -n '<style|style=' src` 已定位主要改造文件。
+- next step：执行阶段继续通过 `rg` 和目标文件阅读确认残留样式入口。
+
+## fallback record
+
+- fallback used：`yes`
+- fallback method：`rg -n '<style|style=' src`、读取 `package.json`、`vite.config.ts`、`tsconfig.json`、`src/assets/styles/main.css` 和命中的 Vue SFC。
+- why fallback was needed：code graph 缺失，且样式迁移影响面可由文本搜索稳定覆盖。
+- residual confidence or remaining blind spots：对 SFC style 命中范围把握高；执行阶段需要根据 Tailwind 实际安装版本确认 Vite 集成方式。
+
+## relevant entrypoints
+
+- 用户入口：
+  - `src/views/HomeView.vue`
+  - `src/views/SkillsView.vue`
+  - `src/views/SkillDetailView.vue`
+  - `src/layouts/PublicLayout.vue`
+- 内部执行入口：
+  - `src/app/main.ts`
+  - `src/assets/styles/main.css`
+  - `vite.config.ts`
+  - `package.json`
+
+## key symbols and modules
+
+- 直接影响模块：
+  - `src/components/common/AppHeader.vue`
+  - `src/components/common/AppFooter.vue`
+  - `src/components/common/ThemeToggle.vue`
+  - `src/features/skills/components/SkillCard.vue`
+  - `src/features/skills/components/SkillGridEmptyState.vue`
+  - `src/features/skills/components/SkillPagination.vue`
+  - `src/features/skills/components/InstallCommandCard.vue`
+  - `src/features/skills/components/SkillDetailMeta.vue`
+  - `src/features/skills/components/SkillVersionHistory.vue`
+  - `src/features/skills/components/SkillRelatedList.vue`
+- 关键符号：
+  - 无新增业务符号。
+  - 主题状态仍由 `useThemeStore` / root `data-theme` 驱动。
+
+## dependency and side-effect boundaries
+
+- Tailwind 构建依赖属于 build-time boundary，不引入运行时服务。
+- `src/assets/styles/main.css` 是全局样式入口，只承接 Tailwind import、theme token、基础 reset、Markdown / code block 生成内容样式。
+- Vue SFC 不再拥有 `<style>` 边界。
+- 剪贴板写入、搜索筛选、分页、路由、Markdown sanitize 等 side effect 和业务边界保持不变。
+
+## impact scope
+
+- likely changed files or symbol clusters：
+  - package / Vite / global CSS
+  - common layout components
+  - discovery pages and skill list components
+  - detail page and detail components
+- likely verification surface：
+  - `rg -n '<style|style=' src`
+  - `npm run typecheck`
+  - `npm test`
+  - `BASE_PATH=/skill-hub/ npm run build`
+- likely regression-sensitive neighbors：
+  - Theme toggle root attribute
+  - Markdown body and highlight.js generated code blocks
+  - Install command copy feedback
+  - Search / filter / pagination bindings
+
+## open follow-up checks
+
+- 执行阶段需再次读取 Tailwind 安装后的官方集成方式，避免使用与当前 Vite 版本不兼容的配置。
+- 执行阶段需确认 `src/env.d.ts` 和 `src/types/vendor.d.ts` 是否包含影响 Vite / Vue / CSS import 的声明。

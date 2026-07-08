@@ -41,62 +41,88 @@ function navigateToDirectory() {
 
 <template>
   <PublicLayout>
-    <section class="app-container hero-grid">
-      <article class="surface-card hero-copy">
-        <span class="eyebrow">Discover Skills</span>
-        <h1>Find the right AI skill, copy the install command, and keep moving.</h1>
-        <p>
+    <section
+      class="mx-auto grid w-[min(100%_-_32px,var(--page-max-width))] grid-cols-[minmax(0,1.8fr)_minmax(280px,1fr)] gap-[22px] pt-12 max-[960px]:w-[min(100%_-_20px,var(--page-max-width))] max-[960px]:grid-cols-1"
+    >
+      <article
+        class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-7 shadow-[var(--shadow-soft)] backdrop-blur-[18px]"
+      >
+        <span
+          class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
+        >
+          Discover Skills
+        </span>
+        <h1 class="my-[18px] mb-3 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05]">
+          Find the right AI skill, copy the install command, and keep moving.
+        </h1>
+        <p class="leading-[1.8] text-[var(--text-muted)]">
           SkillHub is your static-first skill directory: fast browsing, clear categories, and install-ready entries
           served straight from GitHub Pages.
         </p>
 
-        <form class="hero-search-row" @submit.prevent="navigateToDirectory()">
+        <form class="mt-6 grid grid-cols-[minmax(0,1fr)_auto] gap-3 max-[960px]:grid-cols-1" @submit.prevent="navigateToDirectory()">
           <input
             v-model="searchModel"
-            class="ghost-input hero-search"
+            class="min-w-0 rounded-full border border-[var(--border)] bg-white/4 px-[18px] py-[14px] text-[var(--text)] placeholder:text-[var(--text-muted)]"
             placeholder="Search by skill name or short description"
             type="search"
           />
-          <button class="hero-link primary-link" type="submit">Browse Skills</button>
+          <button
+            class="inline-flex items-center justify-center rounded-full bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] px-[18px] py-[14px] font-extrabold text-[#04101a]"
+            type="submit"
+          >
+            Browse Skills
+          </button>
         </form>
 
-        <div class="hero-actions category-row">
-          <RouterLink class="category-chip active-chip" :to="{ name: 'skills' }">全部</RouterLink>
+        <div class="mt-5 flex flex-wrap items-center gap-[14px]">
+          <RouterLink
+            class="inline-flex items-center justify-center rounded-full bg-[var(--accent-soft)] px-[14px] py-2.5 font-bold text-[var(--accent)]"
+            :to="{ name: 'skills' }"
+          >
+            全部
+          </RouterLink>
           <RouterLink
             v-for="category in siteConfig.categories"
             :key="category.key"
-            class="category-chip"
+            class="inline-flex items-center justify-center rounded-full bg-[var(--bg-muted)] px-[14px] py-2.5 font-bold text-[var(--text-muted)]"
             :to="{ name: 'skills', query: { category: category.key } }"
           >
             {{ category.label }}
           </RouterLink>
         </div>
 
-        <div class="hero-actions">
-          <span class="hero-meta">{{ categorySummary }}</span>
+        <div class="mt-[18px] flex flex-wrap items-center gap-[14px]">
+          <span class="text-[var(--text-muted)]">{{ categorySummary }}</span>
         </div>
       </article>
 
-      <aside class="surface-card hero-panel">
+      <aside
+        class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-7 shadow-[var(--shadow-soft)] backdrop-blur-[18px]"
+      >
         <h2>Why It Feels Fast</h2>
         <ul>
-          <li>Search and filtering stay client-side for sub-second feedback.</li>
-          <li>Skill cards and details are generated ahead of time for GitHub Pages delivery.</li>
-          <li>{{ latestSkills.length }} published sample skills are already wired into the directory.</li>
+          <li class="leading-[1.8] text-[var(--text-muted)]">Search and filtering stay client-side for sub-second feedback.</li>
+          <li class="leading-[1.8] text-[var(--text-muted)]">Skill cards and details are generated ahead of time for GitHub Pages delivery.</li>
+          <li class="leading-[1.8] text-[var(--text-muted)]">{{ latestSkills.length }} published sample skills are already wired into the directory.</li>
         </ul>
       </aside>
     </section>
 
-    <section class="app-container latest-shell">
-      <div class="section-heading">
+    <section class="mx-auto w-[min(100%_-_32px,var(--page-max-width))] pt-8 max-md:w-[min(100%_-_20px,var(--page-max-width))]">
+      <div class="mb-5 flex items-end justify-between gap-4 max-[960px]:flex-col max-[960px]:items-stretch">
         <div>
-          <span class="eyebrow">Latest Skills</span>
-          <h2>Newest entries in the directory</h2>
+          <span
+            class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
+          >
+            Latest Skills
+          </span>
+          <h2 class="mt-4 text-[clamp(1.7rem,3vw,2.6rem)]">Newest entries in the directory</h2>
         </div>
-        <RouterLink class="browse-all-link" to="/skills">See full listing</RouterLink>
+        <RouterLink class="font-extrabold text-[var(--accent)]" to="/skills">See full listing</RouterLink>
       </div>
 
-      <div v-if="latestSkills.length" class="skill-grid">
+      <div v-if="latestSkills.length" class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-[18px]">
         <SkillCard
           v-for="skill in latestSkills"
           :key="skill.id"
@@ -112,126 +138,3 @@ function navigateToDirectory() {
     </section>
   </PublicLayout>
 </template>
-
-<style scoped>
-.hero-grid {
-  display: grid;
-  grid-template-columns: minmax(0, 1.8fr) minmax(280px, 1fr);
-  gap: 22px;
-  padding: 48px 0 0;
-}
-
-.hero-copy,
-.hero-panel {
-  padding: 28px;
-}
-
-.hero-copy h1 {
-  margin: 18px 0 12px;
-  font-size: clamp(2.2rem, 5vw, 4.4rem);
-  line-height: 1.05;
-}
-
-.hero-copy p,
-.hero-panel li {
-  color: var(--text-muted);
-  line-height: 1.8;
-}
-
-.hero-search-row {
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  gap: 12px;
-  margin-top: 24px;
-}
-
-.hero-search {
-  min-width: 0;
-}
-
-.hero-actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 14px;
-  align-items: center;
-  margin-top: 18px;
-}
-
-.primary-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 14px 18px;
-  border-radius: 999px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #04101a;
-  font-weight: 800;
-}
-
-.category-row {
-  margin-top: 20px;
-}
-
-.category-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  padding: 10px 14px;
-  border-radius: 999px;
-  background: var(--bg-muted);
-  color: var(--text-muted);
-  font-weight: 700;
-}
-
-.active-chip {
-  background: var(--accent-soft);
-  color: var(--accent);
-}
-
-.hero-meta {
-  color: var(--text-muted);
-}
-
-.latest-shell {
-  padding: 32px 0 0;
-}
-
-.section-heading {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: end;
-  margin-bottom: 20px;
-}
-
-.section-heading h2 {
-  margin: 16px 0 0;
-  font-size: clamp(1.7rem, 3vw, 2.6rem);
-}
-
-.browse-all-link {
-  color: var(--accent);
-  font-weight: 800;
-}
-
-.skill-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
-}
-
-@media (max-width: 960px) {
-  .hero-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .hero-search-row {
-    grid-template-columns: 1fr;
-  }
-
-  .section-heading {
-    flex-direction: column;
-    align-items: stretch;
-  }
-}
-</style>

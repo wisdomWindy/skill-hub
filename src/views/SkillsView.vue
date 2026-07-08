@@ -165,47 +165,63 @@ useHead({
 
 <template>
   <PublicLayout>
-    <section class="app-container listing-shell">
-      <div class="surface-card listing-header">
-        <div class="listing-copy">
-          <span class="eyebrow">Directory</span>
-          <h1>Browse published skills by category, query, and release order.</h1>
-          <p>{{ resultSummary }}</p>
+    <section class="mx-auto w-[min(100%_-_32px,var(--page-max-width))] pt-10 max-md:w-[min(100%_-_20px,var(--page-max-width))]">
+      <div
+        class="mb-[22px] flex items-end justify-between gap-5 rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] px-7 py-6 shadow-[var(--shadow-soft)] backdrop-blur-[18px] max-[1080px]:flex-col max-[1080px]:items-stretch"
+      >
+        <div>
+          <span
+            class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
+          >
+            Directory
+          </span>
+          <h1 class="my-4 mb-2 text-[clamp(1.8rem,4vw,3rem)]">Browse published skills by category, query, and release order.</h1>
+          <p class="m-0 text-[var(--text-muted)]">{{ resultSummary }}</p>
         </div>
 
-        <div class="header-controls">
+        <div class="grid grid-cols-[minmax(280px,360px)_200px] items-center gap-3 max-[1080px]:grid-cols-1">
           <input
             v-model="searchInput"
-            class="ghost-input listing-search"
+            class="min-h-[52px] rounded-full border border-[var(--border)] bg-white/4 px-[18px] py-[14px] text-[var(--text)] placeholder:text-[var(--text-muted)]"
             placeholder="Search by skill name or short description"
             type="search"
             @input="handleSearchInput()"
           />
 
-          <select class="sort-select" :value="selectedSort" @change="handleSortChange">
+          <select
+            class="min-h-[52px] rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-4 text-[var(--text)]"
+            :value="selectedSort"
+            @change="handleSortChange"
+          >
             <option value="latest">发布时间（新到旧）</option>
             <option value="name">名称（A 到 Z）</option>
           </select>
         </div>
       </div>
 
-      <div class="listing-grid">
-        <aside class="surface-card category-panel">
-          <div class="panel-title">Categories</div>
+      <div class="grid grid-cols-[minmax(220px,260px)_minmax(0,1fr)] gap-5 max-[1080px]:grid-cols-1">
+        <aside
+          class="sticky top-[110px] flex flex-col gap-2.5 self-start rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-[22px] shadow-[var(--shadow-soft)] backdrop-blur-[18px] max-[1080px]:static max-[1080px]:flex-row max-[1080px]:flex-wrap"
+        >
+          <div class="font-extrabold max-[1080px]:w-full">Categories</div>
           <button
             v-for="category in categoryOptions"
             :key="category.key"
             type="button"
-            class="category-filter"
-            :class="{ active: category.key === selectedCategory }"
+            class="cursor-pointer rounded-full border px-[14px] py-3 text-left"
+            :class="
+              category.key === selectedCategory
+                ? 'border-[rgba(0,212,170,0.28)] bg-[var(--accent-soft)] text-[var(--accent)]'
+                : 'border-[var(--border)] bg-[var(--bg-muted)] text-[var(--text-muted)]'
+            "
             @click="handleCategoryChange(category.key)"
           >
             {{ category.label }}
           </button>
         </aside>
 
-        <div class="results-panel">
-          <div v-if="paginatedSkills.items.length" class="skill-grid">
+        <div class="flex flex-col gap-[18px]">
+          <div v-if="paginatedSkills.items.length" class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-[18px]">
             <SkillCard
               v-for="skill in paginatedSkills.items"
               :key="skill.id"
@@ -222,7 +238,7 @@ useHead({
             :action-to="{ name: 'skills' }"
           />
 
-          <div class="pagination-row">
+          <div class="flex justify-end max-md:justify-start">
             <SkillPagination
               :page="paginatedSkills.page"
               :total-pages="paginatedSkills.totalPages"
@@ -234,133 +250,3 @@ useHead({
     </section>
   </PublicLayout>
 </template>
-
-<style scoped>
-.listing-shell {
-  padding: 40px 0 0;
-}
-
-.listing-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  align-items: end;
-  padding: 24px 28px;
-  margin-bottom: 22px;
-}
-
-.listing-header h1 {
-  margin: 16px 0 8px;
-  font-size: clamp(1.8rem, 4vw, 3rem);
-}
-
-.listing-copy p {
-  margin: 0;
-  color: var(--text-muted);
-}
-
-.header-controls {
-  display: grid;
-  grid-template-columns: minmax(280px, 360px) 200px;
-  gap: 12px;
-  align-items: center;
-}
-
-.listing-search,
-.sort-select {
-  min-height: 52px;
-}
-
-.sort-select {
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-elevated);
-  color: var(--text);
-  padding: 0 16px;
-}
-
-.listing-grid {
-  display: grid;
-  grid-template-columns: minmax(220px, 260px) minmax(0, 1fr);
-  gap: 20px;
-}
-
-.category-panel {
-  align-self: start;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 22px;
-  position: sticky;
-  top: 110px;
-}
-
-.panel-title {
-  font-weight: 800;
-}
-
-.category-filter {
-  border: 1px solid var(--border);
-  background: var(--bg-muted);
-  color: var(--text-muted);
-  border-radius: 999px;
-  padding: 12px 14px;
-  text-align: left;
-  cursor: pointer;
-}
-
-.category-filter.active {
-  background: var(--accent-soft);
-  color: var(--accent);
-  border-color: rgba(0, 212, 170, 0.28);
-}
-
-.results-panel {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-.skill-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
-  gap: 18px;
-}
-
-.pagination-row {
-  display: flex;
-  justify-content: flex-end;
-}
-
-@media (max-width: 1080px) {
-  .listing-header,
-  .listing-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .listing-header {
-    flex-direction: column;
-    align-items: stretch;
-  }
-
-  .header-controls {
-    grid-template-columns: 1fr;
-  }
-
-  .category-panel {
-    position: static;
-    flex-direction: row;
-    flex-wrap: wrap;
-  }
-
-  .panel-title {
-    width: 100%;
-  }
-}
-
-@media (max-width: 767px) {
-  .pagination-row {
-    justify-content: flex-start;
-  }
-}
-</style>

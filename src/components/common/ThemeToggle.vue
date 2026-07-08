@@ -8,26 +8,12 @@ const { theme } = storeToRefs(themeStore)
 </script>
 
 <template>
-  <button class="theme-toggle" type="button" @click="themeStore.toggleTheme()">
+  <button
+    class="inline-flex cursor-pointer items-center gap-2 rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-[14px] py-3 text-[var(--text)]"
+    type="button"
+    @click="themeStore.toggleTheme()"
+  >
     <span>{{ theme === 'dark' ? 'Dark' : 'Light' }}</span>
-    <strong>Theme</strong>
+    <strong class="text-[var(--accent)]">Theme</strong>
   </button>
 </template>
-
-<style scoped>
-.theme-toggle {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 12px 14px;
-  border: 1px solid var(--border);
-  border-radius: 999px;
-  background: var(--bg-elevated);
-  color: var(--text);
-  cursor: pointer;
-}
-
-.theme-toggle strong {
-  color: var(--accent);
-}
-</style>

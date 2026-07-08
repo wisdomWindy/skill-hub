@@ -36,94 +36,38 @@ async function copyInstallCommand() {
 </script>
 
 <template>
-  <section class="surface-card install-card" aria-labelledby="install-command-title">
-    <div class="install-card-header">
+  <section
+    class="flex flex-col gap-[18px] rounded-[var(--radius-lg)] border border-[rgba(0,212,170,0.34)] bg-[var(--bg-elevated)] p-6 shadow-[var(--shadow-soft)] backdrop-blur-[18px]"
+    aria-labelledby="install-command-title"
+  >
+    <div class="flex items-start justify-between gap-4 max-[520px]:flex-col">
       <div>
-        <span class="eyebrow">Install</span>
-        <h2 id="install-command-title">Install Command</h2>
+        <span
+          class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
+        >
+          Install
+        </span>
+        <h2 id="install-command-title" class="mt-[14px] text-[22px]">Install Command</h2>
       </div>
-      <button type="button" class="copy-button" @click="copyInstallCommand">Copy</button>
+      <button
+        type="button"
+        class="min-h-10 cursor-pointer rounded-full border-0 bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 font-extrabold text-[#04101a] max-[520px]:w-full"
+        @click="copyInstallCommand"
+      >
+        Copy
+      </button>
     </div>
 
-    <pre class="command-block"><code>{{ props.command }}</code></pre>
-    <p class="copy-feedback" :class="copyState">{{ feedbackText }}</p>
+    <pre class="m-0 overflow-x-auto rounded-[var(--radius-md)] border border-[var(--border)] bg-[rgba(2,6,23,0.82)] p-4"><code class="font-mono leading-[1.7] whitespace-pre text-[#d1fae5]">{{ props.command }}</code></pre>
+    <p
+      class="m-0 min-h-5 text-sm font-bold"
+      :class="{
+        'text-[var(--accent)]': copyState === 'success',
+        'text-[#fca5a5]': copyState === 'error',
+        'text-[var(--text-muted)]': copyState === 'idle',
+      }"
+    >
+      {{ feedbackText }}
+    </p>
   </section>
 </template>
-
-<style scoped>
-.install-card {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-  padding: 24px;
-  border-color: rgba(0, 212, 170, 0.34);
-}
-
-.install-card-header {
-  display: flex;
-  justify-content: space-between;
-  gap: 16px;
-  align-items: start;
-}
-
-.install-card h2 {
-  margin: 14px 0 0;
-  font-size: 22px;
-}
-
-.copy-button {
-  min-height: 40px;
-  border: 0;
-  border-radius: 999px;
-  padding: 0 16px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-strong));
-  color: #04101a;
-  cursor: pointer;
-  font-weight: 800;
-}
-
-.command-block {
-  margin: 0;
-  overflow-x: auto;
-  border: 1px solid var(--border);
-  border-radius: var(--radius-md);
-  background: rgba(2, 6, 23, 0.82);
-  padding: 16px;
-}
-
-.command-block code {
-  color: #d1fae5;
-  font-family:
-    "JetBrains Mono",
-    "SFMono-Regular",
-    monospace;
-  line-height: 1.7;
-  white-space: pre;
-}
-
-.copy-feedback {
-  min-height: 20px;
-  margin: 0;
-  color: var(--text-muted);
-  font-size: 14px;
-  font-weight: 700;
-}
-
-.copy-feedback.success {
-  color: var(--accent);
-}
-
-.copy-feedback.error {
-  color: #fca5a5;
-}
-
-@media (max-width: 520px) {
-  .install-card-header {
-    flex-direction: column;
-  }
-
-  .copy-button {
-    width: 100%;
-  }
-}
-</style>
