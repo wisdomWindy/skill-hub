@@ -1,0 +1,18 @@
+id: "agent-backend-agent-framework"
+name: "后端智能体框架"
+category: "devtools"
+version: "v1.0.0"
+shortDesc: "后端智能体框架主控 skill，用于编排本地工作流、维护阶段门禁并路由到子技能。"
+fullDesc: "## 后端智能体框架\n\n后端智能体框架主控 skill，用于编排本地工作流、维护阶段门禁并路由到子技能。\n\n## 来源\n\n该条目来自仓库本地 skill 文件：`.agents/skills/backend-agent-framework/SKILL.md`。\n\n## 使用提示\n\n在 Codex 中可通过 `$backend-agent-framework` 或对应工作流触发该 skill。"
+installCommand: "本地路径：.agents/skills/backend-agent-framework/SKILL.md"
+usageExamples:
+  - title: "在 Codex 中触发"
+    code: "$backend-agent-framework"
+tags:
+  - "本地技能"
+  - "agent"
+  - "工作流"
+status: "published"
+installCount: 0
+createdAt: "2026-07-08T00:00:00.000Z"
+updatedAt: "2026-07-08T00:00:00.000Z"

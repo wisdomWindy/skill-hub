@@ -1,0 +1,19 @@
+id: "agent-frontend-agent-framework-spec"
+name: "前端智能体框架：规格编写"
+category: "devtools"
+version: "v1.0.0"
+shortDesc: "前端智能体框架的规格编写阶段 skill，用于驱动本地工作流的对应步骤。"
+fullDesc: "## 前端智能体框架：规格编写\n\n前端智能体框架的规格编写阶段 skill，用于驱动本地工作流的对应步骤。\n\n## 来源\n\n该条目来自仓库本地 skill 文件：`.agents/skills/frontend-agent-framework/subskills/spec/SKILL.md`。\n\n## 使用提示\n\n在 Codex 中可通过 `$frontend-agent-framework-spec` 或对应工作流触发该 skill。"
+installCommand: "本地路径：.agents/skills/frontend-agent-framework/subskills/spec/SKILL.md"
+usageExamples:
+  - title: "在 Codex 中触发"
+    code: "$frontend-agent-framework-spec"
+tags:
+  - "本地技能"
+  - "agent"
+  - "工作流"
+  - "规格编写"
+status: "published"
+installCount: 0
+createdAt: "2026-07-08T00:00:00.000Z"
+updatedAt: "2026-07-08T00:00:00.000Z"

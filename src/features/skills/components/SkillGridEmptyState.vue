@@ -14,7 +14,7 @@ const props = defineProps<{
     <span
       class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
     >
-      No Results
+      无结果
     </span>
     <h2 class="my-[18px] mb-2.5">{{ props.title }}</h2>
     <p class="m-0 leading-[1.7] text-[var(--text-muted)]">{{ props.description }}</p>

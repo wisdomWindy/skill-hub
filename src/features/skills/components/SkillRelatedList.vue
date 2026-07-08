@@ -16,9 +16,9 @@ const props = defineProps<{
     <span
       class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
     >
-      Related
+      相关
     </span>
-    <h2 id="related-title" class="mt-[14px] mb-4 text-xl">Similar Skills</h2>
+    <h2 id="related-title" class="mt-[14px] mb-4 text-xl">相似技能</h2>
 
     <div class="grid gap-2.5">
       <RouterLink

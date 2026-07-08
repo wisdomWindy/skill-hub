@@ -13,7 +13,7 @@ const { theme } = storeToRefs(themeStore)
     type="button"
     @click="themeStore.toggleTheme()"
   >
-    <span>{{ theme === 'dark' ? 'Dark' : 'Light' }}</span>
-    <strong class="text-[var(--accent)]">Theme</strong>
+    <span>{{ theme === 'dark' ? '深色' : '浅色' }}</span>
+    <strong class="text-[var(--accent)]">主题</strong>
   </button>
 </template>

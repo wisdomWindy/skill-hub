@@ -1,0 +1,19 @@
+id: "agent-novel-agent-framework-structural-revision"
+name: "小说智能体框架：结构修订"
+category: "other"
+version: "v1.0.0"
+shortDesc: "小说智能体框架的结构修订阶段 skill，用于驱动本地工作流的对应步骤。"
+fullDesc: "## 小说智能体框架：结构修订\n\n小说智能体框架的结构修订阶段 skill，用于驱动本地工作流的对应步骤。\n\n## 来源\n\n该条目来自仓库本地 skill 文件：`.agents/skills/novel-agent-framework/subskills/structural-revision/SKILL.md`。\n\n## 使用提示\n\n在 Codex 中可通过 `$novel-agent-framework-structural-revision` 或对应工作流触发该 skill。"
+installCommand: "本地路径：.agents/skills/novel-agent-framework/subskills/structural-revision/SKILL.md"
+usageExamples:
+  - title: "在 Codex 中触发"
+    code: "$novel-agent-framework-structural-revision"
+tags:
+  - "本地技能"
+  - "agent"
+  - "写作"
+  - "结构修订"
+status: "published"
+installCount: 0
+createdAt: "2026-07-08T00:00:00.000Z"
+updatedAt: "2026-07-08T00:00:00.000Z"

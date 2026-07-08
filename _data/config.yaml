@@ -1,6 +1,6 @@
 site:
   title: SkillHub
-  description: A static-first catalog for AI skills, built to ship directly from GitHub Pages.
+  description: 面向 AI 技能的静态优先目录，可直接通过 GitHub Pages 交付。
   baseUrl: ""
 categories:
   - key: devtools

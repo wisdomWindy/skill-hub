@@ -1,0 +1,42 @@
+{
+  "request_id": "use-real-skill-data-directory",
+  "source": {
+    "type": "codex-user-message",
+    "summary": "不要直接使用 .agents/skills/**/SKILL.md 作为数据目录，在项目中单独创建一个目录存储 skill 数据"
+  },
+  "stage": "complete",
+  "status": "complete",
+  "artifacts": {
+    "request": "docs/requests/use-real-skill-data-directory/request.md"
+  },
+  "approvals": {
+    "source_message_authorizes_spec_and_plan": true
+  },
+  "module_flow": {
+    "execution_mode": "sequential",
+    "current_module_id": null,
+    "pending_module_ids": [],
+    "completed_module_ids": [
+      "module-01-real-skill-data-directory"
+    ],
+    "modules": {
+      "module-01-real-skill-data-directory": {
+        "source_module_path": null,
+        "page_design_required": false,
+        "architecture_design_required": false,
+        "approvals": {
+          "spec_approved": true,
+          "plan_approved": true
+        },
+        "status": "completed"
+      }
+    }
+  },
+  "loop": {
+    "iteration": 8,
+    "state": "complete",
+    "last_completed_stage": "review",
+    "pending_gate": null,
+    "reentry_reason": "new_request"
+  }
+}

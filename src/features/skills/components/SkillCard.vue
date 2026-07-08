@@ -36,7 +36,7 @@ function resolveInitials(name: string) {
         v-if="props.skill.icon"
         class="h-14 w-14 flex-none overflow-hidden rounded-[18px] bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)]"
       >
-        <img class="h-full w-full object-cover" :src="props.skill.icon" :alt="`${props.skill.name} icon`" />
+        <img class="h-full w-full object-cover" :src="props.skill.icon" :alt="`${props.skill.name} 图标`" />
       </div>
       <div
         v-else

@@ -31,7 +31,7 @@ const categoryLabel = computed(() => {
 const renderedDescription = computed(() =>
   renderMarkdown(
     skill.value?.fullDesc?.trim()
-      || '## Description unavailable\n\nThis published skill does not include a detailed description yet.',
+      || '## 暂无详情\n\n这个已发布技能还没有补充详细说明。',
   ),
 )
 const renderedUsageExamples = computed(() =>
@@ -43,11 +43,11 @@ const renderedUsageExamples = computed(() =>
 const renderedChangelog = computed(() => (skill.value?.changelog ? renderMarkdown(skill.value.changelog) : ''))
 
 useHead(() => ({
-  title: skill.value ? `${skill.value.name} · SkillHub` : 'Skill Detail · SkillHub',
+  title: skill.value ? `${skill.value.name} · SkillHub` : '技能详情 · SkillHub',
   meta: [
     {
       property: 'og:title',
-      content: skill.value ? `${skill.value.name} · SkillHub` : 'Skill Detail · SkillHub',
+      content: skill.value ? `${skill.value.name} · SkillHub` : '技能详情 · SkillHub',
     },
     {
       property: 'og:description',
@@ -60,10 +60,10 @@ useHead(() => ({
 <template>
   <PublicLayout>
     <section class="mx-auto w-[min(100%_-_32px,var(--page-max-width))] pt-[34px] max-md:w-[min(100%_-_20px,var(--page-max-width))]">
-      <nav class="mb-[18px] flex flex-wrap items-center gap-2.5 text-sm text-[var(--text-muted)]" aria-label="Breadcrumb">
-        <RouterLink class="font-extrabold text-[var(--accent)]" to="/skills">Skills</RouterLink>
+      <nav class="mb-[18px] flex flex-wrap items-center gap-2.5 text-sm text-[var(--text-muted)]" aria-label="面包屑">
+        <RouterLink class="font-extrabold text-[var(--accent)]" to="/skills">技能</RouterLink>
         <span>/</span>
-        <span>{{ skill?.name || 'Skill not found' }}</span>
+        <span>{{ skill?.name || '未找到技能' }}</span>
       </nav>
 
       <div v-if="skill" class="grid grid-cols-[minmax(0,2fr)_minmax(280px,1fr)] gap-[22px] max-[960px]:grid-cols-1">
@@ -80,7 +80,7 @@ useHead(() => ({
             <span
               class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
             >
-              Details
+              详情
             </span>
             <div class="markdown-body mt-[18px]" v-html="renderedDescription" />
           </article>
@@ -92,9 +92,9 @@ useHead(() => ({
             <span
               class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
             >
-              Examples
+              示例
             </span>
-            <h2 class="my-4 mb-[14px] text-[clamp(1.6rem,3vw,2.4rem)]">Usage Examples</h2>
+            <h2 class="my-4 mb-[14px] text-[clamp(1.6rem,3vw,2.4rem)]">使用示例</h2>
             <div class="grid gap-[18px]">
               <section
                 v-for="example in renderedUsageExamples"
@@ -122,11 +122,11 @@ useHead(() => ({
         <span
           class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
         >
-          Missing
+          未找到
         </span>
-        <h1 class="my-4 mb-[14px] text-[clamp(1.6rem,3vw,2.4rem)]">Skill not found</h1>
-        <p class="leading-[1.75] text-[var(--text-muted)]">This skill is not published or does not exist in the static directory.</p>
-        <RouterLink class="mt-3 inline-flex font-extrabold text-[var(--accent)]" to="/skills">Back to directory</RouterLink>
+        <h1 class="my-4 mb-[14px] text-[clamp(1.6rem,3vw,2.4rem)]">未找到技能</h1>
+        <p class="leading-[1.75] text-[var(--text-muted)]">这个技能尚未发布，或不存在于静态目录中。</p>
+        <RouterLink class="mt-3 inline-flex font-extrabold text-[var(--accent)]" to="/skills">返回目录</RouterLink>
       </article>
     </section>
   </PublicLayout>

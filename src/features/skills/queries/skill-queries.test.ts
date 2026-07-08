@@ -12,11 +12,11 @@ import type { SkillSummary } from '@/types/skill'
 
 const records: SkillRecord[] = [
   {
-    id: 'pdf-parser',
-    name: 'PDF Parser',
+    id: 'agent-frontend-agent-framework',
+    name: '前端智能体框架',
     category: 'devtools',
     version: 'v2.1.0',
-    shortDesc: 'Parse PDF documents with OCR-safe defaults.',
+    shortDesc: '编排前端本地工作流并路由到对应子技能。',
     fullDesc: 'detail',
     installCommand: 'install',
     usageExamples: '',
@@ -65,15 +65,15 @@ describe('skill queries', () => {
     const result = buildPublishedSkillSummaries(records)
 
     expect(result).toHaveLength(1)
-    expect(result[0]?.id).toBe('pdf-parser')
+    expect(result[0]?.id).toBe('agent-frontend-agent-framework')
   })
 
   it('filters published skills by search query and category', () => {
     const published = buildPublishedSkillSummaries(records)
-    const result = filterSkillSummaries(published, { query: '  parse pdf  ', category: 'devtools' })
+    const result = filterSkillSummaries(published, { query: '  前端智能体  ', category: 'devtools' })
 
     expect(result).toHaveLength(1)
-    expect(result[0]?.id).toBe('pdf-parser')
+    expect(result[0]?.id).toBe('agent-frontend-agent-framework')
   })
 
   it('does not match tags when searching discovery results', () => {

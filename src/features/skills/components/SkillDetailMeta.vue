@@ -23,7 +23,7 @@ function resolveInitials(name: string) {
       v-if="props.skill.icon"
       class="h-[82px] w-[82px] overflow-hidden rounded-[22px] bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)]"
     >
-      <img class="h-full w-full object-cover" :src="props.skill.icon" :alt="`${props.skill.name} icon`" />
+      <img class="h-full w-full object-cover" :src="props.skill.icon" :alt="`${props.skill.name} 图标`" />
     </div>
     <div
       v-else
@@ -44,14 +44,14 @@ function resolveInitials(name: string) {
           v-if="props.skill.installCount > 0"
           class="rounded-full bg-[var(--bg-muted)] px-2.5 py-[7px] text-[13px] text-[var(--text-muted)]"
         >
-          {{ props.skill.installCount }} installs
+          {{ props.skill.installCount }} 次安装
         </span>
       </div>
       <h1 class="my-[18px] mb-3 text-[clamp(2rem,4vw,3.6rem)] leading-[1.06]">{{ props.skill.name }}</h1>
       <p class="m-0 max-w-[720px] leading-[1.75] text-[var(--text-muted)]">{{ props.skill.shortDesc }}</p>
       <dl class="mt-[18px] flex flex-wrap gap-4">
         <div class="grid gap-1">
-          <dt class="m-0 text-[13px] text-[var(--text-muted)]">Updated</dt>
+          <dt class="m-0 text-[13px] text-[var(--text-muted)]">更新时间</dt>
           <dd class="m-0 font-extrabold">{{ props.skill.updatedAt }}</dd>
         </div>
       </dl>

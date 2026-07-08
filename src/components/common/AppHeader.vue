@@ -11,14 +11,14 @@ const siteConfig = loadSiteConfig()
 
 const currentLabel = computed(() => {
   if (route.name === 'skills') {
-    return 'Skill Directory'
+    return '技能目录'
   }
 
   if (route.name === 'skill-detail') {
-    return 'Skill Detail'
+    return '技能详情'
   }
 
-  return 'Static Delivery'
+  return '静态交付'
 })
 </script>
 
@@ -40,11 +40,11 @@ const currentLabel = computed(() => {
       </RouterLink>
 
       <div class="flex items-center gap-3 max-[960px]:w-full max-[960px]:flex-wrap">
-        <RouterLink class="font-bold text-[var(--text-muted)]" to="/skills">All Skills</RouterLink>
+        <RouterLink class="font-bold text-[var(--text-muted)]" to="/skills">全部技能</RouterLink>
         <input
           class="w-[280px] rounded-full border border-[var(--border)] bg-white/4 px-[18px] py-[14px] text-[var(--text)] placeholder:text-[var(--text-muted)] max-[960px]:w-full"
           disabled
-          placeholder="Search wiring arrives in the next module"
+          placeholder="搜索功能已在目录页启用"
         />
         <ThemeToggle />
       </div>

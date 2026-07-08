@@ -1,0 +1,19 @@
+id: "agent-frontend-agent-framework-bugfix-intake"
+name: "前端智能体框架：缺陷接收"
+category: "devtools"
+version: "v1.0.0"
+shortDesc: "前端智能体框架的缺陷接收阶段 skill，用于驱动本地工作流的对应步骤。"
+fullDesc: "## 前端智能体框架：缺陷接收\n\n前端智能体框架的缺陷接收阶段 skill，用于驱动本地工作流的对应步骤。\n\n## 来源\n\n该条目来自仓库本地 skill 文件：`.agents/skills/frontend-agent-framework/subskills/bugfix-intake/SKILL.md`。\n\n## 使用提示\n\n在 Codex 中可通过 `$frontend-agent-framework-bugfix-intake` 或对应工作流触发该 skill。"
+installCommand: "本地路径：.agents/skills/frontend-agent-framework/subskills/bugfix-intake/SKILL.md"
+usageExamples:
+  - title: "在 Codex 中触发"
+    code: "$frontend-agent-framework-bugfix-intake"
+tags:
+  - "本地技能"
+  - "agent"
+  - "工作流"
+  - "缺陷接收"
+status: "published"
+installCount: 0
+createdAt: "2026-07-08T00:00:00.000Z"
+updatedAt: "2026-07-08T00:00:00.000Z"

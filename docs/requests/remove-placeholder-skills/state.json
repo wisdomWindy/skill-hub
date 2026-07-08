@@ -1,0 +1,42 @@
+{
+  "request_id": "remove-placeholder-skills",
+  "source": {
+    "type": "codex-user-message",
+    "summary": "把占位 skill 数据删除，只保留真实 skill 数据"
+  },
+  "stage": "complete",
+  "status": "complete",
+  "artifacts": {
+    "request": "docs/requests/remove-placeholder-skills/request.md"
+  },
+  "approvals": {
+    "source_message_authorizes_spec_and_plan": true
+  },
+  "module_flow": {
+    "execution_mode": "sequential",
+    "current_module_id": null,
+    "pending_module_ids": [],
+    "completed_module_ids": [
+      "module-01-remove-placeholder-source"
+    ],
+    "modules": {
+      "module-01-remove-placeholder-source": {
+        "source_module_path": null,
+        "page_design_required": false,
+        "architecture_design_required": false,
+        "approvals": {
+          "spec_approved": true,
+          "plan_approved": true
+        },
+        "status": "completed"
+      }
+    }
+  },
+  "loop": {
+    "iteration": 8,
+    "state": "complete",
+    "last_completed_stage": "review",
+    "pending_gate": null,
+    "reentry_reason": "new_request"
+  }
+}

@@ -18,14 +18,14 @@ function jumpTo(nextPage: number) {
 </script>
 
 <template>
-  <nav v-if="props.totalPages > 1" class="flex flex-wrap items-center gap-2.5" aria-label="Skill pagination">
+  <nav v-if="props.totalPages > 1" class="flex flex-wrap items-center gap-2.5" aria-label="技能分页">
     <button
       type="button"
       class="cursor-pointer rounded-full border border-[var(--border)] bg-[var(--bg-elevated)] px-[14px] py-2.5 text-[var(--text)] disabled:cursor-not-allowed disabled:opacity-45"
       :disabled="props.page === 1"
       @click="jumpTo(props.page - 1)"
     >
-      Prev
+      上一页
     </button>
 
     <button
@@ -49,7 +49,7 @@ function jumpTo(nextPage: number) {
       :disabled="props.page === props.totalPages"
       @click="jumpTo(props.page + 1)"
     >
-      Next
+      下一页
     </button>
   </nav>
 </template>

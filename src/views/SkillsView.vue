@@ -68,7 +68,7 @@ const activeCategoryLabel = computed(
   () => categoryOptions.find((item) => item.key === selectedCategory.value)?.label || '全部',
 )
 const resultSummary = computed(() => {
-  const summaryParts = [`${paginatedSkills.value.totalItems} results`]
+  const summaryParts = [`${paginatedSkills.value.totalItems} 个结果`]
 
   if (selectedCategory.value !== 'all') {
     summaryParts.push(activeCategoryLabel.value)
@@ -159,7 +159,7 @@ function handlePageChange(page: number) {
 }
 
 useHead({
-  title: 'Skill Directory · SkillHub',
+  title: '技能目录 · SkillHub',
 })
 </script>
 
@@ -173,9 +173,9 @@ useHead({
           <span
             class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
           >
-            Directory
+            技能目录
           </span>
-          <h1 class="my-4 mb-2 text-[clamp(1.8rem,4vw,3rem)]">Browse published skills by category, query, and release order.</h1>
+          <h1 class="my-4 mb-2 text-[clamp(1.8rem,4vw,3rem)]">按分类、关键词和发布时间浏览已发布技能。</h1>
           <p class="m-0 text-[var(--text-muted)]">{{ resultSummary }}</p>
         </div>
 
@@ -183,7 +183,7 @@ useHead({
           <input
             v-model="searchInput"
             class="min-h-[52px] rounded-full border border-[var(--border)] bg-white/4 px-[18px] py-[14px] text-[var(--text)] placeholder:text-[var(--text-muted)]"
-            placeholder="Search by skill name or short description"
+            placeholder="按技能名称或简介搜索"
             type="search"
             @input="handleSearchInput()"
           />
@@ -203,7 +203,7 @@ useHead({
         <aside
           class="sticky top-[110px] flex flex-col gap-2.5 self-start rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-[22px] shadow-[var(--shadow-soft)] backdrop-blur-[18px] max-[1080px]:static max-[1080px]:flex-row max-[1080px]:flex-wrap"
         >
-          <div class="font-extrabold max-[1080px]:w-full">Categories</div>
+          <div class="font-extrabold max-[1080px]:w-full">分类</div>
           <button
             v-for="category in categoryOptions"
             :key="category.key"
@@ -232,9 +232,9 @@ useHead({
 
           <SkillGridEmptyState
             v-else
-            title="No matching skills"
-            description="Try clearing the query or switching back to all categories."
-            action-label="Reset Filters"
+            title="没有匹配的技能"
+            description="试试清空关键词，或切回全部分类。"
+            action-label="重置筛选"
             :action-to="{ name: 'skills' }"
           />
 

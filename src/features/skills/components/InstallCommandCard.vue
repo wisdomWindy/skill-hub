@@ -9,14 +9,14 @@ const copyState = ref<'idle' | 'success' | 'error'>('idle')
 
 const feedbackText = computed(() => {
   if (copyState.value === 'success') {
-    return 'Command copied'
+    return '命令已复制'
   }
 
   if (copyState.value === 'error') {
-    return 'Copy failed'
+    return '复制失败'
   }
 
-  return 'Ready to copy'
+  return '可复制安装命令'
 })
 
 async function copyInstallCommand() {
@@ -45,16 +45,16 @@ async function copyInstallCommand() {
         <span
           class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
         >
-          Install
+          安装
         </span>
-        <h2 id="install-command-title" class="mt-[14px] text-[22px]">Install Command</h2>
+        <h2 id="install-command-title" class="mt-[14px] text-[22px]">安装命令</h2>
       </div>
       <button
         type="button"
         class="min-h-10 cursor-pointer rounded-full border-0 bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] px-4 font-extrabold text-[#04101a] max-[520px]:w-full"
         @click="copyInstallCommand"
       >
-        Copy
+        复制
       </button>
     </div>
 

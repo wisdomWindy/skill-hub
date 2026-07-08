@@ -4,13 +4,13 @@ import { toSkillDetail, toSkillSummary } from '@/content/adapters/skill-adapter'
 import type { SkillRecord } from '@/types/content'
 
 const baseRecord: SkillRecord = {
-  id: 'pdf-parser',
-  name: 'PDF Parser',
+  id: 'agent-test-skill',
+  name: '测试 Skill',
   category: 'devtools',
   version: 'v2.1.0',
-  shortDesc: 'Parse PDF documents with OCR-safe defaults.',
-  fullDesc: '## PDF Parser\n\nExtract content from PDFs.',
-  installCommand: 'curl -fsSL https://example.com/install.sh | bash -s pdf-parser@v2.1.0',
+  shortDesc: '用于验证 skill 适配器的本地测试记录。',
+  fullDesc: '## 测试 Skill\n\n用于验证详情转换。',
+  installCommand: '本地路径：_data/real-skills/agent-test-skill.yaml',
   usageExamples: '',
   tags: '',
   status: 'published',

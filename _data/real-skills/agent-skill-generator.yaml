@@ -1,0 +1,18 @@
+id: "agent-skill-generator"
+name: "Skill 生成器"
+category: "devtools"
+version: "v1.0.0"
+shortDesc: "把可重复流程、检查清单或需求草案沉淀为可复用的本地 Codex skill。"
+fullDesc: "## Skill 生成器\n\n把可重复流程、检查清单或需求草案沉淀为可复用的本地 Codex skill。\n\n## 来源\n\n该条目来自仓库本地 skill 文件：`.agents/skills/skill-generator/SKILL.md`。\n\n## 使用提示\n\n在 Codex 中可通过 `$skill-generator` 或对应工作流触发该 skill。"
+installCommand: "本地路径：.agents/skills/skill-generator/SKILL.md"
+usageExamples:
+  - title: "在 Codex 中触发"
+    code: "$skill-generator"
+tags:
+  - "本地技能"
+  - "agent"
+  - "工作流"
+status: "published"
+installCount: 0
+createdAt: "2026-07-08T00:00:00.000Z"
+updatedAt: "2026-07-08T00:00:00.000Z"

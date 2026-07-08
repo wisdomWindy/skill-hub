@@ -3,20 +3,28 @@ import { describe, expect, it } from 'vitest'
 import { loadSiteConfig } from '@/content/config/site-config'
 import { loadSkillRecords } from '@/content/skills/load-skill-records'
 
-describe('skill YAML static delivery contract', () => {
-  it('provides enough public and archived sample skills for static pages', () => {
-    const records = loadSkillRecords()
-    const publishedRecords = records.filter((record) => record.status === 'published')
-    const archivedRecords = records.filter((record) => record.status === 'archived')
+const realSkillSources = import.meta.glob('../../../_data/real-skills/*.yaml', {
+  query: '?raw',
+  import: 'default',
+  eager: true,
+})
 
-    expect(publishedRecords.length).toBeGreaterThanOrEqual(3)
-    expect(archivedRecords.length).toBeGreaterThanOrEqual(1)
-  })
-
-  it('keeps sample skill categories aligned with site config', () => {
+describe('real skill static delivery contract', () => {
+  it('keeps real skill categories aligned with site config', () => {
     const categoryKeys = new Set(loadSiteConfig().categories.map((category) => category.key))
     const records = loadSkillRecords()
 
     expect(records.every((record) => categoryKeys.has(record.category))).toBe(true)
+  })
+
+  it('uses the project real-skill data directory as the only skill record source', () => {
+    const records = loadSkillRecords()
+
+    expect(records).toHaveLength(Object.keys(realSkillSources).length)
+    expect(records).toHaveLength(40)
+    expect(records.every((record) => record.id.startsWith('agent-'))).toBe(true)
+    expect(records.every((record) => record.status === 'published')).toBe(true)
+    expect(records.some((record) => record.id === 'agent-frontend-agent-framework')).toBe(true)
+    expect(records.some((record) => record.id === 'agent-frontend-agent-framework-verify')).toBe(true)
   })
 })

@@ -15,7 +15,7 @@ const latestSkills = getLatestSkills(4)
 const searchModel = ref('')
 
 useHead({
-  title: `${siteConfig.site.title} · Discover Skills`,
+  title: `${siteConfig.site.title} · 发现技能`,
   meta: [
     {
       name: 'description',
@@ -50,28 +50,28 @@ function navigateToDirectory() {
         <span
           class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
         >
-          Discover Skills
+          发现技能
         </span>
         <h1 class="my-[18px] mb-3 text-[clamp(2.2rem,5vw,4.4rem)] leading-[1.05]">
-          Find the right AI skill, copy the install command, and keep moving.
+          找到合适的 AI 技能，复制安装命令，然后继续前进。
         </h1>
         <p class="leading-[1.8] text-[var(--text-muted)]">
-          SkillHub is your static-first skill directory: fast browsing, clear categories, and install-ready entries
-          served straight from GitHub Pages.
+          SkillHub 是一个静态优先的技能目录：浏览快速、分类清晰，每个条目都可以直接复制安装命令，
+          并通过 GitHub Pages 交付。
         </p>
 
         <form class="mt-6 grid grid-cols-[minmax(0,1fr)_auto] gap-3 max-[960px]:grid-cols-1" @submit.prevent="navigateToDirectory()">
           <input
             v-model="searchModel"
             class="min-w-0 rounded-full border border-[var(--border)] bg-white/4 px-[18px] py-[14px] text-[var(--text)] placeholder:text-[var(--text-muted)]"
-            placeholder="Search by skill name or short description"
+            placeholder="按技能名称或简介搜索"
             type="search"
           />
           <button
             class="inline-flex items-center justify-center rounded-full bg-linear-to-br from-[var(--accent)] to-[var(--accent-strong)] px-[18px] py-[14px] font-extrabold text-[#04101a]"
             type="submit"
           >
-            Browse Skills
+            浏览技能
           </button>
         </form>
 
@@ -100,11 +100,11 @@ function navigateToDirectory() {
       <aside
         class="rounded-[var(--radius-lg)] border border-[var(--border)] bg-[var(--bg-elevated)] p-7 shadow-[var(--shadow-soft)] backdrop-blur-[18px]"
       >
-        <h2>Why It Feels Fast</h2>
+        <h2>为什么它很快</h2>
         <ul>
-          <li class="leading-[1.8] text-[var(--text-muted)]">Search and filtering stay client-side for sub-second feedback.</li>
-          <li class="leading-[1.8] text-[var(--text-muted)]">Skill cards and details are generated ahead of time for GitHub Pages delivery.</li>
-          <li class="leading-[1.8] text-[var(--text-muted)]">{{ latestSkills.length }} published sample skills are already wired into the directory.</li>
+          <li class="leading-[1.8] text-[var(--text-muted)]">搜索和筛选都在客户端完成，反馈几乎即时。</li>
+          <li class="leading-[1.8] text-[var(--text-muted)]">技能卡片和详情页会提前生成，适合 GitHub Pages 静态交付。</li>
+          <li class="leading-[1.8] text-[var(--text-muted)]">目录中已经接入 {{ latestSkills.length }} 个已发布的示例技能。</li>
         </ul>
       </aside>
     </section>
@@ -115,11 +115,11 @@ function navigateToDirectory() {
           <span
             class="inline-flex items-center gap-2.5 rounded-full bg-[var(--accent-soft)] px-[14px] py-2 text-[13px] font-bold tracking-[0.08em] text-[var(--accent)] uppercase"
           >
-            Latest Skills
+            最新技能
           </span>
-          <h2 class="mt-4 text-[clamp(1.7rem,3vw,2.6rem)]">Newest entries in the directory</h2>
+          <h2 class="mt-4 text-[clamp(1.7rem,3vw,2.6rem)]">目录中的最新条目</h2>
         </div>
-        <RouterLink class="font-extrabold text-[var(--accent)]" to="/skills">See full listing</RouterLink>
+        <RouterLink class="font-extrabold text-[var(--accent)]" to="/skills">查看完整列表</RouterLink>
       </div>
 
       <div v-if="latestSkills.length" class="grid grid-cols-[repeat(auto-fit,minmax(240px,1fr))] gap-[18px]">
@@ -132,8 +132,8 @@ function navigateToDirectory() {
       </div>
       <SkillGridEmptyState
         v-else
-        title="No published skills yet"
-        description="The static directory is ready. Add published YAML entries to populate this grid."
+        title="还没有已发布技能"
+        description="静态目录已经准备好。添加已发布的 YAML 条目后，这里会展示技能卡片。"
       />
     </section>
   </PublicLayout>
