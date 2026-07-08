@@ -45,10 +45,10 @@ Do not commit GitHub tokens, PATs, private keys, or real secrets into YAML examp
 BASE_PATH=/${{ github.event.repository.name }}/ npm run build
 ```
 
-When the build succeeds, `dist` is published to the `gh-pages` branch. If the build fails, the branch is not updated and the previous successful site remains available.
+When the build succeeds, `dist` is uploaded as a GitHub Pages artifact and deployed by `actions/deploy-pages`. If the build fails, no new Pages deployment is published.
 
 In the GitHub repository settings:
 
 - Enable GitHub Pages.
-- Set the source to the `gh-pages` branch.
-- Allow GitHub Actions workflow write permissions so the deploy job can update `gh-pages`.
+- Set the source to **GitHub Actions**.
+- Allow GitHub Actions to create Pages deployments with `pages: write` and `id-token: write` permissions.
