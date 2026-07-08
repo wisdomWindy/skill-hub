@@ -1,0 +1,78 @@
+---
+name: frontend-agent-framework-page-design
+description: Stage subskill for page design. Define page layout, visual hierarchy, styling direction, and interaction structure for page-oriented requests before the formal spec stage.
+---
+
+# Page Design Subskill
+
+## 触发场景
+
+- 当主 `frontend-agent-framework` 在 `intake` 之后判断该需求是页面型需求时使用。
+- 适用于：
+  - 新页面
+  - 页面改版
+  - 明显影响布局、样式、视觉层级、交互组织的 UI-heavy 变更
+
+## 必要输入
+
+- `docs/requests/<request-id>/request.md`
+- `docs/requests/<request-id>/artifacts/prd-snapshot.md`
+- `docs/requests/<request-id>/requirements/requirement-map.md`
+- `docs/requests/<request-id>/state.json`
+- `docs/requests/<request-id>/requirements/modules/<current-module-id>.md`
+
+## 执行步骤
+
+1. 先读：
+   - `docs/requests/<request-id>/state.json`
+   - `docs/requests/<request-id>/request.md`
+   - `docs/requests/<request-id>/artifacts/prd-snapshot.md`
+   - `docs/requests/<request-id>/requirements/requirement-map.md`
+   - `docs/requests/<request-id>/requirements/modules/<current-module-id>.md`
+   - `../../references/framework-overview.md`
+   - `../../references/state-machine.md`
+   - `../../references/templates/page-design.md`
+   - `../../references/policies/doc-writing.md`
+   - `../../references/policies/frontend-components.md`
+   - `../../references/policies/frontend-architecture.md`
+2. 只在页面型需求中使用本阶段。
+3. 仅为 `state.json.module_flow.current_module_id` 产出页面设计。
+4. 产出 `module-runs/<current-module-id>/design/page-design.md`。
+5. 明确定义：
+   - 页面布局结构
+   - 区块层级
+   - 样式方向
+   - 交互骨架
+   - 响应式考虑
+6. 设计结果必须足够稳定，使当前模块的 `architecture-design`（如存在）和 `spec` 能把它当作上游输入，而不是再重新发明布局决策。
+7. 必须以 `requirements/requirement-map.md` 和当前模块工件为页面范围来源，不得跨模块混写。
+8. 所有设计决策必须写入仓库工件，不保留在聊天上下文里。
+9. 保留 `state.json.loop`，不重置、不改写。
+10. 本阶段不写代码。
+11. 对于引入或实质改变当前模块布局、视觉层级、样式方向、交互组织的页面需求，不允许跳过本阶段。
+
+## 输出格式
+
+- 必须产出：
+  - `docs/requests/<request-id>/module-runs/<current-module-id>/design/page-design.md`
+- 最终交付物应至少包含：
+  - 页面布局结构
+  - 区块层级
+  - 样式方向
+  - 交互骨架
+  - 响应式考虑
+  - 设计风险与未决 UI 问题
+
+## 验收标准
+
+- 当前模块 `design/page-design.md` 已存在。
+- 文档已定义布局、层级、样式方向、交互结构、响应式考虑。
+- 所有未决 UI 问题已记录。
+- `state.json.stage` 已切换到当前模块的下一下游阶段，且保留原有 `loop`。
+
+## 安全边界
+
+- 不能写代码。
+- 不能把本阶段强行变成像素级设计工具流程要求。
+- 没有 durable design artifact 时，不能进入实现规划。
+- 不能把本阶段用于不影响页面结构或样式的非 UI 任务。

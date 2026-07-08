@@ -1,0 +1,7 @@
+interface:
+  display_name: "Skill Generator"
+  short_description: "Turn a rough skill request into a validated local Codex skill"
+  default_prompt: "Use $skill-generator to turn a skill idea into a validated local Codex skill deliverable."
+
+policy:
+  allow_implicit_invocation: true

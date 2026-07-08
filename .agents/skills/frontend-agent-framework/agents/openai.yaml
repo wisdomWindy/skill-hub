@@ -1,0 +1,7 @@
+interface:
+  display_name: "Frontend Agent Framework"
+  short_description: "Default entry skill that routes repository-local frontend workflow stages"
+  default_prompt: "Use $frontend-agent-framework to classify the request, enforce local workflow gates, and route to the correct stage subskill."
+
+policy:
+  allow_implicit_invocation: true

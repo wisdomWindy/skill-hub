@@ -1,0 +1,7 @@
+interface:
+  display_name: "Backend Agent Framework"
+  short_description: "Default entry skill that routes repository-local backend workflow stages"
+  default_prompt: "Use $backend-agent-framework to classify the request, enforce local workflow gates, split PRD requirements into ordered backend modules, and route each module through its full downstream stage sequence."
+
+policy:
+  allow_implicit_invocation: true
