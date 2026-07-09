@@ -38,6 +38,7 @@ Keep the repository-local workflow in control through one default entry skill th
 - Enforce TDD for testable behavior changes unless the current task is explicitly non-testable and that exception is recorded.
 - Enforce clean-code discipline so shipped changes remain readable, low-surprise, and maintainable.
 - Enforce design-pattern discipline so abstractions are introduced only when they solve a real change, dependency, or behavior-selection problem.
+- Enforce user-intent fidelity so implementations satisfy the request's practical goal, not just a superficial reading of the words.
 - Enforce repository-context discipline by preferring code graph for structural code understanding when existing-code analysis is material to the request.
 - Enforce backend API contract discipline so frontend integration preserves contract sources, type ownership, field semantics, and explicit adapter boundaries.
 - Enforce TypeScript context discipline so TS-affecting work reads the governing `tsconfig` and relevant declaration sources before coding, without falling into repository-wide declaration-file sweeps.
@@ -65,6 +66,7 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never enter `spec` for a PRD-driven request when any requirement-splitting module that needed Markdown normalization is missing either its raw snapshot or its Markdown-normalized snapshot.
 - Never implement before the active delivery unit's approved spec and plan artifacts exist.
 - Never implement TypeScript-affecting code before recovering the governing `tsconfig` and the declaration or generated type sources that materially affect the scoped files.
+- Never satisfy a user request by relocating the unwanted complexity, risk, ambiguity, or responsibility elsewhere; capture the practical goal and forbidden interpretations before downstream work when intent could be gamed.
 - Never implement authored styling outside Tailwind CSS-style utility classes; never bypass overlong class values by moving them into constants, maps, computed properties, helpers, or imported variables.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, never bypass scaffold selection; prefer the matching project-type scaffold or starter when one exists, and record any justified deviation before implementation.
 - Never declare work complete before the required verification and review artifacts for the active delivery unit exist and pass.
@@ -227,9 +229,11 @@ Workflow rules:
 - Require `plan/plan.md` to reach function-complete task decomposition for scoped work so downstream execution does not infer missing fields, columns, interactions, states, or flow steps ad hoc.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, require the scaffold or starter decision to be made in repository artifacts before implementation; when a suitable project-type scaffold exists, treat it as the default starting point unless the artifacts record why it is unsuitable or unavailable.
 - Do not let execution, verification, or review invent behavior that is not justified by the approved spec and plan.
+- Do not let execution, verification, or review satisfy only the literal words of a request while violating the user's practical goal or using a forbidden interpretation recorded upstream.
 - For behavior that can be covered by tests, plan and execute the work using a red -> green -> refactor loop.
 - Apply `references/policies/clean-code.md` as a durable rule set for naming, responsibility boundaries, duplication control, side-effect containment, and maintainability judgment.
 - Apply `references/policies/design-patterns.md` as a durable rule set for deciding when a pattern is justified, which pattern family fits, and when direct code remains the better choice.
+- Apply `references/policies/user-intent.md` as the rule set for preserving practical user goals, anti-bypass constraints, and intent-level verification.
 - Apply `references/policies/spec-constraints.md` as the upstream rule that forces maintainability and abstraction decisions into `spec/spec.md` before planning and coding.
 - Apply `references/policies/code-graph.md` as the rule set for when to use code graph, when to auto-bootstrap it, and when fallback search is acceptable.
 - Apply `references/policies/api-contracts.md` as the rule set for regular API docs, protobuf-backed interfaces, backend-owned TypeScript contract types, and non-TypeScript contract typing.
@@ -333,6 +337,7 @@ Load only what is needed:
 - Durable standards: `references/policies/*.md`
 - Clean-code maintainability policy: `references/policies/clean-code.md`
 - Design-pattern decision policy: `references/policies/design-patterns.md`
+- User intent fidelity policy: `references/policies/user-intent.md`
 - Spec constraint policy: `references/policies/spec-constraints.md`
 - Code-graph policy: `references/policies/code-graph.md`
 - TypeScript context policy: `references/policies/typescript-context.md`
@@ -361,6 +366,7 @@ Load only what is needed:
 - When marking the request `blocked`, `loop.pending_gate` must name the blocking gate and `loop.state` must be `blocked`.
 - Stop only at real blocking gates such as required approval, missing upstream requirement information, or unavailable external dependency needed for the next stage.
 - Never implement behavior that is not defined, clarified, or accepted in the repository spec artifacts.
+- Never treat wording-only compliance as sufficient when the request's practical goal is to reduce complexity, risk, ambiguity, duplication, or review cost.
 - Never implement authored styling with scoped CSS, CSS modules, Sass/Less, inline style objects, or non-utility semantic class names.
 - Never accept overlong `class`, `className`, or class-binding values, and never hide them in constants, maps, computed properties, helper functions, or imported variables to make markup appear shorter.
 - Never guess a TypeScript target file's active compiler context, path aliases, visible ambient declarations, or generated contract types when the scoped work depends on them; recover that context first.

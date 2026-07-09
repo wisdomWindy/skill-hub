@@ -38,6 +38,7 @@ description: Stage subskill for review. Review correctness, standards compliance
    - `../../references/policies/frontend-components.md`
    - `../../references/policies/testing.md`
    - `../../references/policies/typescript-context.md`
+   - `../../references/policies/user-intent.md`
 2. 先读变更后的代码，再开始评审。
 3. 产出 `module-runs/<current-module-id>/review/review.md`。
 4. 把评审结论分成：
@@ -49,31 +50,32 @@ description: Stage subskill for review. Review correctness, standards compliance
 6. 检查引入或修改的 pattern 是否真的必要、是否与问题匹配。
 7. 依据 spec 中声明的设计约束审查实现，不做脱离工件的主观审美评审。
 8. 检查 spec 与 plan 是否保持同一 function-complete behavior granularity；若有漂移，按 blocker 处理。
-9. 检查 API 集成是否符合 API contract policy：
+9. 如存在 user intent contract，检查实现是否同时满足 literal request 与 practical goal；如果实现只是转移复杂度、风险、歧义、责任或采用 forbidden interpretation，按 blocker 处理。
+10. 检查 API 集成是否符合 API contract policy：
    - contract-source fidelity
    - type reuse correctness
    - field-name preservation
    - adapter-boundary discipline
    - request-layer ownership
-10. 明确写出：
+11. 明确写出：
    - `clean-code assessment: pass|fail`
    - `design-pattern assessment: pass|fail`
-11. 如涉及样式变更，检查 authored styling 是否遵守 frontend-components policy；以下情况按 blocker 处理：
+12. 如涉及样式变更，检查 authored styling 是否遵守 frontend-components policy；以下情况按 blocker 处理：
    - 使用未批准的 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class
    - `class` / `className` / class binding 值超过项目 formatter 正常行宽或依赖多行包裹
    - 用常量、map、computed、helper 或 import 变量隐藏过长 class 值
    - 用条件 class binding 承载大段基础样式而不是小型状态切换
-12. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，检查实现是否先恢复了 governing `tsconfig` 与相关声明来源，再进行编码与类型决策；把靠猜测 path aliases、ambient globals、generated types 落地的行为视为流程缺陷。
-13. 如果结论依赖真实依赖方向、ownership boundary、side-effect spread、abstraction fan-out，优先使用 code graph 证据。
-14. 如果 review 扩展或推翻了早先结构理解，更新 `artifacts/code-context.md`。
-15. 保留 `state.json.loop`，不重置、不改写。
-16. 若仍有 blocker，记录后交回主 skill 回流到 `execute`，并在同一 workflow run 中继续。
-17. 若当前模块通过 review，必须要求主 skill 执行模块收口状态迁移：
+13. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，检查实现是否先恢复了 governing `tsconfig` 与相关声明来源，再进行编码与类型决策；把靠猜测 path aliases、ambient globals、generated types 落地的行为视为流程缺陷。
+14. 如果结论依赖真实依赖方向、ownership boundary、side-effect spread、abstraction fan-out，优先使用 code graph 证据。
+15. 如果 review 扩展或推翻了早先结构理解，更新 `artifacts/code-context.md`。
+16. 保留 `state.json.loop`，不重置、不改写。
+17. 若仍有 blocker，记录后交回主 skill 回流到 `execute`，并在同一 workflow run 中继续。
+18. 若当前模块通过 review，必须要求主 skill 执行模块收口状态迁移：
    - 将当前模块标记为 `completed`
    - 更新 `pending_module_ids` 与 `completed_module_ids`
    - 若仍有待处理模块，则提升下一个模块并切到其首个下游阶段
    - 若无待处理模块，则切到 `stage=complete` 且令 `loop.state=complete`
-18. 在 blocker 未清零前，不允许标记 complete。
+19. 在 blocker 未清零前，不允许标记 complete。
 
 ## 输出格式
 
@@ -83,6 +85,7 @@ description: Stage subskill for review. Review correctness, standards compliance
   - final review findings
   - merge readiness judgment
   - spec-plan alignment findings
+  - user-intent findings（如适用）
   - API integration findings
   - clean-code findings
   - frontend styling findings（如适用）
@@ -94,6 +97,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 ## 验收标准
 
 - 当前模块 `review/review.md` 已存在并按严重级别记录发现项。
+- 如存在 user intent contract，已明确说明实现是否满足用户实际目标并避开 forbidden interpretations。
 - 已明确说明 changed area 是否仍有 clean-code blocker。
 - 如涉及样式变更，已明确说明 Tailwind CSS-style styling、class 值长度、禁止隐藏过长 class 字符串是否合规。
 - 已明确说明 pattern choice 是 justified / overbuilt / unnecessary。
@@ -106,6 +110,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 
 - 不能把 review 压缩成一句批准语。
 - 不能因为“功能能跑”就忽略严重的可维护性问题。
+- 不能接受只满足字面要求但违背用户实际目标的实现。
 - 不能接受没有实际问题支撑的 pattern layer / fake extensibility / framework-shaped indirection。
 - 不能把 clean-code 或 design-pattern 合规性当成默认成立而不写 pass/fail。
 - 不能接受违反 Tailwind CSS-style utility class、class 值长度或禁止隐藏过长 class 字符串规则的 authored styling。

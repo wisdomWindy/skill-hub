@@ -11,6 +11,7 @@ Required top-level sections:
 
 - delivery unit identifier
 - acceptance coverage
+- user intent compliance
 - spec constraint compliance
 - frontend styling compliance
 - summary
@@ -23,6 +24,15 @@ Required fields for each acceptance item:
 - evidence reference
 - follow-up if failed
 - handoff status
+
+`user intent compliance` is required when the spec contains a user intent contract. It must include:
+
+- result (`pass` or `fail`)
+- literal compliance result
+- practical-goal compliance result
+- forbidden-interpretation checks
+- evidence that complexity, risk, ambiguity, or responsibility was not merely relocated
+- follow-up if failed
 
 `spec constraint compliance` must include:
 

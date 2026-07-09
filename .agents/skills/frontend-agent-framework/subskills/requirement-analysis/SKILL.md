@@ -43,6 +43,7 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
    - `../../references/templates/request.md`
    - `../../references/templates/requirement-analysis.md`
    - `../../references/policies/doc-writing.md`
+   - `../../references/policies/user-intent.md`
 2. 仅用于 PRD 驱动需求；bugfix 输入默认不走本阶段，除非主 skill 明确把缺陷提升为等价需求分析问题。
 3. 先消费 intake 工件；如果 `artifacts/prd-snapshot.md` 相比原始 PRD 丢失了关键业务约束、流程、字段、状态或依赖关系，必须回看原始 PRD 或稳定引用。
 4. 若原始 PRD 中显式引用了其他会改变范围判断的资料，必须补建“资料来源与阅读口径”：
@@ -60,6 +61,7 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
    - `analysis/requirement-analysis.md`
 8. 在本阶段明确写清：
    - source inventory and reading stance
+   - user intent contract
    - confirmed scope
    - out-of-scope / non-goals
    - confirmed decisions / invariants
@@ -76,7 +78,13 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
    - downstream stage signals
 9. 需求分析必须以“理解需求”为目标，而不是提前输出实现方案、文件结构、代码抽象、DDL 细节或测试设计。
 10. 对上游已经明确给出的字段、表格、展示、交互、状态、流程、依赖、审批、外部约束，不得在分析阶段压缩成过于宽泛的口号式总结。
-11. 对开发者会自然追问的内容，必须主动展开；至少检查并记录以下维度是否已明确：
+11. 当用户请求包含“优化、简化、缩短、减少、调整、清理、规避、修复、归一”等容易被表面满足的词时，必须提炼 user intent contract：
+   - 用户字面要求是什么
+   - 实际要降低或保护的复杂度、风险、歧义、审查成本或行为语义是什么
+   - 哪些实现方式属于 forbidden interpretations
+   - 哪些实现方式属于 acceptable approaches
+   - 后续 spec / plan / verify / review 必须如何检查 intent compliance
+12. 对开发者会自然追问的内容，必须主动展开；至少检查并记录以下维度是否已明确：
    - 角色、端、菜单、权限、只读 / 可写边界
    - 页面、列表、表单、字段、筛选、导出、弹窗、抽屉、详情区块
    - 创建、编辑、提交、审核、驳回、终止、删除、导入、导出、下载、上传、解析、同步等操作入口和结果
@@ -86,27 +94,27 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
    - 外部接口、异步任务、消息、回调、定时任务、失败重试、幂等和最终一致性
    - 审核快照、操作日志、审计、历史回放、原因文案、审批意见
    - 回归敏感区、权限隔离、安全隔离、旧系统兼容或不兼容边界
-12. 如果源文档只写了业务结果但没有写实现会依赖的前置条件、状态来源、失败处理、权限边界或数据归属，必须将其写入“隐含需求 / hidden assumptions”，并标注：
+13. 如果源文档只写了业务结果但没有写实现会依赖的前置条件、状态来源、失败处理、权限边界或数据归属，必须将其写入“隐含需求 / hidden assumptions”，并标注：
    - 这是从哪条原文或哪个流程推导出来的
    - 为什么开发会受影响
    - 当前能否作为已确认口径
    - 若不能确认，属于业务阻塞、外部接口待补还是非阻塞
-13. 如果源文档中存在表格、字段清单、状态枚举、流程图、权限矩阵、接口字段、验收条目，必须尽量结构化保留；不能只改写成一句“支持列表 / 支持审核 / 支持同步”。
-14. 如果范围内存在多个页面、流程、表格、表单、系统边界或跨模块规则，必须明确记录它们为什么应该在下一阶段被拆开，或为什么应该保持在一个模块内。
-15. 可以在分析阶段给出 `page-design` / `architecture-design` 的 request-level signals，但不能替代 `requirement-splitting` 对具体模块路由的正式判定。
-16. 如果发现源文档存在歧义、冲突、遗漏或无从判断的业务语义，必须记录为开放问题；不能靠常识补全，也不能为了让文档看起来完整而删掉不确定性。
-17. 必须对未决事项分级，不允许一律写成“待确认”：
+14. 如果源文档中存在表格、字段清单、状态枚举、流程图、权限矩阵、接口字段、验收条目，必须尽量结构化保留；不能只改写成一句“支持列表 / 支持审核 / 支持同步”。
+15. 如果范围内存在多个页面、流程、表格、表单、系统边界或跨模块规则，必须明确记录它们为什么应该在下一阶段被拆开，或为什么应该保持在一个模块内。
+16. 可以在分析阶段给出 `page-design` / `architecture-design` 的 request-level signals，但不能替代 `requirement-splitting` 对具体模块路由的正式判定。
+17. 如果发现源文档存在歧义、冲突、遗漏或无从判断的业务语义，必须记录为开放问题；不能靠常识补全，也不能为了让文档看起来完整而删掉不确定性。
+18. 必须对未决事项分级，不允许一律写成“待确认”：
    - `业务阻塞`：若不确认会影响业务流程、数据模型、权限、状态机、审核口径或职责边界，则不得静默带入 `spec`
    - `外部接口待补`：仅当缺的是外部系统接口文档、topic、鉴权细节、字段补充，并且需求主口径已稳定，才允许记录为后续通过 adapter / config / 预留 DTO 承接
    - `非阻塞`：不影响主链路 `spec` 起草，可在设计评审或实现前补齐
-18. 风险必须具体到触发条件和影响面，不能只写“存在风险”；每个高风险项至少写清：
+19. 风险必须具体到触发条件和影响面，不能只写“存在风险”；每个高风险项至少写清：
    - 风险来源
    - 可能出错的开发点
    - 影响页面 / 流程 / 系统
    - 后续 `spec`、`plan` 或实现阶段必须采取的保护方式
-19. 保留 `state.json.loop`，不重置、不改写。
-20. 本阶段不写 `requirements/requirement-map.md`，不写 `spec/plan/execution/verification/review` 工件，不写代码。
-21. 只有在核心来源可读、范围、开发向细化、风险和阻塞分级已写清时，才把 `stage` 设为 `requirement-splitting`；若缺失核心需求来源或存在未分级的关键阻塞，必须停在当前阶段并交由主 skill 处理门禁。
+20. 保留 `state.json.loop`，不重置、不改写。
+21. 本阶段不写 `requirements/requirement-map.md`，不写 `spec/plan/execution/verification/review` 工件，不写代码。
+22. 只有在核心来源可读、范围、开发向细化、风险和阻塞分级已写清时，才把 `stage` 设为 `requirement-splitting`；若缺失核心需求来源或存在未分级的关键阻塞，必须停在当前阶段并交由主 skill 处理门禁。
 
 ## 输出格式
 
@@ -114,6 +122,7 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
   - `docs/requests/<request-id>/analysis/requirement-analysis.md`
 - 最终交付物应包含：
   - 需求理解摘要
+  - 用户意图合同
   - 资料来源与阅读口径
   - confirmed scope
   - out-of-scope / non-goals
@@ -135,6 +144,7 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
 - `analysis/requirement-analysis.md` 已存在。
 - 已记录原始来源、引用资料和阅读口径；若有未读取资料，已写清影响。
 - 当前请求范围与非目标已被显式写清。
+- 对容易被表面满足的请求，已写清用户实际目标、禁止解释、成功标准和后续检查方式。
 - 已把会影响 `spec` 口径的已确认决策显式写清。
 - 已把系统职责边界、项目边界或能力复用边界写清。
 - 上游明确行为约束没有被压缩成无法驱动后续拆分的粗摘要。
@@ -154,6 +164,7 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
 - 不能跳过资料来源盘点、阅读口径或系统边界判断。
 - 不能把需求分析直接写成实现设计。
 - 不能因为“减少二次确认”而删除、淡化或合并未确认问题；要把不明确处具体暴露并分级。
+- 不能只按字面复述用户要求，而不提炼实际目标、反例和禁止规避方式。
 - 不能把源文档中的字段、状态、权限、流程、验收、外部依赖压缩成“支持某功能”。
 - 不能用“后续 spec 再细化”逃避本阶段应完成的需求理解、隐含约束暴露和风险判断。
 - 不能在本阶段生成正式模块工件。

@@ -30,6 +30,7 @@ description: Stage subskill for verification. Validate the implementation agains
    - `../../references/policies/doc-writing.md`
    - `../../references/policies/frontend-components.md`
    - `../../references/policies/typescript-context.md`
+   - `../../references/policies/user-intent.md`
 2. 产出 `module-runs/<current-module-id>/verification/verification.md`。
 3. 将每条 acceptance criterion 映射到：
    - verification method
@@ -38,21 +39,26 @@ description: Stage subskill for verification. Validate the implementation agains
 4. 验证实现是否符合 approved spec，而不是 undocumented intent。
 5. 验证 spec 与 plan 是否在实现范围内保持同一 function-complete granularity。
 6. 验证可测试行为是否被测试覆盖，若无则检查是否有明确例外说明。
-7. 如果 approved spec 包含 trigger/context/handoff 假设，也要验证实现是否遵守。
-8. 如涉及后端接口，验证 request/response handling 是否符合 approved backend contract source，包括：
+7. 如果 approved spec 包含 user intent contract，必须同时验证：
+   - literal compliance
+   - intent compliance
+   - forbidden interpretations 未被采用
+   - 复杂度、风险、歧义或责任没有被转移到未检查位置
+8. 如果 approved spec 包含 trigger/context/handoff 假设，也要验证实现是否遵守。
+9. 如涉及后端接口，验证 request/response handling 是否符合 approved backend contract source，包括：
    - API docs
    - protobuf contracts
    - backend-owned TypeScript declarations
-9. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，验证实现是否遵守 governing `tsconfig` 与已确认的相关声明来源，尤其是 alias resolution、ambient types、generated contracts 与 strictness-sensitive assumptions。
-10. 如涉及样式变更，验证 authored styling 是否遵守 frontend-components policy：
+10. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，验证实现是否遵守 governing `tsconfig` 与已确认的相关声明来源，尤其是 alias resolution、ambient types、generated contracts 与 strictness-sensitive assumptions。
+11. 如涉及样式变更，验证 authored styling 是否遵守 frontend-components policy：
    - 是否只使用 Tailwind CSS-style utility classes
    - 是否存在新增 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class
    - 是否存在超过项目 formatter 正常行宽或依赖多行包裹的 `class` / `className` / class binding
    - 是否存在用常量、map、computed、helper 或 import 变量隐藏过长 class 值
-11. 在当前模块 `verification/verification.md` 中写出明确的 `spec constraint compliance` pass/fail。
-12. 保留 `state.json.loop`，不重置、不改写。
-13. 若验证失败，明确记录失败原因，交回主 skill 回流到 `execute`，并继续同一 workflow run。
-14. 本阶段不能在没有验证工件的情况下宣称完成。
+12. 在当前模块 `verification/verification.md` 中写出明确的 `spec constraint compliance` pass/fail。
+13. 保留 `state.json.loop`，不重置、不改写。
+14. 若验证失败，明确记录失败原因，交回主 skill 回流到 `execute`，并继续同一 workflow run。
+15. 本阶段不能在没有验证工件的情况下宣称完成。
 
 ## 输出格式
 
@@ -63,6 +69,7 @@ description: Stage subskill for verification. Validate the implementation agains
   - acceptance coverage mapping
   - verification evidence
   - spec-constraint compliance 结论
+  - user-intent compliance 结论（如适用）
   - spec-plan granularity alignment 结论
   - frontend styling compliance evidence（如适用）
   - API contract conformance evidence（如适用）
@@ -75,6 +82,7 @@ description: Stage subskill for verification. Validate the implementation agains
 - 每条 acceptance criterion 都已被检查。
 - 每个验证项都有附件或引用证据。
 - 当前模块 `verification/verification.md` 已明确写出 spec constraints pass/fail。
+- 如存在 user intent contract，当前模块 `verification/verification.md` 已明确写出 literal compliance 与 intent compliance pass/fail。
 - 如涉及样式变更，当前模块 `verification/verification.md` 已明确写出 Tailwind CSS-style styling 与 class 值长度检查结论。
 - 当前模块 `verification/verification.md` 已明确写出 spec-plan 粒度对齐结论。
 - 对可测试行为的 TDD 例外都有明确理由和替代证据。
@@ -89,6 +97,7 @@ description: Stage subskill for verification. Validate the implementation agains
 - 不能忽略失败的 acceptance criteria。
 - 不能把 spec-constraint compliance 当作默认成立而不写 pass/fail。
 - 不能接受无法回溯到 approved spec 的实现行为。
+- 不能在实现只满足字面要求但违反用户实际目标时判定验证通过。
 - 不能在 spec / plan 存在行为颗粒度冲突时仍判定验证通过。
 - 不能在 request/response handling 与 approved backend contract source 冲突时仍判定验证通过。
 - 不能在 authored styling 违反 Tailwind CSS-style utility class、class 值长度或禁止隐藏过长 class 字符串规则时判定验证通过。

@@ -9,6 +9,7 @@
 Required sections:
 
 - analysis summary
+- user intent contract
 - source inventory and reading stance
 - confirmed scope
 - out-of-scope and non-goals
@@ -28,6 +29,19 @@ Required sections:
 The artifact must be written as a developer-facing requirement refinement, not a source summary.
 It should preserve enough field, state, workflow, permission, dependency, failure, and risk detail that downstream developers can draft `spec` with fewer product follow-up questions.
 Reducing follow-up questions means exposing hidden or unclear points concretely; it does not mean deleting uncertain content.
+
+### `user intent contract`
+
+Required when the user request can be satisfied superficially but violated in substance, especially requests using words such as simplify, shorten, optimize, clean up, adjust, align, normalize, reduce, avoid, or fix.
+
+Document:
+
+- stated request: the user's literal wording
+- practical goal: what complexity, risk, ambiguity, review cost, or behavior problem the user wants addressed
+- success criteria: observable conditions that prove the practical goal is met
+- forbidden interpretations: solutions that satisfy the words but violate the goal
+- acceptable approaches: solution shapes that preserve the goal
+- downstream checks: how `spec`, `plan`, `verify`, and `review` must preserve this intent
 
 ### `source inventory and reading stance`
 

@@ -20,6 +20,7 @@ Required sections:
 - out of scope
 - trigger and start conditions
 - requirement split summary
+- user intent contract
 - user flow
 - page and module design
 - frontend styling constraints
@@ -34,6 +35,21 @@ Required sections:
 - acceptance criteria
 - human review and handoff
 - risks
+
+## `user intent contract`
+
+Required when the request or requirement-analysis artifact contains intent that can be superficially satisfied.
+
+Document:
+
+- literal request
+- practical goal
+- success criteria
+- forbidden interpretations
+- acceptable approaches
+- verification and review checks
+
+Do not leave practical intent as chat-only context.
 
 ## `API and data contracts`
 
