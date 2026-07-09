@@ -14,6 +14,7 @@ description: Stage subskill for beta feedback. Simulate or organize external rea
 - `artifacts/market-positioning.md`
 - `artifacts/chapter-plan.md`
 - `artifacts/revision-log.md`
+- `artifacts/accepted-risks.md`（如存在）
 - `manuscript/full-draft.md`
 - `state.json`
 
@@ -50,7 +51,7 @@ description: Stage subskill for beta feedback. Simulate or organize external rea
 7. 若本轮只有 `目标读者模拟` 而没有任何外部来源：
    - 记录为 `simulation-only`
    - 不得将本阶段视为满足 industry-standard 的 beta gate
-   - 除非用户明确接受该例外，否则保持 gate 未通过
+   - 除非用户明确接受该例外并写入 `artifacts/accepted-risks.md`，否则保持 gate 未通过
 8. 对每个 blocker 标明建议回退阶段，回退目标必须是可修复阶段，如：
    - `structural-revision`
    - `scene-design`
@@ -59,7 +60,7 @@ description: Stage subskill for beta feedback. Simulate or organize external rea
 9. 只有在以下条件全部满足时，才可推进到 `line-polish`：
    - 重大故事级问题已处理或已明确接受风险
    - 反馈来源与归并规则可追溯
-   - 存在至少一类外部反馈来源，或已记录用户批准的 simulation-only 例外
+   - 存在至少一类外部反馈来源，或已在 `artifacts/accepted-risks.md` 记录用户批准的 simulation-only 例外
    - 覆盖度足以对整部作品或当前交付范围做出有效判断
 10. 通过时把 `state.json.stage` 推进到 `line-polish`。
 
@@ -74,7 +75,7 @@ description: Stage subskill for beta feedback. Simulate or organize external rea
 - 反馈来源、读者画像、样本范围和归并规则清晰可追溯。
 - 已标明每个 blocker 的修复方向。
 - 重大故事级问题未被带入润色阶段。
-- 若无用户批准例外，至少存在一类外部反馈来源。
+- 若无用户批准例外，至少存在一类外部反馈来源；若有例外，必须能在 `artifacts/accepted-risks.md` 中追溯批准记录。
 - 反馈覆盖度已足以覆盖当前交付范围，至少明确说明是否覆盖开头、关键转折、中段、高潮与结尾。
 - 反馈样本充分性已被明确说明：
   - 样本足以支撑当前结论，或

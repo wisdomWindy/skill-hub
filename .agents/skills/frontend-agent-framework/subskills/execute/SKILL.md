@@ -49,43 +49,49 @@ description: Stage subskill for execution. Implement only approved tasks and kee
    - 再写最小通过实现
    - 最后重构并保持测试通过
 8. 实现过程中应用 clean-code 规则和已批准的 pattern 决策。
-9. 如果存在当前模块 `architecture-design`，把它视为执行期必须遵守的结构输入，包括模块边界、文件结构、代码关系、函数分层、数据结构和类型策略。
-10. 如果实际代码情况证明当前 `architecture-design` 在下列任一方面 materially 不合理、不合适、不可行或与现实冲突，必须停止继续实现并回退到 `architecture-design`，不能在执行阶段临时绕过：
+9. 实现新增或修改样式时，严格应用 frontend-components policy：
+   - authored styling 只使用 Tailwind CSS-style utility classes
+   - 不新增 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class 作为样式方案
+   - `class` / `className` / class binding 值必须保持模板内可读，不超过项目 formatter 正常行宽或依赖多行包裹
+   - 不得把过长 class 值移入常量、map、computed、helper 或 import 变量来绕过长度限制
+   - 如 class 值过长，拆分 markup、提取更小组件或降低样式复杂度
+10. 如果存在当前模块 `architecture-design`，把它视为执行期必须遵守的结构输入，包括模块边界、文件结构、代码关系、函数分层、数据结构和类型策略。
+11. 如果实际代码情况证明当前 `architecture-design` 在下列任一方面 materially 不合理、不合适、不可行或与现实冲突，必须停止继续实现并回退到 `architecture-design`，不能在执行阶段临时绕过：
    - 模块边界
    - 文件结构
    - 依赖方向
    - 函数组织
    - 数据结构
    - 类型设计
-11. 发生上述回退时，先把触发证据和实际约束写入当前模块 `execution/changelog.md` 与 `artifacts/code-context.md`，再由主 workflow 继续 `architecture-design -> spec -> plan -> execute` 循环，直到架构设计稳定。
-12. 如果 scoped work 为从 0 开始搭建项目、应用、包或前端业务面：
+12. 发生上述回退时，先把触发证据和实际约束写入当前模块 `execution/changelog.md` 与 `artifacts/code-context.md`，再由主 workflow 继续 `architecture-design -> spec -> plan -> execute` 循环，直到架构设计稳定。
+13. 如果 scoped work 为从 0 开始搭建项目、应用、包或前端业务面：
    - 先按已批准 spec / plan 确认脚手架或 starter 选择
    - 有合适脚手架时，优先基于该脚手架落地，而不是手写 bootstrap
    - 只有在 spec / plan 已明确记录脚手架不可用、不适配或改造成本不合理时，才允许自建初始化结构
    - 对脚手架的裁剪、替换和偏离必须受已批准工件约束，不能在执行时临时发明
-13. 如果 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript：
+14. 如果 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript：
    - 先读取当前目标文件所在作用域的 governing `tsconfig`
    - 如存在直接 extends 链，继续读取所有会 materially 影响当前目标文件的上游 `tsconfig`
    - 提取并理解当前改动实际需要的 compiler context，例如路径别名、ambient globals、JSX runtime、strictness、module resolution、generated type visibility
    - 仅读取与当前改动闭包相关的声明或生成类型来源，例如直接导入类型、package-local `.d.ts`、env shim、backend-owned contract types、proto 生成类型
    - 不要为了“保险”全量扫描仓库所有 `.d.ts` 或 types 文件
    - 如果仍无法确认当前目标文件实际受哪套 `tsconfig` 或类型来源约束，停止编码，先补上下文
-14. 对 API 集成工作：
+15. 对 API 集成工作：
    - 服务端有 TS contract types 时优先复用
    - 非 TS 契约时保留后端字段名并用 TS 类型表达
    - proto 优先复用生成类型，否则从 proto 导出 TS-facing types
    - request transport / contract handling / semantic normalization 保持在 request layer 或 adapter boundary
-15. 既有代码影响较大时，优先用 code graph 确认 impact scope / callers / ownership boundaries。
-16. 如执行中发现新的结构信息，更新 `artifacts/code-context.md`。
-17. 默认串行执行，除非计划明确标注某些 work unit 可并行。
-18. 持续更新：
+16. 既有代码影响较大时，优先用 code graph 确认 impact scope / callers / ownership boundaries。
+17. 如执行中发现新的结构信息，更新 `artifacts/code-context.md`。
+18. 默认串行执行，除非计划明确标注某些 work unit 可并行。
+19. 持续更新：
    - 当前模块 `execution/changelog.md`
    - 当前模块 `plan/task-board.md`
-19. 保持执行过程可观察、可追问、可重定向。
-20. 保留 `state.json.loop`，不重置、不改写。
-21. 如果需求变化或计划暴露出 gap，立即停下并回退到 `spec` 或 `plan`。
-22. 如果是从 verify / review 失败回流而来，继续当前活动 workflow run，不当作全新任务重来。
-23. 本阶段不宣称完成。
+20. 保持执行过程可观察、可追问、可重定向。
+21. 保留 `state.json.loop`，不重置、不改写。
+22. 如果需求变化或计划暴露出 gap，立即停下并回退到 `spec` 或 `plan`。
+23. 如果是从 verify / review 失败回流而来，继续当前活动 workflow run，不当作全新任务重来。
+24. 本阶段不宣称完成。
 
 ## 输出格式
 
@@ -109,6 +115,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 - 对可测试行为，已记录 test-first 执行步骤或合理例外。
 - 若执行期曾发现架构设计与实际代码约束冲突，已留下可驱动 `architecture-design` 修正的证据。
 - 若 scoped work 为 greenfield，执行已按批准工件优先采用对应脚手架或已记录拒绝理由。
+- 如涉及样式变更，执行结果遵守 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的约束。
 - 改动区域可读性仍然达标，必要的 clean-code 重构已完成或显式记录。
 - 引入的 pattern 仍能回溯到已批准问题陈述。
 - 当前模块 `plan/task-board.md` 已反映完成状态。
@@ -126,6 +133,8 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 - 不能在未读取 governing `tsconfig` 与相关声明来源的情况下猜路径别名、全局类型、JSX 设定、module resolution 或现有 contract types。
 - 不能把“先把全仓 `.d.ts` 都读一遍”当作默认 TypeScript 上下文恢复策略。
 - 不能在存在合适脚手架且未被上游工件否决的情况下手写 greenfield bootstrap。
+- 不能用 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class 承载 authored styling。
+- 不能保留过长 `class` / `className` / class binding 值，也不能用常量、map、computed、helper 或 import 变量隐藏过长 class 值。
 - 不能跳过任务跟踪。
 - 不能宣称请求完成。
 - 对可测试行为，不能无说明地跳过 TDD。

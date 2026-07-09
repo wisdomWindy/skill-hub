@@ -41,6 +41,7 @@ Keep the repository-local workflow in control through one default entry skill th
 - Enforce repository-context discipline by preferring code graph for structural code understanding when existing-code analysis is material to the request.
 - Enforce backend API contract discipline so frontend integration preserves contract sources, type ownership, field semantics, and explicit adapter boundaries.
 - Enforce TypeScript context discipline so TS-affecting work reads the governing `tsconfig` and relevant declaration sources before coding, without falling into repository-wide declaration-file sweeps.
+- Enforce frontend styling discipline so authored styles use Tailwind CSS-style utility classes, keep class values reviewable inline, and do not hide overlong class strings behind constants or computed values.
 
 ## Built-In Constitution
 
@@ -64,6 +65,7 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never enter `spec` for a PRD-driven request when any requirement-splitting module that needed Markdown normalization is missing either its raw snapshot or its Markdown-normalized snapshot.
 - Never implement before the active delivery unit's approved spec and plan artifacts exist.
 - Never implement TypeScript-affecting code before recovering the governing `tsconfig` and the declaration or generated type sources that materially affect the scoped files.
+- Never implement authored styling outside Tailwind CSS-style utility classes; never bypass overlong class values by moving them into constants, maps, computed properties, helpers, or imported variables.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, never bypass scaffold selection; prefer the matching project-type scaffold or starter when one exists, and record any justified deviation before implementation.
 - Never declare work complete before the required verification and review artifacts for the active delivery unit exist and pass.
 - Never declare work complete before the required verification artifact explicitly records `spec constraint compliance: pass`.
@@ -232,6 +234,7 @@ Workflow rules:
 - Apply `references/policies/code-graph.md` as the rule set for when to use code graph, when to auto-bootstrap it, and when fallback search is acceptable.
 - Apply `references/policies/api-contracts.md` as the rule set for regular API docs, protobuf-backed interfaces, backend-owned TypeScript contract types, and non-TypeScript contract typing.
 - Apply `references/policies/typescript-context.md` as the rule set for recovering governing `tsconfig` context and scoped declaration sources before TypeScript-affecting implementation.
+- Apply `references/policies/frontend-components.md` as the rule set for component reuse, Tailwind CSS-style authored styling, class-value length, and class-binding reviewability.
 
 ## Loop State Contract
 
@@ -333,6 +336,7 @@ Load only what is needed:
 - Spec constraint policy: `references/policies/spec-constraints.md`
 - Code-graph policy: `references/policies/code-graph.md`
 - TypeScript context policy: `references/policies/typescript-context.md`
+- Frontend components and styling policy: `references/policies/frontend-components.md`
 - Pattern catalog: `references/patterns/*.md`
 - Artifact shape requirements: `references/templates/*.md`
 - Requirement analysis artifact shape: `references/templates/requirement-analysis.md`
@@ -357,6 +361,8 @@ Load only what is needed:
 - When marking the request `blocked`, `loop.pending_gate` must name the blocking gate and `loop.state` must be `blocked`.
 - Stop only at real blocking gates such as required approval, missing upstream requirement information, or unavailable external dependency needed for the next stage.
 - Never implement behavior that is not defined, clarified, or accepted in the repository spec artifacts.
+- Never implement authored styling with scoped CSS, CSS modules, Sass/Less, inline style objects, or non-utility semantic class names.
+- Never accept overlong `class`, `className`, or class-binding values, and never hide them in constants, maps, computed properties, helper functions, or imported variables to make markup appear shorter.
 - Never guess a TypeScript target file's active compiler context, path aliases, visible ambient declarations, or generated contract types when the scoped work depends on them; recover that context first.
 - Never hand-roll a greenfield project bootstrap when a suitable project-type scaffold or starter is available unless the approved spec or plan explicitly records why scaffold reuse is unsuitable or unavailable.
 - Never continue `execute` on top of an already-known-invalid `architecture-design` artifact; route back and repair the design first.

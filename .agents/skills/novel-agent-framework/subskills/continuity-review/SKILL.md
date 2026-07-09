@@ -14,6 +14,7 @@ description: Stage subskill for continuity review. Check timeline, character log
 - `artifacts/character-bible.md`
 - `artifacts/chapter-plan.md`
 - `artifacts/continuity-ledger.md`
+- `artifacts/accepted-risks.md`（如存在）
 - `manuscript/full-draft.md`
 - `state.json`
 
@@ -34,7 +35,8 @@ description: Stage subskill for continuity review. Check timeline, character log
    - character issues
    - architecture issues
 4. 只要存在 blocker，就建议主 skill 回退到最早可修复阶段。
-5. 通过时把 `state.json.stage` 推进到 `structural-revision`。
+5. 若建议将 blocker 降级为 accepted risk，只能记录为 candidate；必须由用户明确批准并写入 `artifacts/accepted-risks.md` 后才可放行。
+6. 通过时把 `state.json.stage` 推进到 `structural-revision`。
 
 ## 输出格式
 
@@ -52,7 +54,7 @@ description: Stage subskill for continuity review. Check timeline, character log
   - 伤势、疤痕、关系温度等 continuity-sensitive attributes
   - 伏笔布置与回收状态
 - 已识别主要连续性问题并按严重级别分类，而不是只做笼统备注。
-- 所有 continuity blocker 都已清零，或被明确降级为 accepted risk 并记录原因。
+- 所有 continuity blocker 都已清零；若被降级为 accepted risk，必须已在 `artifacts/accepted-risks.md` 中记录用户批准、影响范围、原因和后续处理。
 - 已给出明确回退建议或放行结论，且放行结论能支持进入 `structural-revision` 而不会把明显连续性问题带入下游。
 
 ## 安全边界

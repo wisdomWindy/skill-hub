@@ -67,8 +67,13 @@
 - `continuity_failed`
 - `structure_failed`
 - `character_failed`
+- `chapter_planning_failed`
+- `scene_design_failed`
+- `drafting_failed`
 - `beta_feedback_failed`
+- `line_polish_failed`
 - `copyedit_failed`
 - `proofread_failed`
+- `accepted_risk_pending`
 - `acceptance_failed`
 - `manual_reopen`

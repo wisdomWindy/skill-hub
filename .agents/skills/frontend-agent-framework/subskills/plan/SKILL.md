@@ -35,6 +35,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - `../../references/policies/code-graph.md`
    - `../../references/policies/doc-writing.md`
    - `../../references/policies/clean-code.md`
+   - `../../references/policies/frontend-components.md`
    - `../../references/policies/spec-constraints.md`
    - `../../references/policies/testing.md`
    - `../../references/policies/typescript-context.md`
@@ -83,25 +84,31 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - 读取与当前作用域相关的声明或生成类型来源
    - 基于这些约束实施改动与验证
    不得把“全量扫所有 `.d.ts`”写成默认动作。
-17. 把 clean-code guardrails、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
-18. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
-19. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
-20. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
-21. 当前模块 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
+17. 如涉及新增或修改样式，计划必须把 Tailwind CSS-style styling 约束拆进任务：
+   - 只使用 Tailwind CSS-style utility classes 落地 authored styling
+   - 不新增 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class 作为样式方案
+   - `class` / `className` / class binding 值不得超过项目 formatter 正常行宽或依赖多行包裹
+   - 不得用常量、map、computed、helper 或 import 变量隐藏过长 class 值
+   - 过长时必须拆分结构、提取更小组件或降低样式复杂度
+18. 把 clean-code guardrails、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
+19. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
+20. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
+21. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
+22. 当前模块 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
    - 先给全局摘要
    - 再按任务分节
    - 每个任务都用固定小节展示目标、范围、前置条件、交互、状态、风险、测试
    - 避免输出大段连续散文
-22. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
+23. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
    - 起点
    - 关键步骤
    - 分支判断
    - 成功出口
    - 失败/回退出口
-23. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
-24. 保留 `state.json.loop`，不重置、不改写。
-25. 本阶段不写实现代码。
-26. 完成后请求用户审批，再设置当前模块 `approvals.plan_approved=true` 并切到 `stage=execute`。
+24. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
+25. 保留 `state.json.loop`，不重置、不改写。
+26. 本阶段不写实现代码。
+27. 完成后请求用户审批，再设置当前模块 `approvals.plan_approved=true` 并切到 `stage=execute`。
 
 ## 输出格式
 
@@ -119,6 +126,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
   - API 对接与类型策略
   - 风险与回滚说明
   - clean-code / pattern / boundary 约束
+  - Tailwind CSS-style styling 约束（如适用）
   - trigger / context / handoff 规划（如适用）
 
 ## 验收标准
@@ -134,6 +142,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - API 对接项已写清 contract source、type strategy、adapter boundary、request-layer ownership。
 - 若 scoped work 为 greenfield，计划已把脚手架采用或拒绝及其落地改造拆成显式任务。
 - clean-code / pattern 决策已记录。
+- 如涉及样式变更，计划已拆出 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的执行和验证任务。
 - 串行与可并行任务已区分。
 - 主动式 workflow 的 trigger / context / observation / handoff 已写清（如适用）。
 - 用户已审批 plan。
@@ -156,3 +165,4 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - 不能把多接口/多表面 API 对接压成一个黑盒任务。
 - 不能省略任何任务的流程图。
 - 不能把整份 `plan.md` 写成只有长段落、缺少任务分节的低可读格式。
+- 不能把样式实现方式、class 值长度治理或禁止隐藏过长 class 字符串的检查留给 execute 自行决定。

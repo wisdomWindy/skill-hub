@@ -41,6 +41,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - `../../references/policies/design-patterns.md`
    - `../../references/policies/doc-writing.md`
    - `../../references/policies/frontend-architecture.md`
+   - `../../references/policies/frontend-components.md`
    - `../../references/policies/spec-constraints.md`
    - `../../references/policies/typescript-context.md`
 2. 先消费 intake 工件；对 PRD 驱动需求，必须先消费 `requirements/requirement-map.md` 与当前模块工件；如果存在当前模块的 `page-design` 或 `architecture-design`，则再把它们视为上游输入。
@@ -65,28 +66,33 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 9. 如果 requirement-splitting 已经按模块拆分了内容，当前模块 spec 只能承接当前模块功能单元，不能重新合并多个模块。
 10. 如果仍有未知信息，写入当前模块 `spec/clarifications.md`，作为显式 clarification 或 approved assumption。
 11. 把可维护性、抽象边界、side effect、duplication ownership、命名与模式决策写成 spec constraints，而不是留给下游凭感觉判断。
-12. 如果存在当前模块 `architecture-design`，spec 必须承接其中的模块边界、文件结构、依赖方向、函数分层、数据结构与类型策略，不能在 spec 阶段重新发明或悄悄改写。
-13. 如果 scoped work 是从 0 开始搭建项目、应用、包或前端业务面，必须在 spec 中明确脚手架或 starter 决策：
+12. 如涉及新增或修改样式，spec 必须记录 Tailwind CSS-style utility class 约束：
+   - authored styling 只能使用 Tailwind CSS-style utilities
+   - `class` / `className` / class binding 值必须保持可在模板内直接审查，超过项目 formatter 正常行宽或需要多行包裹即视为过长
+   - 不允许用常量、map、computed、helper 或 import 变量隐藏过长 class 值
+   - 条件 class binding 只能承载小型状态切换，不能承载大段基础样式
+13. 如果存在当前模块 `architecture-design`，spec 必须承接其中的模块边界、文件结构、依赖方向、函数分层、数据结构与类型策略，不能在 spec 阶段重新发明或悄悄改写。
+14. 如果 scoped work 是从 0 开始搭建项目、应用、包或前端业务面，必须在 spec 中明确脚手架或 starter 决策：
    - 优先判断是否存在合适的同类型项目脚手架
    - 有可复用脚手架时，默认复用并写明来源
    - 不复用时，必须记录不适配、不可用或改造成本不合理的原因
    - 允许偏离脚手架的范围也要提前写明
-14. 如涉及后端接口：
+15. 如涉及后端接口：
    - 识别权威 contract source
    - 记录 direct contract consumption 还是 adapter boundary
    - 服务端有 TypeScript 声明则优先复用
    - 非 TS 契约则保留字段名并写成 TS 可用类型
    - protobuf 需说明是复用生成类型还是由 proto 导出前端可用类型
-15. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，spec 必须记录：
+16. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，spec 必须记录：
    - 哪个 `tsconfig` 实际 governs 当前作用域文件
    - 哪些 compiler options 会 materially 影响实现或类型理解，例如路径别名、ambient globals、JSX runtime、strictness、module resolution
    - 哪些声明或生成类型来源属于当前改动必须读取的闭包范围
    - 明确禁止把“后面执行时再猜 tsconfig / 再扫全仓 `.d.ts`”当作实现策略
-16. 如涉及既有代码结构调整：
+17. 如涉及既有代码结构调整：
    - 优先用 code graph 识别真实边界、依赖方向和 impact scope
    - 如结构理解加深，更新 `artifacts/code-context.md`
-17. 不写实现代码。
-18. 完成后请求用户审批，再把当前模块 `approvals.spec_approved=true` 并切到 `stage=plan`。
+18. 不写实现代码。
+19. 完成后请求用户审批，再把当前模块 `approvals.spec_approved=true` 并切到 `stage=plan`。
 
 ## 输出格式
 
@@ -99,6 +105,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
   - API 与数据合同决策
   - API contract source / type reuse / protobuf handling / adapter-boundary 决策
   - design constraints
+  - frontend styling constraints
   - pattern decision
   - clarifications
   - 可直接驱动 plan 的 function-complete behavior contracts
@@ -108,6 +115,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 当前模块 `spec/spec.md` 已存在，且覆盖 scope、flows、modules、contracts、edge cases、acceptance criteria、risks。
 - 行为颗粒度已达到与 `plan` 对齐的 function-complete granularity。
 - spec 已记录 responsibility boundaries、side-effect placement、duplication ownership、complexity guardrails、pattern use / rejection。
+- 如涉及样式变更，spec 已记录 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的约束。
 - 当前模块 `spec/clarifications.md` 已记录开放问题与已定决策。
 - spec 足够清晰，plan / tests / verification evidence 都能回溯到它。
 - spec 没有迫使 `plan` 自行补写原本应在 spec 中明确的产品行为。
@@ -130,3 +138,4 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 不能绕过 requirement-splitting 工件重新凭印象组织模块范围。
 - 不能把重大抽象/协作问题留给下游自己决定。
 - 不能把关键 responsibility / side-effect / duplication / readability 约束留空。
+- 不能把样式实现方式、class 值长度治理或禁止隐藏过长 class 字符串的规则留给下游自己决定。

@@ -21,6 +21,7 @@ description: Stage subskill for acceptance review. Judge whether the novel packa
 - `artifacts/market-positioning.md`
 - `artifacts/beta-feedback.md`
 - `artifacts/style-sheet.md`
+- `artifacts/accepted-risks.md`
 - `artifacts/copyedit-log.md`
 - `artifacts/proofread-log.md`
 - `manuscript/full-draft.md`
@@ -55,8 +56,9 @@ description: Stage subskill for acceptance review. Judge whether the novel packa
    - blocking issues
    - accepted risks
    - recommended rollback stage
-6. 只有全部 blocker 清零时，才允许主 skill 进入 `complete`。
-7. 如未通过，要求主 skill 回退到最早可修复阶段并继续 loop。
+6. 对每个 accepted risk 核对 `artifacts/accepted-risks.md` 中的用户批准记录；缺少批准记录的 accepted risk 必须按 blocker 处理。
+7. 只有全部 blocker 清零时，才允许主 skill 进入 `complete`。
+8. 如未通过，要求主 skill 回退到最早可修复阶段并继续 loop。
 
 ## 输出格式
 
@@ -70,7 +72,8 @@ description: Stage subskill for acceptance review. Judge whether the novel packa
 - 已给出明确 blocker 与回退阶段。
 - 通过时，可直接支持主 skill 标记 `complete`。
 - 已明确说明作品是否兑现了既定市场与读者承诺。
-- 已明确说明 beta 阶段是否满足外部反馈 gate，或记录了用户批准的例外。
+- 已明确说明 beta 阶段是否满足外部反馈 gate；若使用例外，必须引用 `artifacts/accepted-risks.md` 中的批准记录。
+- 所有 accepted risk 都已逐条引用批准来源、影响范围和最终验收结论；未授权风险不得支持 complete。
 
 ## 安全边界
 

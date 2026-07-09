@@ -27,6 +27,7 @@ The framework aims to create and maintain:
 - continuity ledger,
 - revision log,
 - beta feedback report,
+- accepted risk register,
 - copyedit log,
 - proofread log,
 - acceptance report.

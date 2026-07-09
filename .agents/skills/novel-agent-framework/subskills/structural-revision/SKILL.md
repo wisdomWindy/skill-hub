@@ -31,7 +31,7 @@ description: Stage subskill for structural revision. Repair pacing, escalation, 
    - 情绪兑现密度
 3. 对需要删除、合并、重排、补桥的内容做出明确修订建议。
 4. 若修订影响章节顺序或大节点，回写 `artifacts/chapter-plan.md` 与必要的上游工件。
-5. 通过时把 `state.json.stage` 推进到 `line-polish`。
+5. 通过时把 `state.json.stage` 推进到 `beta-feedback`，不得跳过读者反馈 gate。
 
 ## 输出格式
 
@@ -44,9 +44,9 @@ description: Stage subskill for structural revision. Repair pacing, escalation, 
 
 - 关键结构性问题不只是“有处理路径”，而是已经被吸收到修订后的结构工件或正文中。
 - `artifacts/story-architecture.md`、`artifacts/chapter-plan.md`、`artifacts/revision-log.md` 与当前正文保持一致，不存在结构层面的明显漂移。
-- 节奏、转折、中段升级、高潮兑现与结尾回收已达到可进入 `line-polish` 的稳定状态。
+- 节奏、转折、中段升级、高潮兑现与结尾回收已达到可进入 `beta-feedback` 的稳定状态。
 - beta 反馈中的故事级 blocker 已被吸收、关闭，或被明确反驳并记录依据。
-- 不再存在阻止进入 `line-polish` 的结构 blocker。
+- 不再存在阻止进入 `beta-feedback` 的结构 blocker。
 
 ## 安全边界
 

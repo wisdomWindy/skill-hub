@@ -58,17 +58,22 @@ description: Stage subskill for review. Review correctness, standards compliance
 10. 明确写出：
    - `clean-code assessment: pass|fail`
    - `design-pattern assessment: pass|fail`
-11. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，检查实现是否先恢复了 governing `tsconfig` 与相关声明来源，再进行编码与类型决策；把靠猜测 path aliases、ambient globals、generated types 落地的行为视为流程缺陷。
-12. 如果结论依赖真实依赖方向、ownership boundary、side-effect spread、abstraction fan-out，优先使用 code graph 证据。
-13. 如果 review 扩展或推翻了早先结构理解，更新 `artifacts/code-context.md`。
-14. 保留 `state.json.loop`，不重置、不改写。
-15. 若仍有 blocker，记录后交回主 skill 回流到 `execute`，并在同一 workflow run 中继续。
-16. 若当前模块通过 review，必须要求主 skill 执行模块收口状态迁移：
+11. 如涉及样式变更，检查 authored styling 是否遵守 frontend-components policy；以下情况按 blocker 处理：
+   - 使用未批准的 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class
+   - `class` / `className` / class binding 值超过项目 formatter 正常行宽或依赖多行包裹
+   - 用常量、map、computed、helper 或 import 变量隐藏过长 class 值
+   - 用条件 class binding 承载大段基础样式而不是小型状态切换
+12. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，检查实现是否先恢复了 governing `tsconfig` 与相关声明来源，再进行编码与类型决策；把靠猜测 path aliases、ambient globals、generated types 落地的行为视为流程缺陷。
+13. 如果结论依赖真实依赖方向、ownership boundary、side-effect spread、abstraction fan-out，优先使用 code graph 证据。
+14. 如果 review 扩展或推翻了早先结构理解，更新 `artifacts/code-context.md`。
+15. 保留 `state.json.loop`，不重置、不改写。
+16. 若仍有 blocker，记录后交回主 skill 回流到 `execute`，并在同一 workflow run 中继续。
+17. 若当前模块通过 review，必须要求主 skill 执行模块收口状态迁移：
    - 将当前模块标记为 `completed`
    - 更新 `pending_module_ids` 与 `completed_module_ids`
    - 若仍有待处理模块，则提升下一个模块并切到其首个下游阶段
    - 若无待处理模块，则切到 `stage=complete` 且令 `loop.state=complete`
-17. 在 blocker 未清零前，不允许标记 complete。
+18. 在 blocker 未清零前，不允许标记 complete。
 
 ## 输出格式
 
@@ -80,6 +85,7 @@ description: Stage subskill for review. Review correctness, standards compliance
   - spec-plan alignment findings
   - API integration findings
   - clean-code findings
+  - frontend styling findings（如适用）
   - design-pattern findings
   - code-graph-backed structural findings（如适用）
   - pass/fail compliance conclusions
@@ -89,6 +95,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 
 - 当前模块 `review/review.md` 已存在并按严重级别记录发现项。
 - 已明确说明 changed area 是否仍有 clean-code blocker。
+- 如涉及样式变更，已明确说明 Tailwind CSS-style styling、class 值长度、禁止隐藏过长 class 字符串是否合规。
 - 已明确说明 pattern choice 是 justified / overbuilt / unnecessary。
 - 当前模块 `review/review.md` 已明确写出 `clean-code assessment: pass|fail` 与 `design-pattern assessment: pass|fail`。
 - 已明确说明 spec 与 plan 是否保持所需行为颗粒度对齐。
@@ -101,6 +108,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 不能因为“功能能跑”就忽略严重的可维护性问题。
 - 不能接受没有实际问题支撑的 pattern layer / fake extensibility / framework-shaped indirection。
 - 不能把 clean-code 或 design-pattern 合规性当成默认成立而不写 pass/fail。
+- 不能接受违反 Tailwind CSS-style utility class、class 值长度或禁止隐藏过长 class 字符串规则的 authored styling。
 - 不能把 material spec-plan granularity drift 当作无害文档问题。
 - 不能接受无批准 adapter boundary 的 API 集成代码去重复声明服务端 TS 类型或偷偷改写后端字段语义。
 - 不能接受 TypeScript 相关实现建立在未确认 `tsconfig`、未确认声明来源、或全靠猜测的 alias / global / generated-type 假设之上。

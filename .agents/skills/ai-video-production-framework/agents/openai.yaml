@@ -1,0 +1,7 @@
+interface:
+  display_name: "AI Video Production Framework"
+  short_description: "AI video workflow for manju and film delivery"
+  default_prompt: "Use $ai-video-production-framework to produce an AI video through a staged, industry-standard manju or film workflow."
+
+policy:
+  allow_implicit_invocation: true

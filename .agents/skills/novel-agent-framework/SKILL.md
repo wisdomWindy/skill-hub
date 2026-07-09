@@ -51,6 +51,7 @@ Turn a rough story idea into a complete, expandable, industry-standard novel pac
 - Never let `copyedit` repair prose problems that require `line-polish`, or structure problems that require earlier stages.
 - Never let `proofread` absorb unresolved copyedit-level inconsistency or story-level problems.
 - Never treat internal reader simulation alone as sufficient beta feedback for an industry-standard completion claim unless the user explicitly accepts that exception.
+- Never let a stage self-waive a blocker as `accepted risk`; accepted risks that affect completion, beta qualification, continuity, structure, or market promise require explicit user approval recorded in `artifacts/accepted-risks.md`.
 - Never declare completion after a first draft alone.
 - Never treat word count as proof of quality.
 - Never bypass `continuity-review` before `acceptance-review`.
@@ -169,6 +170,8 @@ Expected artifacts include:
 - `artifacts/copyedit-log.md`
 - `artifacts/proofread-log.md`
 - `artifacts/acceptance-standard.md`
+- `artifacts/accepted-risks.md`
+- `artifacts/acceptance-review.md`
 - `manuscript/outline.md`
 - `manuscript/chapters/`
 - `manuscript/full-draft.md`
@@ -195,6 +198,7 @@ Subskills may add more artifacts, but they must preserve this core workspace con
 - Do not let style polish invent plot logic that the manuscript has not earned.
 - Do not treat internal self-review as a substitute for reader-simulation or beta-style feedback.
 - Treat reader simulation as a fallback signal only; for industry-standard completion claims, require at least one external feedback source unless the user explicitly accepts a simulation-only workflow.
+- Treat accepted risks as signed exceptions, not as hidden leniency. Every accepted risk must be recorded in `artifacts/accepted-risks.md` with source stage, risk description, affected acceptance item, rationale, approving user signal, approval date or conversation reference, and downstream handling.
 - Do not let acceptance-review become a generic compliment pass; it must state pass/fail against the acceptance standard.
 
 ## Completion Standard
@@ -213,7 +217,8 @@ The novel project may reach `complete` only when:
 - continuity is internally consistent,
 - prose quality matches the intended market level,
 - beta-style reader objections have been addressed or consciously accepted,
-- at least one external beta-style feedback source has informed the revision loop, unless a simulation-only exception is explicitly recorded,
+- at least one external beta-style feedback source has informed the revision loop, unless a simulation-only exception is explicitly approved by the user and recorded in `artifacts/accepted-risks.md`,
+- every accepted risk that affects completion is traceable in `artifacts/accepted-risks.md` and referenced from `artifacts/acceptance-review.md`,
 - copyediting issues are below blocker threshold,
 - proofread-level defects are below blocker threshold,
 - and `acceptance-review` explicitly records pass.

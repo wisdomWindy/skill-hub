@@ -44,6 +44,7 @@ description: Stage subskill for page design. Define page layout, visual hierarch
    - 样式方向
    - 交互骨架
    - 响应式考虑
+   - Tailwind CSS-style utility class 约束与 class 值长度风险
 6. 设计结果必须足够稳定，使当前模块的 `architecture-design`（如存在）和 `spec` 能把它当作上游输入，而不是再重新发明布局决策。
 7. 必须以 `requirements/requirement-map.md` 和当前模块工件为页面范围来源，不得跨模块混写。
 8. 所有设计决策必须写入仓库工件，不保留在聊天上下文里。
@@ -59,6 +60,7 @@ description: Stage subskill for page design. Define page layout, visual hierarch
   - 页面布局结构
   - 区块层级
   - 样式方向
+  - Tailwind CSS-style styling constraints
   - 交互骨架
   - 响应式考虑
   - 设计风险与未决 UI 问题
@@ -67,6 +69,7 @@ description: Stage subskill for page design. Define page layout, visual hierarch
 
 - 当前模块 `design/page-design.md` 已存在。
 - 文档已定义布局、层级、样式方向、交互结构、响应式考虑。
+- 如涉及样式变更，文档已声明只能使用 Tailwind CSS-style utility classes，且不能用常量、computed 或 helper 隐藏过长 class 值。
 - 所有未决 UI 问题已记录。
 - `state.json.stage` 已切换到当前模块的下一下游阶段，且保留原有 `loop`。
 

@@ -12,6 +12,7 @@ Required top-level sections:
 - delivery unit identifier
 - acceptance coverage
 - spec constraint compliance
+- frontend styling compliance
 - summary
 
 Required fields for each acceptance item:
@@ -27,5 +28,14 @@ Required fields for each acceptance item:
 
 - result (`pass` or `fail`)
 - checked constraints
+- evidence reference
+- follow-up if failed
+
+`frontend styling compliance` is required when the scoped work adds or changes authored styling. It must include:
+
+- result (`pass` or `fail`)
+- Tailwind CSS-style utility class conformance
+- class length and inline reviewability check
+- check that overlong class values were not hidden in constants, maps, computed properties, helpers, or imported variables
 - evidence reference
 - follow-up if failed

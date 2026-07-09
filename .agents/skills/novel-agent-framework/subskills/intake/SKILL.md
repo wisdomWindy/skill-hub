@@ -53,7 +53,8 @@ description: Stage subskill for intake. Create the novel project workspace from 
    - 初始对标作品
    - 商业卖点假设
 8. 在 `artifacts/acceptance-standard.md` 中初始化完成标准草案。
-8. 初始化 `state.json`：
+9. 在 `artifacts/accepted-risks.md` 中初始化风险批准登记表，默认记录为 none。
+10. 初始化 `state.json`：
    - `stage=market-positioning`
    - `loop.state=running`
    - `loop.reentry_reason=new_project`
@@ -67,6 +68,7 @@ description: Stage subskill for intake. Create the novel project workspace from 
   - `docs/novel-projects/<novel-id>/artifacts/genre-and-readership.md`
   - `docs/novel-projects/<novel-id>/artifacts/market-positioning.md`
   - `docs/novel-projects/<novel-id>/artifacts/acceptance-standard.md`
+  - `docs/novel-projects/<novel-id>/artifacts/accepted-risks.md`
 
 ## 验收标准
 
@@ -84,6 +86,7 @@ description: Stage subskill for intake. Create the novel project workspace from 
   - 关键验收维度
   - 已知例外或待确认项
   - 现阶段不能声称完成的原因
+- `artifacts/accepted-risks.md` 已初始化，且明确当前没有已批准风险，或逐条记录已有用户批准例外。
 - `state.json` 已初始化并进入 `market-positioning`，且 loop 元信息可支持后续恢复与审计。
 
 ## 安全边界

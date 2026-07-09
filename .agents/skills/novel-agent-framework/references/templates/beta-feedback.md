@@ -43,7 +43,7 @@ For each source or cohort, record:
 - confidence level
 
 Never merge all sources into one anonymous blob.
-At least one external source is required for an industry-standard completion claim unless the user explicitly approves a simulation-only exception.
+At least one external source is required for an industry-standard completion claim unless the user explicitly approves a simulation-only exception recorded in `artifacts/accepted-risks.md`.
 
 ### `reading coverage`
 
@@ -76,6 +76,7 @@ This section must explicitly state one of:
 - simulation-only-not-qualified
 
 If the round is not qualified, later stages must not treat the beta gate as fully passed.
+If `simulation-only-exception-approved` is used, cite the matching accepted-risk id from `artifacts/accepted-risks.md`.
 
 ### `blocker clusters`
 
@@ -95,3 +96,5 @@ Record:
 - which feedback was not adopted
 - why
 - what tradeoff was accepted
+
+If the disagreement affects completion, market promise, structure, continuity, or beta qualification, it must also appear in `artifacts/accepted-risks.md`.
