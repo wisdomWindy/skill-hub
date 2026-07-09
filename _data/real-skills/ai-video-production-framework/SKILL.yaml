@@ -1,0 +1,18 @@
+id: "agent-ai-video-production-framework"
+name: "ai-video-production-framework"
+category: "devtools"
+version: "v1.0.0"
+shortDesc: "本地智能体主控 skill，用于编排本地工作流、维护阶段门禁并路由到子技能。"
+fullDesc: "## ai-video-production-framework\n\n本地智能体主控 skill，用于编排本地工作流、维护阶段门禁并路由到子技能。\n\n## 来源\n\n该条目来自仓库本地 skill 文件：`.agents/skills/ai-video-production-framework/SKILL.md`。\n\n## 使用提示\n\n在 Codex 中可通过 `$ai-video-production-framework` 或对应工作流触发该 skill。"
+installCommand: "本地路径：.agents/skills/ai-video-production-framework"
+usageExamples:
+  - title: "在 Codex 中触发"
+    code: "$ai-video-production-framework"
+tags:
+  - "本地技能"
+  - "agent"
+  - "工作流"
+status: "published"
+installCount: 0
+createdAt: "2026-07-08T00:00:00.000Z"
+updatedAt: "2026-07-08T00:00:00.000Z"

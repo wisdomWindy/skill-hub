@@ -10,6 +10,8 @@ const realSkillSources = import.meta.glob('../../../_data/real-skills/**/SKILL.y
 })
 
 describe('real skill static delivery contract', () => {
+  const topLevelSkillCount = 5
+
   it('keeps real skill categories aligned with site config', () => {
     const categoryKeys = new Set(loadSiteConfig().categories.map((category) => category.key))
     const records = loadSkillRecords()
@@ -21,26 +23,25 @@ describe('real skill static delivery contract', () => {
     const records = loadSkillRecords()
 
     expect(records).toHaveLength(Object.keys(realSkillSources).length)
-    expect(records).toHaveLength(40)
+    expect(records).toHaveLength(topLevelSkillCount)
     expect(records.every((record) => record.id.startsWith('agent-'))).toBe(true)
     expect(records.every((record) => record.status === 'published')).toBe(true)
     expect(records.some((record) => record.id === 'agent-frontend-agent-framework')).toBe(true)
-    expect(records.some((record) => record.id === 'agent-frontend-agent-framework-verify')).toBe(true)
+    expect(records.some((record) => record.id === 'agent-frontend-agent-framework-verify')).toBe(false)
   })
 
-  it('keeps the generated data directory aligned with the original skill directory shape', () => {
+  it('generates records only for top-level skills', () => {
     expect(realSkillSources).toHaveProperty('../../../_data/real-skills/frontend-agent-framework/SKILL.yaml')
-    expect(realSkillSources).toHaveProperty('../../../_data/real-skills/frontend-agent-framework/subskills/verify/SKILL.yaml')
+    expect(realSkillSources).not.toHaveProperty('../../../_data/real-skills/frontend-agent-framework/subskills/verify/SKILL.yaml')
+    expect(Object.keys(realSkillSources).every((sourcePath) => !sourcePath.includes('/subskills/'))).toBe(true)
   })
 
-  it('uses directory install commands for main skills and file install commands for subskills', () => {
+  it('uses directory install commands so subskills are installed with the main skill tree', () => {
     const records = loadSkillRecords()
 
     expect(records.find((record) => record.id === 'agent-frontend-agent-framework')?.installCommand).toBe(
       '本地路径：.agents/skills/frontend-agent-framework',
     )
-    expect(records.find((record) => record.id === 'agent-frontend-agent-framework-verify')?.installCommand).toBe(
-      '本地路径：.agents/skills/frontend-agent-framework/subskills/verify/SKILL.md',
-    )
+    expect(records.some((record) => record.installCommand.includes('/subskills/'))).toBe(false)
   })
 })

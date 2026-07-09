@@ -1,4 +1,4 @@
-import { mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
+import { existsSync, mkdirSync, readdirSync, readFileSync, rmSync, writeFileSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
@@ -13,42 +13,14 @@ const frameworkLabels = {
   'skill-generator': 'Skill 生成器',
 }
 
-const stageLabels = {
-  'acceptance-review': '验收评审',
-  'architecture-design': '架构设计',
-  'beta-feedback': 'Beta 反馈',
-  'bugfix-intake': '缺陷接收',
-  'chapter-planning': '章节规划',
-  'character-design': '角色设计',
-  'continuity-review': '连续性审查',
-  copyedit: '文案编辑',
-  drafting: '正文起草',
-  execute: '执行实现',
-  'idea-expansion': '创意扩展',
-  intake: '需求接收',
-  'line-polish': '语言润色',
-  'market-positioning': '市场定位',
-  'page-design': '页面设计',
-  plan: '计划编写',
-  proofread: '校对',
-  review: '评审',
-  'requirement-analysis': '需求分析',
-  'requirement-splitting': '需求拆分',
-  'scene-design': '场景设计',
-  spec: '规格编写',
-  'story-architecture': '故事架构',
-  'structural-revision': '结构修订',
-  verify: '验证',
-}
-
-function findSkillFiles(dir) {
+function findTopLevelSkillFiles(dir) {
   return readdirSync(dir, { withFileTypes: true }).flatMap((entry) => {
-    const entryPath = path.join(dir, entry.name)
-    if (entry.isDirectory()) {
-      return findSkillFiles(entryPath)
+    if (!entry.isDirectory()) {
+      return []
     }
 
-    return entry.name === 'SKILL.md' ? [entryPath] : []
+    const skillFilePath = path.join(dir, entry.name, 'SKILL.md')
+    return existsSync(skillFilePath) ? [skillFilePath] : []
   })
 }
 
@@ -74,7 +46,7 @@ function resolveSegments(filePath) {
 }
 
 function buildSkillId(segments) {
-  return `agent-${segments.filter((segment) => segment !== 'subskills').join('-')}`
+  return `agent-${segments.join('-')}`
 }
 
 function resolveOutputPath(filePath) {
@@ -82,18 +54,13 @@ function resolveOutputPath(filePath) {
   return path.join(outputRoot, relativePath)
 }
 
-function resolveInstallPath(filePath, segments) {
-  const installTarget = segments.length === 1 ? path.dirname(filePath) : filePath
-  return toPosixPath(installTarget)
+function resolveInstallPath(filePath) {
+  return toPosixPath(path.dirname(filePath))
 }
 
 function resolveDisplayName(segments, fallbackName) {
-  const [framework, maybeSubskills, stage] = segments
+  const [framework] = segments
   const frameworkLabel = frameworkLabels[framework] || fallbackName
-
-  if (maybeSubskills === 'subskills' && stage) {
-    return `${frameworkLabel}：${stageLabels[stage] || stage}`
-  }
 
   return frameworkLabel
 }
@@ -103,12 +70,8 @@ function resolveCategory(segments) {
 }
 
 function resolveShortDesc(segments) {
-  const [framework, maybeSubskills, stage] = segments
+  const [framework] = segments
   const frameworkLabel = frameworkLabels[framework] || '本地智能体'
-
-  if (maybeSubskills === 'subskills' && stage) {
-    return `${frameworkLabel}的${stageLabels[stage] || stage}阶段 skill，用于驱动本地工作流的对应步骤。`
-  }
 
   if (framework === 'skill-generator') {
     return '把可重复流程、检查清单或需求草案沉淀为可复用的本地 Codex skill。'
@@ -118,17 +81,13 @@ function resolveShortDesc(segments) {
 }
 
 function resolveTags(segments) {
-  const [framework, maybeSubskills, stage] = segments
+  const [framework] = segments
   const tags = ['本地技能', 'agent']
 
   if (framework === 'novel-agent-framework') {
     tags.push('写作')
   } else {
     tags.push('工作流')
-  }
-
-  if (maybeSubskills === 'subskills' && stage) {
-    tags.push(stageLabels[stage] || stage)
   }
 
   return tags
@@ -146,7 +105,7 @@ function renderSkillRecord(filePath) {
   const displayName = resolveDisplayName(segments, triggerName)
   const shortDesc = resolveShortDesc(segments)
   const sourcePath = toPosixPath(filePath)
-  const installPath = resolveInstallPath(filePath, segments)
+  const installPath = resolveInstallPath(filePath)
   const tags = resolveTags(segments)
   const fullDesc = [
     `## ${displayName}`,
@@ -186,7 +145,7 @@ function renderSkillRecord(filePath) {
 rmSync(outputRoot, { recursive: true, force: true })
 mkdirSync(outputRoot, { recursive: true })
 
-const skillFiles = findSkillFiles(sourceRoot).sort((left, right) => toPosixPath(left).localeCompare(toPosixPath(right)))
+const skillFiles = findTopLevelSkillFiles(sourceRoot).sort((left, right) => toPosixPath(left).localeCompare(toPosixPath(right)))
 
 for (const filePath of skillFiles) {
   const outputPath = resolveOutputPath(filePath)
