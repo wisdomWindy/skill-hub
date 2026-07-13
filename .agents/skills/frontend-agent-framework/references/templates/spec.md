@@ -30,6 +30,7 @@ Required sections:
 - change axes and pattern decision
 - code context and impact assumptions
 - API and data contracts
+- frontend / server responsibility boundary
 - context and dependency sources
 - edge cases
 - acceptance criteria
@@ -75,6 +76,20 @@ Typing rules that the spec must preserve:
 - if the backend provides TypeScript declarations, use them as the preferred contract types
 - if the backend does not provide TypeScript declarations, preserve backend field names and express field types using valid TypeScript types
 - if the source contract is protobuf, state whether generated types already exist or whether TypeScript-facing types will be derived from protobuf definitions
+
+## `frontend / server responsibility boundary`
+
+Required when requirement analysis or requirement splitting identified server-owned work, shared contract work, or external-interface pending items.
+
+Document:
+
+- frontend-owned tasks this spec is allowed to implement
+- server-owned tasks this spec depends on but must not implement
+- shared API / DTO / enum / error-code / permission / workflow-state contract obligations
+- external-interface pending items and whether they block frontend implementation
+- adapter / mapper / fromDetail boundaries used to isolate frontend semantics from backend contract semantics
+
+Do not convert server-owned responsibilities into frontend implementation requirements. If the frontend can only proceed with a mock, adapter placeholder, feature flag, or assumption, state that explicitly.
 
 ## `function-complete behavior breakdown`
 

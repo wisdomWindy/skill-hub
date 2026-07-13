@@ -33,7 +33,7 @@ description: Stage subskill for requirement splitting. Normalize a PRD-driven re
    - `../../references/templates/requirement-splitting.md`
    - `../../references/policies/doc-writing.md`
 2. 仅用于 PRD 驱动需求；bugfix 输入默认不走本阶段，除非主 skill 明确把缺陷提升为等价需求拆分问题。
-3. 先消费 `requirement-analysis` 工件，把其中确认过的范围、非目标、依赖、风险、歧义和拆分依据视为本阶段上游输入，而不是重新从零发明拆分逻辑。
+3. 先消费 `requirement-analysis` 工件，把其中确认过的范围、非目标、前端 / 服务端职责拆分、依赖、风险、歧义和拆分依据视为本阶段上游输入，而不是重新从零发明拆分逻辑。
 4. 在正式拆分前，先检查原始内容里是否存在 Markdown 不能稳定表达或下游 `.md` 工件不易识别的格式。
 5. 如果存在非 Markdown 兼容格式，先做最小必要的 Markdown 归一化，再开始拆分，例如：
    - 非标准表格、截图表格、富文本栅格转成 Markdown 表格
@@ -54,6 +54,7 @@ description: Stage subskill for requirement splitting. Normalize a PRD-driven re
 13. 对每个模块明确：
    - 模块边界
    - 业务目标
+   - 前端职责、服务端职责、共享契约和外部接口待补项
    - 用户可见行为
    - 表单/表格/展示/交互/流程内容
    - 下游 `spec` 必须保留的显式约束
@@ -90,6 +91,7 @@ description: Stage subskill for requirement splitting. Normalize a PRD-driven re
 - 最终交付物应包含：
   - 需求拆分总览
   - requirement-analysis 承接结果
+  - 前端 / 服务端职责拆分承接结果
   - 模块级原始内容快照
   - 已归一化的 Markdown 兼容内容
   - source trace 映射
@@ -103,7 +105,7 @@ description: Stage subskill for requirement splitting. Normalize a PRD-driven re
 
 - `requirements/requirement-map.md` 已存在。
 - 已为范围内模块生成模块工件。
-- requirement-analysis 中确认的范围、非目标、依赖与拆分依据已被承接，而不是被本阶段忽略。
+- requirement-analysis 中确认的范围、非目标、前端 / 服务端职责拆分、依赖与拆分依据已被承接，而不是被本阶段忽略。
 - 每个模块工件都能回溯到原始需求文档对应内容。
 - 每个发生过格式归一化的模块都同时保留了原始内容快照与 Markdown 归一化副本。
 - 原始内容中的非 Markdown 兼容格式已被转换为 Markdown 可识别格式或等价结构化说明。
@@ -119,6 +121,7 @@ description: Stage subskill for requirement splitting. Normalize a PRD-driven re
 - 不能发明需求文档中不存在的新行为。
 - 不能在本阶段写 spec、plan 或代码。
 - 不能绕过 `requirement-analysis` 重新凭印象定义范围、非目标或拆分依据。
+- 不能在拆分时把 requirement-analysis 已确认的服务端职责改写成前端实现任务，或把前端职责改写成服务端待办。
 - 不能把多个模块压成导致下游遗漏的笼统摘要。
 - 不能借格式归一化之名改写原始业务语义。
 - 不能只保留 Markdown 归一化结果而删除原始内容快照。

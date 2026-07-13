@@ -37,10 +37,12 @@ Keep the repository-local workflow in control through one default entry skill th
 - Enforce specification-driven development so implementation follows approved repository artifacts instead of ad hoc coding decisions.
 - Enforce TDD for testable behavior changes unless the current task is explicitly non-testable and that exception is recorded.
 - Enforce clean-code discipline so shipped changes remain readable, low-surprise, and maintainable.
+- Enforce change-chain integrity so code modification or removal is preceded by feature-flow and reference analysis, and followed by a clean-chain validation.
 - Enforce design-pattern discipline so abstractions are introduced only when they solve a real change, dependency, or behavior-selection problem.
 - Enforce user-intent fidelity so implementations satisfy the request's practical goal, not just a superficial reading of the words.
 - Enforce repository-context discipline by preferring code graph for structural code understanding when existing-code analysis is material to the request.
 - Enforce backend API contract discipline so frontend integration preserves contract sources, type ownership, field semantics, and explicit adapter boundaries.
+- Enforce frontend/backend responsibility separation during requirement analysis so downstream frontend work does not absorb server-owned changes or hide backend dependencies.
 - Enforce TypeScript context discipline so TS-affecting work reads the governing `tsconfig` and relevant declaration sources before coding, without falling into repository-wide declaration-file sweeps.
 - Enforce frontend styling discipline so authored styles use Tailwind CSS-style utility classes, keep class values reviewable inline, and do not hide overlong class strings behind constants or computed values.
 
@@ -60,6 +62,7 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Existing request: preserve or repair `state.json.loop`, resume the active loop, and continue orchestrating from there.
 - Never start coding before a request workspace exists under `docs/requests/<request-id>/`.
 - Never enter `requirement-splitting` for a PRD-driven request before a durable `requirement-analysis` artifact exists.
+- Never enter `requirement-splitting` for a PRD-driven request before requirement analysis distinguishes frontend-owned work, server-owned work, shared contract work, external-interface pending work, and blocker ownership when the requirement touches data, APIs, permissions, workflows, or cross-system behavior.
 - Never enter `page-design`, `architecture-design`, `spec`, or `plan` for a PRD-driven request before durable requirement-splitting artifacts exist.
 - Never let a later split module enter downstream stages while an earlier split module has not yet passed `review`.
 - Never let code-architecture-sensitive work enter `spec` without a durable `architecture-design` artifact.
@@ -68,6 +71,9 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never implement TypeScript-affecting code before recovering the governing `tsconfig` and the declaration or generated type sources that materially affect the scoped files.
 - Never satisfy a user request by relocating the unwanted complexity, risk, ambiguity, or responsibility elsewhere; capture the practical goal and forbidden interpretations before downstream work when intent could be gamed.
 - Never implement authored styling outside Tailwind CSS-style utility classes; never bypass overlong class values by moving them into constants, maps, computed properties, helpers, or imported variables.
+- Never modify or remove existing code before reviewing the affected feature flow, file reference relationships, callers, side effects, and downstream consumers enough to understand what each touched symbol owns.
+- Never treat a modification or removal as complete until the post-change feature flow and reference chain have been rechecked for missing links, orphan links, stale callers, unintended side effects, and collateral impact on neighboring features.
+- Never treat test-file imports or references as real production owners for code that the approved request requires modifying or removing; update or remove the tests to match the requested behavior instead of preserving obsolete production code for tests.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, never bypass scaffold selection; prefer the matching project-type scaffold or starter when one exists, and record any justified deviation before implementation.
 - Never declare work complete before the required verification and review artifacts for the active delivery unit exist and pass.
 - Never declare work complete before the required verification artifact explicitly records `spec constraint compliance: pass`.
@@ -199,6 +205,7 @@ Workflow rules:
 - Normalize bugfix inputs into the same request workspace structure used by PRD-driven requests.
 - For PRD-driven requirements, force a durable `requirement-analysis -> requirement-splitting` pass before any design, specification, or planning work begins.
 - Treat requirement analysis as the explicit需求理解阶段: it must fix scope, non-goals, ambiguity visibility, dependency awareness, and splitting rationale before module decomposition begins.
+- Treat requirement analysis as the frontend/backend responsibility separation stage when the request depends on data, APIs, permissions, workflows, backend validation, persistence, async jobs, or cross-system behavior; it must state what frontend implements, what server must provide or change, what is shared contract work, and what blocks frontend progress.
 - Treat requirement splitting as source-preserving normalization: it must split modules and functional units without inventing behavior, implementation, or UX detail that is not grounded in the source.
 - For page-oriented requests, treat page design as a required upstream input to `spec`, not as an implementation detail.
 - For code-architecture-sensitive requests, treat `architecture-design` as a required upstream input to `spec`, not as an implementation detail.
@@ -227,6 +234,9 @@ Workflow rules:
 - Treat the approved spec and plan as the authoritative implementation contract for all downstream stages.
 - Require the approved spec and approved plan to stay aligned at the same function-complete behavior granularity for the scoped work; if one artifact is materially coarser, finer, or contradictory, route back to repair the artifacts before downstream execution continues.
 - Require `plan/plan.md` to reach function-complete task decomposition for scoped work so downstream execution does not infer missing fields, columns, interactions, states, or flow steps ad hoc.
+- Require downstream `requirement-splitting`, `spec`, and `plan` to preserve the frontend/backend responsibility split fixed during requirement analysis; frontend implementation may consume contracts and adapters, but must not silently implement server-owned persistence, validation, permission, workflow, or data-production responsibilities.
+- For existing-code modification or removal, require the plan and execution record to identify the affected feature chain, involved files, symbol reference relationships, callers, side effects, and downstream consumers before editing; after editing, verification and review must confirm the chain is still coherent, with no missing required step and no stale extra step.
+- For modification or removal decisions, treat test-only references to the target code as empty references for ownership and retention decisions; the tests are part of the adaptation surface and must be updated, replaced, or removed according to the approved behavior.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, require the scaffold or starter decision to be made in repository artifacts before implementation; when a suitable project-type scaffold exists, treat it as the default starting point unless the artifacts record why it is unsuitable or unavailable.
 - Do not let execution, verification, or review invent behavior that is not justified by the approved spec and plan.
 - Do not let execution, verification, or review satisfy only the literal words of a request while violating the user's practical goal or using a forbidden interpretation recorded upstream.
@@ -354,6 +364,7 @@ Load only what is needed:
 
 - Never code before the request workspace exists.
 - Never let a PRD-driven request enter `requirement-splitting` without a requirement-analysis artifact that fixes scope, non-goals, visible ambiguities, and splitting rationale.
+- Never let a PRD-driven request enter `requirement-splitting` when frontend-owned work, server-owned work, shared API/DTO contract work, external-interface pending work, and blocker ownership are materially relevant but not separated in `analysis/requirement-analysis.md`.
 - Never implement before the active delivery unit's approved spec and plan exist.
 - Never let page-oriented work enter `spec` without a page design artifact when layout, styling, or interaction structure is a material requirement.
 - Never let code-architecture-sensitive work enter `spec` without an architecture design artifact when module boundaries, file structure, code relationships, function structure, data structures, or type strategy materially affect the solution shape.
@@ -367,6 +378,9 @@ Load only what is needed:
 - Stop only at real blocking gates such as required approval, missing upstream requirement information, or unavailable external dependency needed for the next stage.
 - Never implement behavior that is not defined, clarified, or accepted in the repository spec artifacts.
 - Never treat wording-only compliance as sufficient when the request's practical goal is to reduce complexity, risk, ambiguity, duplication, or review cost.
+- Never treat removal of a call or request as complete until the behavior-owned dependency closure has been checked and cleaned: imports, helpers, constants, types, request wrappers, state, tests, mocks, and comments.
+- Never treat modification or removal of existing code as complete without pre-change chain analysis and post-change chain validation covering feature flow, file references, callers, side effects, downstream consumers, missing links, stale links, and neighboring-feature impact.
+- Never keep production code solely because it is referenced by test files when the approved request requires that production code to change or disappear; test references are empty references for retention decisions and must be adapted to the new behavior.
 - Never implement authored styling with scoped CSS, CSS modules, Sass/Less, inline style objects, or non-utility semantic class names.
 - Never accept overlong `class`, `className`, or class-binding values, and never hide them in constants, maps, computed properties, helper functions, or imported variables to make markup appear shorter.
 - Never guess a TypeScript target file's active compiler context, path aliases, visible ambient declarations, or generated contract types when the scoped work depends on them; recover that context first.

@@ -90,31 +90,45 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - 每个相关任务写清 forbidden interpretations
    - 每个相关任务写清如何证明没有把问题、复杂度或风险转移到别处
    - 不能只把字面要求拆成任务而遗漏反例约束
-18. 如涉及新增或修改样式，计划必须把 Tailwind CSS-style styling 约束拆进任务：
+18. 如 scoped work 包含修改或移除既有代码，计划必须先拆出变更链路审查任务：
+   - 审查功能入口、组件 / hook / store / service / adapter / helper 链路
+   - 审查文件引用关系、import / export、调用方、消费者、事件、watch / computed、测试与 mock
+   - 审查副作用、请求、状态流转、下游 UI 或数据消费者
+   - 写明哪些链路环节是本次变更的 owner，哪些只是邻近影响面
+   - 写明测试文件引用只作为测试适配面，不作为保留待改 / 待删生产代码的真实调用方
+   - 写明操作完成后的链路复查方式，确保不缺少必要环节，也不保留多余环节
+19. 如 scoped work 包含移除调用、请求、分支、字段、控件或副作用，计划必须拆出删除依赖闭包清理任务：
+   - 检查 import / export
+   - 检查 helper function / constant / enum / type
+   - 检查 request wrapper / composable / adapter
+   - 检查 ref / reactive state / computed / watch
+   - 检查 tests / mocks / comments
+   - 保留 helper 时必须记录真实生产调用方；仅测试文件引用不算真实调用方，必须改测试适配需求
+20. 如涉及新增或修改样式，计划必须把 Tailwind CSS-style styling 约束拆进任务：
    - 只使用 Tailwind CSS-style utility classes 落地 authored styling
    - 不新增 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class 作为样式方案
    - `class` / `className` / class binding 值不得超过项目 formatter 正常行宽或依赖多行包裹
    - 不得用常量、map、computed、helper 或 import 变量隐藏过长 class 值
    - 过长时必须拆分结构、提取更小组件或降低样式复杂度
-19. 把 clean-code guardrails、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
-20. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
-21. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
-22. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
-23. 当前模块 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
+21. 把 clean-code guardrails、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
+22. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
+23. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
+24. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
+25. 当前模块 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
    - 先给全局摘要
    - 再按任务分节
    - 每个任务都用固定小节展示目标、范围、前置条件、交互、状态、风险、测试
    - 避免输出大段连续散文
-24. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
+26. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
    - 起点
    - 关键步骤
    - 分支判断
    - 成功出口
    - 失败/回退出口
-25. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
-26. 保留 `state.json.loop`，不重置、不改写。
-27. 本阶段不写实现代码。
-28. 完成后请求用户审批，再设置当前模块 `approvals.plan_approved=true` 并切到 `stage=execute`。
+27. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
+28. 保留 `state.json.loop`，不重置、不改写。
+29. 本阶段不写实现代码。
+30. 完成后请求用户审批，再设置当前模块 `approvals.plan_approved=true` 并切到 `stage=execute`。
 
 ## 输出格式
 
@@ -127,6 +141,8 @@ description: Stage subskill for planning. Convert the approved spec into executi
   - 任务拆解
   - function-complete 级任务细化
   - user intent compliance 任务（如适用）
+  - change-chain review 任务（修改或移除既有代码时适用）
+  - removal cleanup 任务（如适用）
   - 每个任务对应的流程图
   - 依赖关系
   - 测试与验证策略
@@ -147,6 +163,9 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - `execute` 无需猜测文本输入的隐式边界语义，尤其是纯空格、归一化后空值、长度计算口径、非法字符与校验触发时机。
 - 所有验收标准都已映射到执行任务和验证任务。
 - 如 spec 包含 user intent contract，计划已把 literal compliance 与 intent compliance 都映射到任务和验证点。
+- 如存在既有代码修改或移除，计划已拆出操作前功能链路与引用关系审查任务，并拆出操作后链路完整性复查任务。
+- 如存在行为移除，计划已拆出该行为独占依赖闭包的清理与验证任务。
+- 如测试文件引用待改或待删生产代码，计划已把这些测试列为适配项，而不是把测试引用当作保留生产代码的依据。
 - API 对接项已写清 contract source、type strategy、adapter boundary、request-layer ownership。
 - 若 scoped work 为 greenfield，计划已把脚手架采用或拒绝及其落地改造拆成显式任务。
 - clean-code / pattern 决策已记录。
@@ -170,6 +189,9 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - 不能把页面结构、字段定义、列定义、交互结果、loading 规则留空。
 - 不能让 `execute` 自行补产品行为。
 - 不能让 `execute` 自行理解用户真实意图或自行发现 forbidden interpretations。
+- 不能让 `execute` 在未规划功能链路、文件引用关系、调用方、副作用和影响面审查的情况下修改或移除既有代码。
+- 不能让 `execute` 自行发现行为移除后的 orphan helper、unused import、stale request wrapper、obsolete state、测试或注释残留。
+- 不能因为测试文件仍引用待改或待删代码，就把该测试引用规划成生产代码真实调用方；应规划测试适配。
 - 不能私自把 spec 细化成新行为。
 - 不能把多接口/多表面 API 对接压成一个黑盒任务。
 - 不能省略任何任务的流程图。

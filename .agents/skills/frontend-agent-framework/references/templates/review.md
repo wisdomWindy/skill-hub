@@ -15,6 +15,8 @@ Required sections:
 - accepted risks
 - follow-up items
 - user intent assessment
+- change-chain integrity assessment
+- removal cleanup assessment
 - clean-code assessment
 - frontend styling assessment
 - design-pattern assessment
@@ -27,6 +29,25 @@ Required sections:
 - literal request compliance
 - practical goal compliance
 - forbidden interpretations found or ruled out
+- required follow-up if failed
+
+`change-chain integrity assessment` is required when implementation modifies or removes existing code. It must include:
+
+- result (`pass` or `fail`)
+- changed feature chain reviewed
+- pre-change flow and reference analysis sufficiency
+- post-change chain cleanliness
+- missing links, stale extra links, duplicate paths, conflict paths, or orphan symbols found
+- test references to changed or removed production code adapted rather than treated as production owners
+- neighboring feature impact found or ruled out
+- required follow-up if failed
+
+`removal cleanup assessment` is required when implementation removes a call, request, branch, field, control, or side effect. It must include:
+
+- result (`pass` or `fail`)
+- orphan imports, helpers, constants, types, request wrappers, state, tests, mocks, or comments found
+- retained helpers and their remaining real production callers
+- test-only references found and adapted, not used as retention evidence
 - required follow-up if failed
 
 `clean-code assessment` must include:

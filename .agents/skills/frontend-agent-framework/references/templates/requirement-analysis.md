@@ -15,6 +15,7 @@ Required sections:
 - out-of-scope and non-goals
 - confirmed decisions and invariants
 - system boundaries and ownership
+- frontend and server responsibility split
 - source-backed behavior inventory
 - developer-facing behavior details
 - implicit requirements and hidden assumptions
@@ -134,6 +135,21 @@ Document:
 
 If the request spans multiple projects or systems, this section is required.
 
+### `frontend and server responsibility split`
+
+Required when the request touches data, APIs, permissions, backend validation, persistence, state machines, audit, async jobs, callbacks, synchronization, or cross-system behavior.
+
+Document:
+
+- frontend-owned work: pages, interactions, display, form semantics, UI validation, request consumption, adapter / mapper / fromDetail normalization, loading / empty / error handling, local state, and regression surface
+- server-owned work: APIs, fields, DTOs, permission checks, persistence, backend validation, state transitions, audit logs, async jobs, callbacks, synchronization, and data source ownership
+- shared contract work: API shape, DTO fields, enum domains, error codes, permission semantics, workflow states, pagination, nullability, default values, and generated or backend-owned types
+- dependency status for each server-owned item: confirmed, external-interface pending, business-blocking, or non-blocking
+- frontend continuation stance: can proceed with existing contract, can proceed behind adapter / mock / config / feature flag, or must stop until backend decision exists
+
+Do not turn server-owned responsibilities into frontend implementation tasks just to keep the frontend plan moving.
+Do not push frontend-owned display, interaction, adapter, or semantic-normalization work to the server unless the source explicitly makes it server-owned.
+
 ### `workflow and dependency assessment`
 
 Document:
@@ -193,6 +209,7 @@ Document how this analysis reduces product follow-up during development:
 - concrete hidden questions that have been surfaced instead of left implicit
 - areas where developers can proceed using a stated adapter / config / DTO boundary
 - areas where developers must stop for product or external-system confirmation
+- frontend-owned versus server-owned work that downstream stages must not merge or silently swap
 - source-backed risk checks that must become acceptance or regression coverage later
 
 This is not a summary section. It is a handoff checklist for the next stage.

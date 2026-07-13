@@ -12,6 +12,8 @@ Required top-level sections:
 - delivery unit identifier
 - acceptance coverage
 - user intent compliance
+- change-chain integrity
+- removal cleanup compliance
 - spec constraint compliance
 - frontend styling compliance
 - summary
@@ -32,6 +34,29 @@ Required fields for each acceptance item:
 - practical-goal compliance result
 - forbidden-interpretation checks
 - evidence that complexity, risk, ambiguity, or responsibility was not merely relocated
+- follow-up if failed
+
+`change-chain integrity` is required when implementation modifies or removes existing code. It must include:
+
+- result (`pass` or `fail`)
+- changed feature chain
+- pre-change chain review evidence
+- post-change chain validation evidence
+- checked entrypoints, files, imports, exports, callers, consumers, side effects, state, tests, and mocks
+- test references to changed or removed production code treated as adaptation targets, not production owners
+- missing required links found or ruled out
+- stale extra links found or ruled out
+- neighboring feature impact found or ruled out
+- follow-up if failed
+
+`removal cleanup compliance` is required when implementation removes a call, request, branch, field, control, or side effect. It must include:
+
+- result (`pass` or `fail`)
+- removed behavior
+- checked imports, helpers, constants, types, request wrappers, state, tests, mocks, and comments
+- retained helpers and their remaining real production callers
+- test-only references found and adapted, not used as retention evidence
+- evidence reference
 - follow-up if failed
 
 `spec constraint compliance` must include:

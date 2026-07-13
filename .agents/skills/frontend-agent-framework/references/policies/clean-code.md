@@ -10,10 +10,18 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - Use the approved spec and plan to decide what behavior should exist; use this policy to decide how that behavior should be expressed in code.
 - Escalate to a blocking issue when the implementation materially harms readability, change safety, or future extension cost.
 - Do not use this policy to force speculative abstraction, cosmetic churn, or refactors that are unrelated to the approved request.
+- Before modifying or removing existing code, inspect the affected feature flow, file reference relationships, callers, side effects, and downstream consumers so the change is made against the whole owned chain instead of a single visible line.
+- After modifying or removing existing code, re-check the changed chain for missing required links, orphan links, stale callers, stale side effects, and collateral impact on neighboring features.
+- When removing behavior, remove the now-unused dependency closure owned by that behavior: imports, helper functions, constants, types, request wrappers, reactive state, computed values, watchers, tests, mocks, and comments that no longer serve another caller.
+- Test-file imports or references to code that the approved request changes or removes are empty references for production ownership decisions. Update, replace, or remove the tests to fit the approved behavior instead of retaining obsolete production code for test compatibility.
 
 ## Severity Guide
 
 - Blocking: misleading names, hidden side effects, duplicate business rules that can drift, oversized mixed-responsibility modules, ambiguous control flow, or code structure that makes planned verification unreliable.
+- Blocking: existing-code modification or removal performed without enough feature-flow and reference-chain analysis to prove what the touched code owns and what other features may be affected.
+- Blocking: post-change chain validation finds a missing required step, orphan reference, stale caller, obsolete side effect, or extra code path that no longer has a real owner.
+- Blocking: deleted behavior that leaves unused imports, dead helpers, orphan request wrappers, stale constants, obsolete computed/watch state, or comments/tests that describe behavior no longer present.
+- Blocking: production code retained solely because test files still import or reference it after the approved behavior requires that code to change or be removed.
 - Non-blocking: local naming improvements, light extraction opportunities, optional polish, or cleanup that improves clarity but is not required for safe delivery.
 
 ## Principles
@@ -88,12 +96,34 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - Prefer small opportunistic improvements tied to the changed area: remove dead code, tighten names, collapse duplication, add missing test clarity, and isolate risky branches.
 - Do not turn the request into a broad cleanup campaign that obscures delivery progress or expands scope beyond the approved plan.
 
+### 11. Removal Changes Must Close Their Dependency Trail
+
+- When a request removes a call, action, branch, request, field, UI control, or side effect, trace every symbol that existed only to support that removed behavior.
+- Remove unused imports, helper functions, local constants, enums, types, request wrappers, composables, computed values, watchers, refs, state fields, tests, mocks, and comments that become dead after the behavior is removed.
+- Before leaving execution, search changed files and direct helper modules for the removed symbol names and helper names to prove no orphan references or orphan definitions remain.
+- Keep shared helpers only when another real production caller still uses them. If the helper is retained, the execution or review evidence must identify that remaining production caller.
+- Test-only references are not real callers for retaining removed or replaced production code. If only tests still reference the target, treat that as a test adaptation task, not as evidence the production symbol is still owned.
+- Do not keep dead helper code as a potential future reuse point. Future reuse is not a current owner.
+
+### 12. Modification And Removal Must Preserve The Whole Chain
+
+- For any existing-code modification or removal, identify the functional chain before editing: user entrypoint, component or hook path, state ownership, request or adapter boundary, helper layer, emitted side effects, and downstream UI or data consumers.
+- Identify the file and symbol reference chain before editing: imports, exports, callers, direct consumers, event handlers, watchers, computed values, tests, mocks, and configuration references that participate in the behavior.
+- Separate production ownership references from test-only references. Tests prove expected behavior; they do not own production symbols that the request explicitly changes or removes.
+- Modify or remove code at the owning layer of the behavior. Do not patch only the visible symptom while leaving the real owner, adapter, state transition, or side effect inconsistent.
+- After editing, re-run a chain check across changed files and directly related helper modules to prove the remaining flow is coherent end to end.
+- The final chain must be clean: no missing required step, no stale unused step, no duplicate replacement path, no orphan helper, no stale import, no obsolete state, no hidden side effect, and no unreviewed impact on neighboring features.
+
 ## Review Triggers
 
 Treat the following as explicit clean-code review checks:
 
 - Does each changed unit have a clear purpose and readable name?
 - Is business logic duplicated in multiple places?
+- Was the affected feature flow and file reference chain reviewed before modifying or removing existing code?
+- After the change, is the chain still coherent end to end, with no missing required link and no stale extra link?
+- Did any removed behavior leave unused imports, orphan helpers, stale request wrappers, obsolete state, or comments/tests for behavior that no longer exists?
+- Was any production code kept only because tests referenced it? If yes, that is a defect; adapt the tests instead.
 - Are side effects obvious and placed in the right layer?
 - Does the control flow read clearly from top to bottom?
 - Did the change add flags, branches, or parameters that indicate a missing abstraction?

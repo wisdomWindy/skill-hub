@@ -92,6 +92,8 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - 服务端有 TypeScript 声明则优先复用
    - 非 TS 契约则保留字段名并写成 TS 可用类型
    - protobuf 需说明是复用生成类型还是由 proto 导出前端可用类型
+   - 承接 requirement-analysis / requirement-splitting 中的前端 / 服务端职责拆分，不得把服务端负责的字段生产、权限、持久化、状态流转、审计、异步任务或同步能力写成前端实现任务
+   - 前端只定义消费、展示、交互、adapter / mapper / fromDetail 归一、错误处理和状态呈现等前端职责；缺失服务端契约必须写入 clarifications 或外部接口待补
 17. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，spec 必须记录：
    - 哪个 `tsconfig` 实际 governs 当前作用域文件
    - 哪些 compiler options 会 materially 影响实现或类型理解，例如路径别名、ambient globals、JSX runtime、strictness、module resolution
@@ -113,6 +115,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
   - 与 requirement-splitting 对齐的模块边界与 source trace
   - user intent contract
   - API 与数据合同决策
+  - 前端 / 服务端职责边界承接结果
   - API contract source / type reuse / protobuf handling / adapter-boundary 决策
   - design constraints
   - frontend styling constraints
@@ -132,6 +135,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - spec 没有迫使 `plan` 自行补写原本应在 spec 中明确的产品行为。
 - 若上游已有显式字段/列/交互/状态/流程要求，spec 已完整带下。
 - 若存在 requirement-splitting 工件，当前模块 spec 已完整承接当前模块显式行为约束。
+- 若上游包含前端 / 服务端职责拆分，spec 已承接该边界，且没有把服务端职责写成前端实现任务。
 - 若存在 architecture-design 工件，当前模块 spec 已完整承接当前模块代码架构决策。
 - 若 scoped work 为 greenfield，spec 已明确脚手架或 starter 决策及允许偏离范围。
 - 用户已审批 spec。
@@ -148,6 +152,8 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 不能把行为停留在比 `plan` 所需更粗的颗粒度。
 - 不能遗漏上游已明确给出的字段、交互、状态、流程信息。
 - 不能绕过 requirement-splitting 工件重新凭印象组织模块范围。
+- 不能绕过 requirement-analysis / requirement-splitting 中确认的前端 / 服务端职责拆分。
+- 不能把服务端字段生产、权限校验、持久化、状态流转、审计、异步任务或同步职责伪装成前端可独立完成的 spec。
 - 不能把重大抽象/协作问题留给下游自己决定。
 - 不能把关键 responsibility / side-effect / duplication / readability 约束留空。
 - 不能把样式实现方式、class 值长度治理或禁止隐藏过长 class 字符串的规则留给下游自己决定。

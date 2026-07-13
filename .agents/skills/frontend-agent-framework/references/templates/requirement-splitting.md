@@ -28,6 +28,7 @@ Document what the preceding `requirement-analysis` stage fixed as upstream const
 
 - confirmed scope
 - non-goals
+- frontend / server responsibility split
 - ambiguity notes that still remain open
 - dependencies that affect module boundaries
 - any request-level routing or sequencing signal that splitting must preserve
@@ -51,6 +52,7 @@ For each module or functional unit, include:
 - whether `page-design` is required before `spec`
 - whether `architecture-design` is required before `spec`
 - downstream consumer notes for `spec` and `plan`
+- frontend-owned work, server-owned work, shared contract work, and external-interface pending items inherited from requirement analysis
 - downstream run artifact root
 
 ### `markdown normalization notes`
@@ -73,6 +75,7 @@ For every split module, explicitly list upstream details that downstream stages 
 - interaction triggers and outcomes
 - loading, empty, error, success, disabled, and visibility rules
 - workflow branches and state transitions
+- frontend / server responsibility boundary and API / DTO / permission / state contract obligations
 
 ### `module execution sequence`
 
@@ -97,6 +100,7 @@ Required sections:
 - forms, tables, displays, and interactions
 - workflow and state rules
 - dependencies and impacted neighbors
+- frontend / server responsibility boundary
 - page-design routing decision
 - downstream spec obligations
 - open questions

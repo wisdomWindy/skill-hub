@@ -15,6 +15,7 @@ Required sections:
 - installation or bootstrap record
 - fallback record
 - relevant entrypoints
+- functional chain under change
 - key symbols and modules
 - dependency and side-effect boundaries
 - impact scope
@@ -63,6 +64,18 @@ List:
 - user-facing entrypoints
 - internal execution entrypoints
 - important event or async triggers when material
+
+### `functional chain under change`
+
+Required when existing code will be modified or removed. Describe:
+
+- user-facing or internal trigger that starts the chain
+- component, hook, store, service, adapter, helper, and request-wrapper path
+- state transitions, side effects, emitted events, and downstream consumers
+- which chain links are owned by the requested change
+- neighboring feature links that must not be changed without approval
+- test files that reference the target code, recorded as adaptation targets rather than production owners
+- post-change checks needed to prove the chain has no missing or stale links
 
 ### `key symbols and modules`
 
