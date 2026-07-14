@@ -21,7 +21,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -52,7 +52,11 @@ description: Stage subskill for review. Review correctness, standards compliance
    - non-blocking issues
    - accepted risks
    - follow-up items
-5. 既看功能正确性，也看 clean-code 和 functional-programming 合规性。
+5. 既看功能正确性，也看 clean-code 和 functional-programming 合规性。逐个检查本次新增或扩大作用域的常量是否具有稳定业务语义、约束、必要快照、复杂表达式简化或真实复用价值；以下情况按 blocker 处理：
+   - 只给单次使用的显然字面量、模板片段、对象 / 数组、简单属性访问或简单表达式换名
+   - 名称只是复述值或下一步操作，移除常量后代码同样清晰且不损失正确性
+   - 为假想复用创建模块级 / 导出常量，或为已有领域常量创建同义 / 透传别名
+   - 常量作用域大于当前真实 owner 和调用方所需范围
 6. 检查引入或修改的 pattern 是否真的必要、是否与问题匹配。
 7. 依据 spec 中声明的设计约束审查实现，不做脱离工件的主观审美评审。
 8. 检查 spec 与 plan 是否保持同一 function-complete behavior granularity；若有漂移，按 blocker 处理。
@@ -95,7 +99,7 @@ description: Stage subskill for review. Review correctness, standards compliance
    - 更新 `pending_module_ids` 与 `completed_module_ids`
    - 若仍有待处理模块，则提升下一个模块并切到其首个下游阶段
    - 若无待处理模块，则切到 `stage=complete` 且令 `loop.state=complete`
-22. 若 bugfix 或非拆分请求通过 review，必须要求主 skill 设置 `state.json.stage=complete` 与 `state.json.loop.state=complete`。
+22. 若 direct-change、bugfix 或非拆分请求通过 review，必须要求主 skill 设置 `state.json.stage=complete` 与 `state.json.loop.state=complete`。
 23. 在 blocker 未清零前，不允许标记 complete。
 
 ## 输出格式
@@ -125,6 +129,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 如存在 user intent contract，已明确说明实现是否满足用户实际目标并避开 forbidden interpretations。
 - 如存在既有代码修改或移除，已明确说明操作前链路审查是否充分、操作后链路是否干净、是否存在缺环或多余环节、是否影响邻近功能。
 - 已明确说明 changed area 是否仍有 clean-code blocker。
+- 已明确说明新增或扩大作用域的常量是否均有可证明的语义、约束、快照、简化或复用价值，且无意义常量已作为 blocker 处理。
 - 如存在行为移除，已明确说明是否仍有 orphan helper、unused import、stale request wrapper、obsolete state、测试或注释残留。
 - 已明确说明测试文件是否已按需求适配；没有把测试引用当作待改或待删生产代码的真实调用方。
 - 如涉及样式变更，已明确说明 Tailwind CSS-style styling、class 值长度、禁止隐藏过长 class 字符串是否合规。
@@ -136,13 +141,14 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 已明确说明 spec 与 plan 是否保持所需行为颗粒度对齐。
 - 当前交付单元所有 blocker 都已清零，否则必须回流执行。
 - 拆分模块通过时，主 skill 必须完成模块收口状态迁移后，再推进到下一个模块或 `complete`，且保留原有 `loop`。
-- bugfix 或非拆分请求通过时，主 skill 必须设置 `stage=complete` 与 `loop.state=complete`。
+- direct-change、bugfix 或非拆分请求通过时，主 skill 必须设置 `stage=complete` 与 `loop.state=complete`。
 
 ## 安全边界
 
 - 不能把 review 压缩成一句批准语。
 - 不能因为“功能能跑”就忽略严重的可维护性问题。
 - 不能因为“函数式”就接受更难读、更难调试或隐藏副作用的实现。
+- 不能接受只给一次性显然值换名、为假想复用导出、创建同义别名或无依据扩大作用域的常量。
 - 不能接受只满足字面要求但违背用户实际目标的实现。
 - 不能接受缺少变更链路审查或链路复查证据的既有代码修改 / 移除。
 - 不能接受修改或移除后仍存在缺环、多余环节、重复路径、冲突路径或未授权邻近功能影响。

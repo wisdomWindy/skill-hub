@@ -24,7 +24,7 @@ description: Stage subskill for page design. Define page layout, visual hierarch
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -51,7 +51,7 @@ description: Stage subskill for page design. Define page layout, visual hierarch
    - 响应式考虑
    - Tailwind CSS-style utility class 约束与 class 值长度风险
 6. 设计结果必须足够稳定，使当前交付单元的 `architecture-design`（如存在）和 `spec` 能把它当作上游输入，而不是再重新发明布局决策。
-7. 拆分 PRD 工作必须以 `requirements/requirement-map.md` 和当前模块工件为页面范围来源，不得跨模块混写；bugfix 或非拆分请求以 `request.md`、`artifacts/prd-snapshot.md` 和既有 code context 为范围来源。
+7. 拆分 PRD 工作必须以 `requirements/requirement-map.md` 和当前模块工件为页面范围来源，不得跨模块混写；direct-change、bugfix 或非拆分请求以 `request.md`、`artifacts/prd-snapshot.md` 和既有 code context 为范围来源。
 8. 所有设计决策必须写入仓库工件，不保留在聊天上下文里。
 9. 保留 `state.json.loop`，不重置、不改写。
 10. 本阶段不写代码。

@@ -1,6 +1,6 @@
 ---
 name: frontend-agent-framework-plan
-description: Stage subskill for planning. Convert the approved spec into execution tasks, dependencies, and verification strategy.
+description: Stage subskill for planning. Convert the framework-approved spec into execution tasks, dependencies, and verification strategy.
 ---
 
 # Plan Subskill
@@ -8,7 +8,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
 ## 触发场景
 
 - 当主 `frontend-agent-framework` 将请求路由到 `stage=plan` 时使用。
-- 适用于把已批准 spec 转成执行任务、依赖关系、验证策略的场景。
+- 适用于把已通过 framework 自动审批的 spec 转成执行任务、依赖关系、验证策略的场景。
 
 ## 必要输入
 
@@ -22,7 +22,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -46,14 +46,14 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - `../../references/policies/testing.md`
    - `../../references/policies/typescript-context.md`
    - `../../references/policies/user-intent.md`
-2. 进入本阶段前，要求当前交付单元 spec 已审批：
+2. 进入本阶段前，要求当前交付单元 spec 已通过 framework 自动审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`
-   - bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
+   - direct-change、bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
 3. 产出：
    - 当前交付单元的 `plan/plan.md`
    - 当前交付单元的 `plan/task-board.md`
 4. 默认使用中文写计划工件。
-5. 所有任务都必须回溯到已批准 spec。
+5. 所有任务都必须回溯到已通过 framework 自动审批的 spec。
 6. 保持 spec 颗粒度：
    - `plan` 必须沿用 spec 的 function-complete behavior granularity
    - 不能用 plan 私自补产品行为
@@ -71,7 +71,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - 前后空白、连续空白、换行、粘贴内容、非法字符
    - 校验触发时机与报错时机
    若这些语义未在 spec 中定清，必须回退到 spec，不能由 plan 自行偷偷发明。
-9. 如果任何产品细节仍未知，显式写成 blocking clarification 或 approved assumption。
+9. 如果任何产品细节仍未知，显式写成 blocking clarification 或 framework-approved assumption；如果该未知项需要人工确认，不能在本阶段请求用户审批，必须回退到 `requirement-analysis`、`intake` 或 `bugfix-intake` 的前置确认 gate。
 10. 如果 PRD 明明有细节而 spec 缺失，视为 spec 质量问题，回退到 spec。
 11. 如果 requirement-splitting 已经拆出了模块与功能单元，当前模块计划只能覆盖当前模块，不得把多个模块重新压成一个黑盒计划。
 12. 对可测试行为按 TDD 导向拆任务，并在实现前定义验证路径。
@@ -83,7 +83,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - UI consumption
    - verification
 14. 如果 scoped work 为从 0 开始搭建项目、应用、包或前端业务面，计划必须把脚手架或 starter 落地拆成显式任务：
-   - 先确认并应用已批准的脚手架选择
+   - 先确认并应用 spec 中已通过 framework 自动审批的脚手架选择
    - 再拆脚手架裁剪、目录调整、依赖替换和初始化代码改造
    - 若不使用脚手架，必须把自建 bootstrap 的理由和范围写成任务约束
 15. 服务端有 TS 声明时优先复用；无 TS 声明时，保持服务端字段名并写成 TS 类型；proto 需说明复用生成类型还是从 proto 推导。
@@ -142,9 +142,9 @@ description: Stage subskill for planning. Convert the approved spec into executi
 28. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
 29. 保留 `state.json.loop`，不重置、不改写。
 30. 本阶段不写实现代码。
-31. 完成后请求用户审批，再设置审批并切到 `stage=execute`：
+31. 完成后执行 framework 自动审批检查，只有在 plan 满足 framework-approved spec、模板、政策、任务完整性、验证策略、影响面、前置确认口径和状态机门禁时，才设置审批并切到 `stage=execute`；不得请求用户审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`
-   - bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
+   - direct-change、bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
 
 ## 输出格式
 
@@ -174,7 +174,7 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - 当前交付单元 `plan/plan.md` 使用了清晰的人眼友好结构，而不是难以扫描的大段文字。
 - 每个任务都有对应流程图。
 - 当前交付单元 `plan/task-board.md` 已存在并反映执行单元。
-- 任务颗粒度与已批准 spec 保持一致，不出现产品含义漂移。
+- 任务颗粒度与已通过 framework 自动审批的 spec 保持一致，不出现产品含义漂移。
 - `execute` 无需猜测表单字段、表格列、展示字段、交互效果、loading 结束条件。
 - `execute` 无需猜测文本输入的隐式边界语义，尤其是纯空格、归一化后空值、长度计算口径、非法字符与校验触发时机。
 - 所有验收标准都已映射到执行任务和验证任务。
@@ -189,15 +189,15 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - 如涉及样式变更，计划已拆出 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的执行和验证任务。
 - 串行与可并行任务已区分。
 - 主动式 workflow 的 trigger / context / observation / handoff 已写清（如适用）。
-- 用户已审批 plan。
-- 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`；bugfix 或非拆分请求已设置 `state.json.approvals.plan_approved=true`。
+- framework 已自动审批 plan，并记录其满足 framework-approved spec、模板、政策、任务完整性、验证策略、影响面、前置确认口径和状态机门禁。
+- 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`；direct-change、bugfix 或非拆分请求已设置 `state.json.approvals.plan_approved=true`。
 - `state.json.stage=execute`，且保留原有 `loop`。
 
 ## 安全边界
 
 - 不能写代码。
 - 不能创建 spec 未授权的任务。
-- 没有用户审批时不能进入 execution。
+- 未通过 framework 自动审批检查时不能进入 execution。
 - 不能把样例计划当捷径直接套用。
 - 对可测试行为，不能把测试设计拖到实现之后。
 - 不能把明显的复杂度、重复、混责问题留成未规划状态。

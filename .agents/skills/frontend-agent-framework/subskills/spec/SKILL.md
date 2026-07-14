@@ -24,7 +24,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -71,7 +71,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - 校验触发时机（输入中 / blur / submit）
 8. 如果上游需求源已经给出字段、列、交互、状态、流程细节，这些信息必须进入 spec，不能因为 intake 摘要粗化而丢失。
 9. 如果 requirement-splitting 已经按模块拆分了内容，当前模块 spec 只能承接当前模块功能单元，不能重新合并多个模块。
-10. 如果仍有未知信息，写入当前交付单元 `spec/clarifications.md`，作为显式 clarification 或 approved assumption。
+10. 如果仍有未知信息，写入当前交付单元 `spec/clarifications.md`，作为显式 clarification 或框架可接受 assumption；如果该未知信息需要人工确认，不能在本阶段请求用户审批，必须回退到 `requirement-analysis`、`intake` 或 `bugfix-intake` 的前置确认 gate。
 11. 如果 requirement-analysis 或用户当前输入包含 user intent contract，spec 必须承接并细化：
    - literal request
    - practical goal
@@ -115,9 +115,9 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - 优先用 code graph 识别真实边界、依赖方向和 impact scope
    - 如结构理解加深，更新 `artifacts/code-context.md`
 20. 不写实现代码。
-21. 完成后请求用户审批，再设置审批并切到 `stage=plan`：
+21. 完成后执行框架自动审批检查，只有在 spec 满足模板、政策、source traceability、当前交付单元范围、已确认需求口径和状态机门禁时，才设置审批并切到 `stage=plan`；不得请求用户审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`
-   - bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
+   - direct-change、bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
 
 ## 输出格式
 
@@ -154,15 +154,15 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 若上游包含前端 / 服务端职责拆分，spec 已承接该边界，且没有把服务端职责写成前端实现任务。
 - 若存在 architecture-design 工件，当前交付单元 spec 已完整承接当前交付单元代码架构决策。
 - 若 scoped work 为 greenfield，spec 已明确脚手架或 starter 决策及允许偏离范围。
-- 用户已审批 spec。
-- 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`；bugfix 或非拆分请求已设置 `state.json.approvals.spec_approved=true`。
+- framework 已自动审批 spec，并记录其满足模板、政策、source traceability、范围、需求口径和状态机门禁。
+- 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`；direct-change、bugfix 或非拆分请求已设置 `state.json.approvals.spec_approved=true`。
 - `state.json.stage=plan`，且保留原有 `loop`。
 
 ## 安全边界
 
 - 不能写代码。
 - 不能在 spec 不存在前生成实现任务。
-- 没有用户审批时不能进入 `plan`。
+- 未通过 framework 自动审批检查时不能进入 `plan`。
 - 不能把样例 spec 的结论直接复制到新请求中。
 - 不能把行为写得含糊到需要实现阶段去猜。
 - 不能只满足用户字面表达而丢失实际目标、反例和禁止规避方式。

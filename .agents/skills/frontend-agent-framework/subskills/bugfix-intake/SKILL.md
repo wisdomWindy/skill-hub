@@ -59,8 +59,9 @@ description: Stage subskill for defect intake. Normalize a Feishu/Lark project d
 10. 只写 bugfix intake 工件，不写 `spec/spec.md`，不写代码。
 11. 在 `request.md` 中写入 bugfix 目标和初始 done signal。
 12. 归一化缺陷内容，输出为下游 `spec/plan` 可消费的标准工件。
-13. 初始化 `state.json.loop`，并把 `stage` 设为 `spec`。
-14. 对 bugfix 请求，将 `state.json.module_flow` 初始化为 `null`；本框架的模块顺序执行仅适用于 requirement-splitting 之后的 PRD 驱动请求。
+13. 本阶段是 bugfix 的人工确认前置 gate：如果 observed behavior、expected behavior、复现范围、修复目标、禁止解释、歧义内容、模糊内容或完成条件仍需用户 / 缺陷来源确认，必须停在 bugfix-intake 并记录阻塞原因；不能把确认推迟到 `spec` 或 `plan`。
+14. 初始化 `state.json.loop`，并把 `stage` 设为 `spec`。
+15. 对 bugfix 请求，将 `state.json.module_flow` 初始化为 `null`；本框架的模块顺序执行仅适用于 requirement-splitting 之后的 PRD 驱动请求。
 
 ## 输出格式
 
@@ -88,6 +89,7 @@ description: Stage subskill for defect intake. Normalize a Feishu/Lark project d
 - `artifacts/bugfix-source.md` 已完成缺陷上下文归一化。
 - 如需要结构分析，`artifacts/code-context.md` 已存在。
 - 下游标准摘要已写入 `artifacts/prd-snapshot.md`。
+- 需要人工确认的缺陷语义、修复目标、歧义 / 模糊内容或完成条件已在 bugfix-intake 阶段解决或阻塞，没有推迟到 `spec` / `plan`。
 - `state.json.stage=spec`。
 - `state.json.loop` 已按框架规定形状初始化。
 - `state.json.module_flow=null`。

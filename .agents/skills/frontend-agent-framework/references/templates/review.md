@@ -57,6 +57,8 @@ Required sections:
 
 - result (`pass` or `fail`)
 - key findings
+- findings for constants introduced or moved to a broader scope, including the domain meaning, constraint, snapshot, simplification, or real reuse that justifies each non-obvious declaration
+- unnecessary one-off aliases, speculative module or exported constants, synonym constants, and over-broad constant scope found or ruled out
 - required follow-up if failed
 
 `functional-programming assessment` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:

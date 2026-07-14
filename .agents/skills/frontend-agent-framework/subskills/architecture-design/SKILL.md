@@ -29,7 +29,7 @@ description: Stage subskill for code architecture design. Define frontend module
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -71,7 +71,7 @@ description: Stage subskill for code architecture design. Define frontend module
    - 需要使用或明确拒绝的 pattern 决策
 7. 如果是 greenfield 场景，代码架构设计必须和已批准的脚手架或 starter 决策保持一致，并明确允许的偏离范围。
 8. 设计结果必须足够稳定，使当前交付单元的 `spec` 能把它当作上游输入，而不是在 `spec` 或 `execute` 阶段重新发明模块与类型结构。
-9. 拆分 PRD 工作必须以 `requirements/requirement-map.md` 和当前模块工件为范围来源，不得跨模块混写；bugfix 或非拆分请求以 `request.md`、`artifacts/prd-snapshot.md` 和既有 code context 为范围来源。
+9. 拆分 PRD 工作必须以 `requirements/requirement-map.md` 和当前模块工件为范围来源，不得跨模块混写；direct-change、bugfix 或非拆分请求以 `request.md`、`artifacts/prd-snapshot.md` 和既有 code context 为范围来源。
 10. 如果本阶段是从 `execute` 回退而来，必须优先吸收当前交付单元 `execution/changelog.md` 与 `artifacts/code-context.md` 中记录的实际代码约束、依赖边界和失败证据，修正不合理的架构设计，而不是重复原设计。
 11. 如果既有代码结构影响较大，优先结合 `code-context.md` 或 code graph 结果确认真实依赖边界。
 12. 所有设计决策必须写入仓库工件，不保留在聊天上下文里。

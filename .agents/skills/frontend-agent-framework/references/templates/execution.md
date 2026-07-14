@@ -10,7 +10,7 @@
 Required sections:
 
 - delivery unit identifier
-- approved spec and plan references
+- framework-approved spec and plan references
 - execution summary
 - task-board updates
 - changed files and owned symbols

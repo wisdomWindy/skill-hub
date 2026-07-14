@@ -20,7 +20,7 @@ description: Stage subskill for verification. Validate the implementation agains
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -42,10 +42,10 @@ description: Stage subskill for verification. Validate the implementation agains
    - verification method
    - result
    - evidence
-4. 验证实现是否符合 approved spec，而不是 undocumented intent。
+4. 验证实现是否符合 framework-approved spec，而不是 undocumented intent。
 5. 验证 spec 与 plan 是否在实现范围内保持同一 function-complete granularity。
 6. 验证可测试行为是否被测试覆盖，若无则检查是否有明确例外说明。
-7. 如果 approved spec 包含 user intent contract，必须同时验证：
+7. 如果 framework-approved spec 包含 user intent contract，必须同时验证：
    - literal compliance
    - intent compliance
    - forbidden interpretations 未被采用
@@ -56,8 +56,8 @@ description: Stage subskill for verification. Validate the implementation agains
    - 测试文件引用待改或待删代码时，已被当作测试适配面处理，而不是生产代码保留依据
    - 没有缺少必要环节、残留多余环节、重复路径、冲突路径或未授权邻近功能影响
 9. 如果实现移除了调用、请求、分支、字段、控件或副作用，验证是否同步清理该行为独占的 import、helper、常量、类型、request wrapper、状态、测试、mock 和注释；保留 helper 时必须有真实生产调用方证据，仅测试引用不能作为保留证据。
-10. 如果 approved spec 包含 trigger/context/handoff 假设，也要验证实现是否遵守。
-11. 如涉及后端接口，验证 request/response handling 是否符合 approved backend contract source，包括：
+10. 如果 framework-approved spec 包含 trigger/context/handoff 假设，也要验证实现是否遵守。
+11. 如涉及后端接口，验证 request/response handling 是否符合 framework-approved backend contract source，包括：
    - API docs
    - protobuf contracts
    - backend-owned TypeScript declarations
@@ -130,12 +130,12 @@ description: Stage subskill for verification. Validate the implementation agains
 - 不能在没有证据时标记完成。
 - 不能忽略失败的 acceptance criteria。
 - 不能把 spec-constraint compliance 当作默认成立而不写 pass/fail。
-- 不能接受无法回溯到 approved spec 的实现行为。
+- 不能接受无法回溯到 framework-approved spec 的实现行为。
 - 不能在实现只满足字面要求但违反用户实际目标时判定验证通过。
 - 不能在缺少变更前链路审查、变更后链路复查，或仍存在缺环、多余环节、重复路径、冲突路径、未授权邻近功能影响时判定验证通过。
 - 不能在移除行为后仍有孤立 helper、unused import、stale request wrapper、obsolete state、测试或注释残留时判定验证通过。
 - 不能因为测试文件引用待改或待删生产代码就判定该生产代码仍有真实调用方；测试必须适配新需求。
 - 不能在 spec / plan 存在行为颗粒度冲突时仍判定验证通过。
-- 不能在 request/response handling 与 approved backend contract source 冲突时仍判定验证通过。
+- 不能在 request/response handling 与 framework-approved backend contract source 冲突时仍判定验证通过。
 - 不能在 authored styling 违反 Tailwind CSS-style utility class、class 值长度或禁止隐藏过长 class 字符串规则时判定验证通过。
 - 不能在存在隐藏副作用、隐藏 mutation、语义归一层级错误或不可读的过度函数式链路时判定 functional-programming compliance 通过。

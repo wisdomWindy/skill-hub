@@ -34,11 +34,13 @@ Keep the repository-local workflow in control through one default entry skill th
   `observe state -> decide next action -> dispatch one stage or gate recovery action -> observe result -> iterate`
 - Decide whether workflow-style parallel execution is justified, while keeping it separate from the lifecycle and loop.
 - Decide whether the request should remain reactive user-driven work or be framed as a proactive workflow with explicit start conditions.
-- Block stage skipping when required approvals or artifacts are missing.
+- Block stage skipping when required automatic approvals or artifacts are missing.
 - Keep request decisions, transitions, and evidence in repository artifacts instead of chat-only state.
-- Enforce specification-driven development so implementation follows approved repository artifacts instead of ad hoc coding decisions.
+- Enforce specification-driven development so implementation follows framework-approved repository artifacts instead of ad hoc coding decisions.
+- Enforce front-loaded human confirmation: needs, questions, rules, and product decisions that require a person must be handled in requirement analysis or source normalization before downstream stages proceed.
 - Enforce TDD for testable behavior changes unless the current task is explicitly non-testable and that exception is recorded.
 - Enforce clean-code discipline so shipped changes remain readable, low-surprise, and maintainable.
+- Enforce meaningful-constant discipline so constants carry domain meaning, correctness constraints, necessary snapshots, material simplification, or real reuse instead of merely renaming one-off values.
 - Enforce functional-programming discipline so business rules and data transformations prefer pure, composable, immutable code while side effects stay explicit.
 - Enforce change-chain integrity so code modification or removal is preceded by feature-flow and reference analysis, and followed by a clean-chain validation.
 - Enforce design-pattern discipline so abstractions are introduced only when they solve a real change, dependency, or behavior-selection problem.
@@ -57,6 +59,9 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - New requirement: decompose the request into the full lifecycle and start from `intake`.
 - Direct-change requirement: when the user gives a stable frontend change, cleanup, modification, or removal request without a PRD, route it through `intake`, create a request-level delivery unit, skip `requirement-analysis` and `requirement-splitting`, and enter the first required downstream stage.
 - PRD-driven requirement: after `intake`, always run `requirement-analysis` before `requirement-splitting`.
+- Human confirmation rule: for PRD-driven work, all needs, questions, rules, ambiguous content, fuzzy content, and product decisions that require human confirmation must be surfaced and resolved or explicitly classified in `requirement-analysis` before `requirement-splitting`.
+- Human confirmation rule: for direct-change and bugfix work that does not enter `requirement-analysis`, the equivalent confirmation gate is `intake` or `bugfix-intake`; unresolved human decisions, ambiguous content, and fuzzy content must be captured before entering `page-design`, `architecture-design`, `spec`, or `plan`.
+- Automatic approval rule: `spec` and `plan` are approved by framework standards, not by user approval prompts; set the approval flags only after the stage artifact satisfies the relevant template, policy, source-traceability, and gate checks.
 - Page-oriented requirement: after `requirement-splitting`, insert `page-design` before `spec` when layout, styling, or interaction structure is a material part of the request.
 - Code-architecture-sensitive requirement: after `requirement-splitting`, insert `architecture-design` before `spec` when code module design, file structure design, code relationship design, function design, data structure design, or type design is a material part of the request.
 - If a request is both page-oriented and code-architecture-sensitive, run `page-design` before `architecture-design`, then enter `spec`.
@@ -71,10 +76,13 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never let a later split module enter downstream stages while an earlier split module has not yet passed `review`.
 - Never let code-architecture-sensitive work enter `spec` without a durable `architecture-design` artifact.
 - Never enter `spec` for a PRD-driven request when any requirement-splitting module that needed Markdown normalization is missing either its raw snapshot or its Markdown-normalized snapshot.
-- Never implement before the active delivery unit's approved spec and plan artifacts exist.
+- Never allow ambiguous or fuzzy requirement content to pass into `spec` or `plan` as an implementation assumption when it affects scope, behavior, data semantics, permissions, state flow, API contract meaning, validation rules, acceptance criteria, or user intent; confirm it in the front-loaded gate first.
+- Never request user approval for `spec` or `plan`; if those stages expose a decision that truly needs a person, roll back to `requirement-analysis` or the appropriate source-normalization gate instead of pausing inside `spec` or `plan`.
+- Never implement before the active delivery unit's framework-approved spec and plan artifacts exist.
 - Never implement TypeScript-affecting code before recovering the governing `tsconfig` and the declaration or generated type sources that materially affect the scoped files.
 - Never satisfy a user request by relocating the unwanted complexity, risk, ambiguity, or responsibility elsewhere; capture the practical goal and forbidden interpretations before downstream work when intent could be gamed.
 - Never implement authored styling outside Tailwind CSS-style utility classes; never bypass overlong class values by moving them into constants, maps, computed properties, helpers, or imported variables.
+- Never introduce a constant that only renames an obvious one-off literal or simple expression, expands scope for hypothetical reuse, or aliases an existing domain constant without adding meaning.
 - Never hide mutation, I/O, navigation, analytics, cache writes, request calls, or state writes inside helpers that appear to be pure value transformations.
 - Never mutate props, backend DTOs, shared module state, function arguments, or imported constants as a shortcut for data shaping; use explicit owner updates or immutable transformations.
 - Never modify or remove existing code before reviewing the affected feature flow, file reference relationships, callers, side effects, and downstream consumers enough to understand what each touched symbol owns.
@@ -182,7 +190,7 @@ Workflow contract rules:
 The main skill runs a single explicit control loop for the request. The lifecycle stages stay the same; the loop is the control mechanism that advances or re-enters those stages.
 
 1. Observe: read `state.json`, inspect artifacts, approvals, lifecycle gates, and the active delivery unit.
-2. Decide: choose exactly one next action from `dispatch_stage`, `recover_gate`, `request_approval`, `wait_external`, or `complete`.
+2. Decide: choose exactly one next action from `dispatch_stage`, `recover_gate`, `request_frontloaded_confirmation`, `wait_external`, or `complete`.
 3. Dispatch: load only the one subskill that matches the current lifecycle stage when the action is `dispatch_stage`.
 4. Observe result: verify the stage exit criteria or the recovered gate result, then re-check the lifecycle gates.
 5. Iterate: update `state.json.loop` and begin the next decision cycle.
@@ -208,7 +216,7 @@ Workflow-style parallelization is optional horizontal scale. It is not the lifec
 Workflow rules:
 
 - Default to one active main-skill path through the lifecycle.
-- Use workflow-style parallel execution only when the approved plan identifies multiple independent work units whose cost and context split justify parallelism.
+- Use workflow-style parallel execution only when the framework-approved plan identifies multiple independent work units whose cost and context split justify parallelism.
 - Do not use workflow-style parallel execution for trivial edits, tightly coupled changes, or single-thread tasks that fit comfortably in one context.
 - When a workflow is proactive, trigger clarity matters before scale; do not parallelize a poorly scoped trigger.
 - If parallel execution is used, it must still report back into the same request artifacts, gates, and loop state.
@@ -221,7 +229,7 @@ Workflow rules:
 - Normalize direct frontend change, cleanup, modification, and removal inputs into the same request workspace structure, then run the request-level downstream lifecycle without PRD-only analysis and splitting stages.
 - For PRD-driven requirements, force a durable `requirement-analysis -> requirement-splitting` pass before any design, specification, or planning work begins.
 - Do not force direct-change requests through `requirement-analysis` or `requirement-splitting` unless the instruction expands into a PRD-like multi-module requirement that needs source-preserving decomposition.
-- Treat requirement analysis as the explicit需求理解阶段: it must fix scope, non-goals, ambiguity visibility, dependency awareness, and splitting rationale before module decomposition begins.
+- Treat requirement analysis as the explicit需求理解阶段: it must fix scope, non-goals, ambiguity visibility, fuzzy-content handling, dependency awareness, and splitting rationale before module decomposition begins.
 - Treat requirement analysis as the frontend/backend responsibility separation stage when the request depends on data, APIs, permissions, workflows, backend validation, persistence, async jobs, or cross-system behavior; it must state what frontend implements, what server must provide or change, what is shared contract work, and what blocks frontend progress.
 - Treat requirement splitting as source-preserving normalization: it must split modules and functional units without inventing behavior, implementation, or UX detail that is not grounded in the source.
 - For page-oriented requests, treat page design as a required upstream input to `spec`, not as an implementation detail.
@@ -237,19 +245,18 @@ Workflow rules:
 - For PRD-driven requirements, do not allow `spec` to start when a normalized module lacks either the raw snapshot or the Markdown-normalized snapshot; first recover the missing companion artifact and then re-check the gate.
 - For PRD-driven requirements with split modules, do not let `spec`, `plan`, `execute`, `verify`, or `review` span multiple modules at once; downstream work must stay scoped to the active module.
 - If `execute` discovers that the approved `architecture-design` is materially incompatible with actual code constraints, repository structure, dependency boundaries, function organization, or type/data-shape reality, route immediately back to `architecture-design` and continue the same workflow run through `architecture-design -> spec -> plan -> execute` without waiting for a new user prompt.
-- If `verify` fails and the failure can be addressed by implementation work defined by the approved spec and plan, route immediately back to `execute` and continue the loop without waiting for a new user prompt.
-- If `review` finds blocking issues that can be addressed by implementation work defined by the approved spec and plan, route immediately back to `execute` and continue the loop without waiting for a new user prompt.
-- If the next gate depends on user approval or an unavailable external resource, stop at that gate and report exactly what is required to continue.
+- If `verify` fails and the failure can be addressed by implementation work defined by the framework-approved spec and plan, route immediately back to `execute` and continue the loop without waiting for a new user prompt.
+- If `review` finds blocking issues that can be addressed by implementation work defined by the framework-approved spec and plan, route immediately back to `execute` and continue the loop without waiting for a new user prompt.
+- If the next gate depends on human confirmation, route to `requirement-analysis`, `intake`, or `bugfix-intake` as the front-loaded confirmation gate; only stop there when the decision cannot be recovered from sources or repository context.
 - If the next gate can be satisfied by gathering repository-local context, artifacts, or evidence, obtain that prerequisite first and then continue the lifecycle.
 - When a gate fails, first attempt loop-local recovery for missing state, missing artifacts, or missing repository evidence before declaring the request blocked.
 - Use workflow-style parallelization only as an execution-scale choice after planning, never as a replacement for lifecycle control.
 - Prefer workflows that are observable and steerable: the team must be able to inspect progress, verify evidence, and intervene before completion claims are accepted.
-- For `spec` and `plan` approval gates, prefer structured approval UI over free-text confirmation when the environment supports it.
-- In Codex environments where `request_user_input` is available, use it to present explicit approval options such as approve / reject / revise.
-- Only fall back to plain-text approval requests when structured approval UI is unavailable in the current environment.
+- For `spec` and `plan` approval gates, use framework automatic approval: validate the artifact against this skill's templates, policies, source traceability, active delivery unit scope, and state-machine gates, then set the relevant approval flag without asking the user.
+- Do not use structured approval UI or free-text confirmation for `spec` or `plan`; human confirmation belongs in requirement analysis or source normalization before downstream artifacts are authored.
 - Unless the user explicitly requests another language, request artifacts should follow the user's working language; for this repository's current workflow, `spec` / `clarifications` / `plan` / `task-board` should default to Chinese.
-- Treat the approved spec and plan as the authoritative implementation contract for all downstream stages.
-- Require the approved spec and approved plan to stay aligned at the same function-complete behavior granularity for the scoped work; if one artifact is materially coarser, finer, or contradictory, route back to repair the artifacts before downstream execution continues.
+- Treat the framework-approved spec and plan as the authoritative implementation contract for all downstream stages.
+- Require the framework-approved spec and framework-approved plan to stay aligned at the same function-complete behavior granularity for the scoped work; if one artifact is materially coarser, finer, or contradictory, route back to repair the artifacts before downstream execution continues.
 - Require `plan/plan.md` to reach function-complete task decomposition for scoped work so downstream execution does not infer missing fields, columns, interactions, states, or flow steps ad hoc.
 - Require downstream `requirement-splitting`, `spec`, and `plan` to preserve the frontend/backend responsibility split fixed during requirement analysis; frontend implementation may consume contracts and adapters, but must not silently implement server-owned persistence, validation, permission, workflow, or data-production responsibilities.
 - Use the active delivery unit artifact root consistently:
@@ -258,7 +265,7 @@ Workflow rules:
 - For existing-code modification or removal, require the plan and execution record to identify the affected feature chain, involved files, symbol reference relationships, callers, side effects, and downstream consumers before editing; after editing, verification and review must confirm the chain is still coherent, with no missing required step and no stale extra step.
 - For modification or removal decisions, treat test-only references to the target code as empty references for ownership and retention decisions; the tests are part of the adaptation surface and must be updated, replaced, or removed according to the approved behavior.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, require the scaffold or starter decision to be made in repository artifacts before implementation; when a suitable project-type scaffold exists, treat it as the default starting point unless the artifacts record why it is unsuitable or unavailable.
-- Do not let execution, verification, or review invent behavior that is not justified by the approved spec and plan.
+- Do not let execution, verification, or review invent behavior that is not justified by the framework-approved spec and plan.
 - Do not let execution, verification, or review satisfy only the literal words of a request while violating the user's practical goal or using a forbidden interpretation recorded upstream.
 - For behavior that can be covered by tests, plan and execute the work using a red -> green -> refactor loop.
 - Apply `references/policies/clean-code.md` as a durable rule set for naming, responsibility boundaries, duplication control, side-effect containment, and maintainability judgment.
@@ -319,6 +326,7 @@ For split PRD-driven requests after `requirement-splitting`, `state.json` must a
 
 For direct-change, bugfix, and other non-split requests, `module_flow` remains `null`.
 Use top-level `approvals.spec_approved` and `approvals.plan_approved` for non-split approval gates.
+Approval fields are framework-owned automatic gates, not user-approval prompts.
 When a non-split request passes `review` without blockers, set `stage=complete` and `loop.state=complete`.
 
 ## Active Delivery Unit Artifact Roots
@@ -343,6 +351,7 @@ Path mapping:
 
 For split PRD-driven work, approvals live under `state.json.module_flow.modules.<module-id>.approvals`.
 For direct-change, bugfix, and other non-split work, approvals live under top-level `state.json.approvals`.
+In both scopes, approvals record that the framework accepted `spec` or `plan` against its standards; they do not mean a person approved the artifact at that stage.
 
 ## Sequential Stage Execution
 
@@ -418,7 +427,7 @@ Load only what is needed:
 - Never code before the request workspace exists.
 - Never let a PRD-driven request enter `requirement-splitting` without a requirement-analysis artifact that fixes scope, non-goals, visible ambiguities, and splitting rationale.
 - Never let a PRD-driven request enter `requirement-splitting` when frontend-owned work, server-owned work, shared API/DTO contract work, external-interface pending work, and blocker ownership are materially relevant but not separated in `analysis/requirement-analysis.md`.
-- Never implement before the active delivery unit's approved spec and plan exist.
+- Never implement before the active delivery unit's framework-approved spec and plan exist.
 - Never let a stage read or write split-module artifacts for a non-split request, or request-level downstream artifacts for a split module.
 - Never let page-oriented work enter `spec` without a page design artifact when layout, styling, or interaction structure is a material requirement.
 - Never let code-architecture-sensitive work enter `spec` without an architecture design artifact when module boundaries, file structure, code relationships, function structure, data structures, or type strategy materially affect the solution shape.
@@ -429,9 +438,9 @@ Load only what is needed:
 - When requirements change, update request artifacts first and roll the stage back to `spec` or `plan`.
 - Do not bypass the local workflow by jumping straight to code.
 - When a gate fails, resolve the missing prerequisite first instead of forcing stage progression.
-- Mark the request `blocked` only when the gate depends on user approval or an unavailable external system, credential, or resource after internal recovery was attempted.
+- Mark the request `blocked` only when a front-loaded human confirmation gate, unavailable external system, credential, or resource remains unresolved after internal recovery was attempted.
 - When marking the request `blocked`, `loop.pending_gate` must name the blocking gate and `loop.state` must be `blocked`.
-- Stop only at real blocking gates such as required approval, missing upstream requirement information, or unavailable external dependency needed for the next stage.
+- Stop only at real blocking gates such as unresolved front-loaded confirmation, missing upstream requirement information, or unavailable external dependency needed for the next stage.
 - Never implement behavior that is not defined, clarified, or accepted in the repository spec artifacts.
 - Never treat wording-only compliance as sufficient when the request's practical goal is to reduce complexity, risk, ambiguity, duplication, or review cost.
 - Never treat removal of a call or request as complete until the behavior-owned dependency closure has been checked and cleaned: imports, helpers, constants, types, request wrappers, state, tests, mocks, and comments.
@@ -440,12 +449,12 @@ Load only what is needed:
 - Never implement authored styling with scoped CSS, CSS modules, Sass/Less, inline style objects, or non-utility semantic class names.
 - Never accept overlong `class`, `className`, or class-binding values, and never hide them in constants, maps, computed properties, helper functions, or imported variables to make markup appear shorter.
 - Never guess a TypeScript target file's active compiler context, path aliases, visible ambient declarations, or generated contract types when the scoped work depends on them; recover that context first.
-- Never hand-roll a greenfield project bootstrap when a suitable project-type scaffold or starter is available unless the approved spec or plan explicitly records why scaffold reuse is unsuitable or unavailable.
+- Never hand-roll a greenfield project bootstrap when a suitable project-type scaffold or starter is available unless the framework-approved spec or plan explicitly records why scaffold reuse is unsuitable or unavailable.
 - Never continue `execute` on top of an already-known-invalid `architecture-design` artifact; route back and repair the design first.
 - Never skip test-first execution for testable behavior changes unless the reason is explicitly recorded in repository artifacts.
 - Never allow materially misleading names, hidden side effects, duplicate business rules, or mixed-responsibility structures to pass review as if they were style-only concerns.
 - Never allow hidden mutation, hidden side effects, duplicated derived state, or mutation-based data shaping to pass review when a clear pure transformation or explicit owner update would preserve behavior and improve safety.
-- Never introduce pattern layers, factories, managers, handlers, or indirection objects without a concrete problem statement in the approved spec or plan.
+- Never introduce pattern layers, factories, managers, handlers, or indirection objects without a concrete problem statement in the framework-approved spec or plan.
 - Never treat maintainability, boundary, side-effect, or pattern choices as purely downstream concerns when they materially affect the shape of the solution; record them in the spec first.
 - Never skip code-context recovery for an existing-code request that clearly depends on dependency structure, impact scope, or ownership boundaries; use code graph when available and fall back explicitly when not.
 - Never hide the workflow's starting conditions, context sources, or human handoff path in chat-only instructions.
@@ -503,7 +512,7 @@ Stage actions belong only to subskills.
 Treat a request as complete only after all of the following are true:
 
 - the goal contract is satisfied by observable results
-- implementation matches the approved plan
+- implementation matches the framework-approved plan
 - verification evidence exists for acceptance criteria
 - the required verification artifact explicitly records `spec constraint compliance: pass`
 - when applicable, the required verification artifact explicitly records `user intent compliance: pass`

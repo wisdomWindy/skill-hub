@@ -21,6 +21,7 @@ Required sections:
 - implicit requirements and hidden assumptions
 - workflow and dependency assessment
 - ambiguity and clarification register
+- human confirmation decisions
 - risk and constraint assessment
 - blocker classification and handling stance
 - confirmation-reduction notes
@@ -30,6 +31,7 @@ Required sections:
 The artifact must be written as a developer-facing requirement refinement, not a source summary.
 It should preserve enough field, state, workflow, permission, dependency, failure, and risk detail that downstream developers can draft `spec` with fewer product follow-up questions.
 Reducing follow-up questions means exposing hidden or unclear points concretely; it does not mean deleting uncertain content.
+Human confirmation must be front-loaded here: downstream `spec` and `plan` approval is automatic framework approval, so needs, questions, rules, ambiguous content, fuzzy content, and product decisions that require a person must be resolved, blocked, or explicitly classified before leaving requirement analysis.
 
 ### `user intent contract`
 
@@ -166,11 +168,37 @@ Document:
 - source contradictions
 - missing decisions
 - unclear boundaries
+- ambiguous wording or behavior with more than one plausible interpretation
+- fuzzy requirements that lack measurable standards, concrete scope, or acceptance criteria
 - questions that must remain visible to downstream stages
 
 Do not guess missing business semantics just to make the analysis read cleanly.
 Do not remove ambiguous content to make the artifact look more certain.
-Every ambiguity should include why it matters to development and which downstream module or artifact must carry it.
+Every ambiguity or fuzzy item should include why it matters to development, what decision is missing, who should confirm it, and whether it blocks downstream automatic `spec` / `plan` approval.
+If ambiguous or fuzzy content affects scope, core behavior, data semantics, permissions, state flow, frontend/server responsibility, API contract meaning, validation rules, acceptance criteria, or user intent, it requires human confirmation and blocks leaving requirement analysis until resolved or explicitly classified.
+
+### `human confirmation decisions`
+
+Document every need, question, rule, ambiguous content, fuzzy content, or product decision that would otherwise require human confirmation after requirement analysis.
+
+For each item, record:
+
+- item
+- ambiguity / fuzziness type when applicable
+- possible interpretations or missing measurable standard when applicable
+- why it requires or does not require human confirmation
+- confirmation owner when applicable
+- resolved decision, blocking status, or non-blocking rationale
+- downstream artifact that must carry the decision
+- whether the item permits downstream automatic `spec` / `plan` approval
+
+Rules:
+
+- If the item affects scope, core behavior, data semantics, permissions, state flow, frontend/server responsibility, API contract meaning, validation rules, acceptance criteria, or user intent and is unresolved, it blocks leaving requirement analysis.
+- Ambiguous or fuzzy content cannot be downgraded to a non-blocking item unless the artifact explains why every plausible interpretation would produce the same downstream spec, plan, implementation, and verification result.
+- If the item is external-interface detail but requirement meaning is stable, classify it as `外部接口待补` and state the adapter / mock / config / DTO boundary that permits downstream work.
+- If the item is non-blocking, explain why it does not affect downstream automatic approval.
+- Do not defer human confirmation to `spec` or `plan` approval prompts.
 
 ### `risk and constraint assessment`
 
@@ -209,6 +237,7 @@ Document how this analysis reduces product follow-up during development:
 - concrete hidden questions that have been surfaced instead of left implicit
 - areas where developers can proceed using a stated adapter / config / DTO boundary
 - areas where developers must stop for product or external-system confirmation
+- confirmation decisions that make downstream automatic `spec` and `plan` approval safe
 - frontend-owned versus server-owned work that downstream stages must not merge or silently swap
 - source-backed risk checks that must become acceptance or regression coverage later
 

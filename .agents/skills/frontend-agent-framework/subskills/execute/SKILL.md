@@ -1,6 +1,6 @@
 ---
 name: frontend-agent-framework-execute
-description: Stage subskill for execution. Implement only approved tasks and keep execution records aligned with the plan.
+description: Stage subskill for execution. Implement only framework-approved tasks and keep execution records aligned with the plan.
 ---
 
 # Execute Subskill
@@ -8,7 +8,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 ## 触发场景
 
 - 当主 `frontend-agent-framework` 将请求路由到 `stage=execute` 时使用。
-- 适用于按已批准 spec 和 plan 落地代码实现的阶段。
+- 适用于按已通过 framework 自动审批的 spec 和 plan 落地代码实现的阶段。
 
 ## 必要输入
 
@@ -22,7 +22,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 当前交付单元路径规则：
 
 - 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
-- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+- direct-change、bugfix 或非拆分请求：`docs/requests/<request-id>/`
 
 ## 执行步骤
 
@@ -47,10 +47,10 @@ description: Stage subskill for execution. Implement only approved tasks and kee
    - `../../references/policies/testing.md`
    - `../../references/policies/typescript-context.md`
    - `../../references/policies/user-intent.md`
-2. 执行前要求当前交付单元 plan 已审批：
+2. 执行前要求当前交付单元 plan 已通过 framework 自动审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`
-   - bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
-3. 仅实现已批准任务。
+   - direct-change、bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
+3. 仅实现已通过 framework 自动审批的任务。
 4. 把 spec 与 plan 视为唯一实现合同。
 5. 如果 plan 缺少关键字段、列、交互、状态或 loading 结束条件，停止执行并回退到 `plan`。
 6. 如果 spec 与 plan 在行为颗粒度或产品含义上冲突，停止执行并回退修复工件。
@@ -79,7 +79,11 @@ description: Stage subskill for execution. Implement only approved tasks and kee
    - 先写失败测试
    - 再写最小通过实现
    - 最后重构并保持测试通过
-12. 实现过程中应用 clean-code、functional-programming 规则和已批准的 pattern 决策。
+12. 实现过程中应用 clean-code、functional-programming 规则和已批准的 pattern 决策。声明常量时必须先确认它至少承载稳定业务语义、集中规则或配置、必要快照、复杂表达式简化或真实复用之一：
+   - 单次使用且显而易见的字符串、数字、布尔值、模板片段、对象 / 数组字面量、简单属性访问或简单表达式应保持内联，不能声明一个只复述值或下一步操作的常量
+   - 不得为了假想复用创建模块级或导出常量，也不得给已有领域常量再声明同义或透传别名
+   - 仅当前函数或组件拥有的值优先保持局部；只有存在真实跨作用域 owner 或调用方时才扩大常量作用域
+   - 为避免重复或昂贵求值、固定非确定性 / 有状态读取的一次结果、支持类型收窄或显著改善多步控制流而声明的局部 `const` 可以保留
 13. 对业务规则、校验、筛选排序、payload 构造、状态派生、adapter / mapper / `fromDetail` 转换，优先实现为可测试的纯函数或纯转换步骤：
    - 不直接 mutate props、backend DTO、共享 store snapshot、函数参数或导入常量
    - 请求、导航、写状态、缓存、埋点等副作用只能放在明确 command / action / request / lifecycle 边界
@@ -102,7 +106,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
    - 类型设计
 17. 发生上述回退时，先把触发证据和实际约束写入当前交付单元 `execution/changelog.md` 与 `artifacts/code-context.md`，再由主 workflow 继续 `architecture-design -> spec -> plan -> execute` 循环，直到架构设计稳定。
 18. 如果 scoped work 为从 0 开始搭建项目、应用、包或前端业务面：
-   - 先按已批准 spec / plan 确认脚手架或 starter 选择
+   - 先按已通过 framework 自动审批的 spec / plan 确认脚手架或 starter 选择
    - 有合适脚手架时，优先基于该脚手架落地，而不是手写 bootstrap
    - 只有在 spec / plan 已明确记录脚手架不可用、不适配或改造成本不合理时，才允许自建初始化结构
    - 对脚手架的裁剪、替换和偏离必须受已批准工件约束，不能在执行时临时发明
@@ -149,7 +153,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 
 ## 验收标准
 
-- 已批准的实现任务已完成。
+- 已通过 framework 自动审批的实现任务已完成。
 - 如存在 user intent contract，执行结果同时满足 literal request 与 practical goal，且没有采用 forbidden interpretations。
 - 如果修改或移除了既有代码，已审查完整功能链路、文件引用关系、调用方、副作用与影响面，并在操作后复查链路正常、无缺环、无多余环节。
 - 如果任务移除了行为，已清理该行为独占的 import、helper、常量、类型、请求封装、状态、测试、mock 和注释；保留项都有真实生产调用方。
@@ -160,6 +164,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 - 若执行期曾发现架构设计与实际代码约束冲突，已留下可驱动 `architecture-design` 修正的证据。
 - 若 scoped work 为 greenfield，执行已按批准工件优先采用对应脚手架或已记录拒绝理由。
 - 如涉及样式变更，执行结果遵守 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的约束。
+- 新增常量均能说明其业务语义、约束、必要快照、可读性收益或真实复用价值；不存在只给一次性显然值换名的无意义常量。
 - 改动区域可读性仍然达标，必要的 clean-code 重构已完成或显式记录。
 - 引入的 pattern 仍能回溯到已批准问题陈述。
 - 当前交付单元 `plan/task-board.md` 已反映完成状态。
@@ -189,6 +194,7 @@ description: Stage subskill for execution. Implement only approved tasks and kee
 - 对可测试行为，不能无说明地跳过 TDD。
 - 不能把 spec / plan 当作可选参考。
 - 不能在已触碰区域保留明显误导命名、隐藏副作用、重复业务规则而不处理。
+- 不能声明只复述单次使用字面量、简单属性访问或简单表达式的无意义常量，也不能以假想复用为由扩大常量作用域或导出常量。
 - 不能在纯 helper 中隐藏请求、状态写入、导航、缓存、埋点或其他副作用。
 - 不能通过 mutate props、backend DTO、共享 store snapshot、函数参数或导入常量来完成数据转换。
 - 不能把本应属于 adapter / mapper / `fromDetail` 的数据语义归一挪到 computed、watch 或模板兜底中。

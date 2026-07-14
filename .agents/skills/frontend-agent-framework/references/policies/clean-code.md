@@ -22,6 +22,7 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - Blocking: post-change chain validation finds a missing required step, orphan reference, stale caller, obsolete side effect, or extra code path that no longer has a real owner.
 - Blocking: deleted behavior that leaves unused imports, dead helpers, orphan request wrappers, stale constants, obsolete computed/watch state, or comments/tests that describe behavior no longer present.
 - Blocking: production code retained solely because test files still import or reference it after the approved behavior requires that code to change or be removed.
+- Blocking: newly introduced constants that add indirection without carrying domain meaning, enforcing a constraint, preserving a required snapshot, materially simplifying a complex expression, or serving real reuse.
 - Non-blocking: local naming improvements, light extraction opportunities, optional polish, or cleanup that improves clarity but is not required for safe delivery.
 
 ## Principles
@@ -115,6 +116,16 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - After editing, re-run a chain check across changed files and directly related helper modules to prove the remaining flow is coherent end to end.
 - The final chain must be clean: no missing required step, no stale unused step, no duplicate replacement path, no orphan helper, no stale import, no obsolete state, no hidden side effect, and no unreviewed impact on neighboring features.
 
+### 13. Constants Must Earn Their Indirection
+
+- Declare a constant only when its name carries stable domain meaning, centralizes a rule or configuration value, preserves an intentionally shared or time-sensitive snapshot, improves a genuinely complex expression, or serves multiple real uses.
+- Keep an obvious single-use literal or expression inline when extracting it would only make the reader jump to another name and location.
+- Do not extract one-off strings, numbers, booleans, template fragments, object or array literals, simple property access, or a trivial expression into a constant whose name merely restates the value or the next operation.
+- Do not create module-level or exported constants for hypothetical reuse. Their scope must match current ownership and current callers; prefer a local binding when only one function or component owns the value.
+- Reuse an existing domain constant when it represents the same rule. Do not create a synonym constant or a pass-through alias solely to avoid using the existing name directly.
+- Local `const` bindings remain appropriate when they capture a meaningful intermediate result, avoid repeated or expensive evaluation, preserve one evaluation of a non-deterministic or stateful read, enable type narrowing, or make multi-step control flow materially clearer.
+- Judge the declaration by whether removing it would lose meaning, correctness, or real duplication control. If removal only eliminates a name and leaves equally readable code, keep the value inline.
+
 ## Review Triggers
 
 Treat the following as explicit clean-code review checks:
@@ -127,11 +138,13 @@ Treat the following as explicit clean-code review checks:
 - Was any production code kept only because tests referenced it? If yes, that is a defect; adapt the tests instead.
 - Are side effects obvious and placed in the right layer?
 - Does the control flow read clearly from top to bottom?
+- Does every new constant provide domain meaning, a correctness constraint, a necessary snapshot, meaningful simplification, or real reuse instead of merely renaming a one-off value?
 - Did the change add flags, branches, or parameters that indicate a missing abstraction?
 - Did the change improve or degrade the immediate area it touched?
 
 ## Non-Goals
 
 - This policy does not define whitespace, lint, or formatter preferences.
+- This policy does not ban `const` or require repeated evaluation; it rejects declarations whose only effect is unnecessary indirection.
 - This policy does not require refactoring unrelated files for aesthetic consistency.
 - This policy does not justify bypassing the approved spec, plan, or verification flow.

@@ -67,6 +67,12 @@ Before `requirement-analysis` finishes, no requirement-analysis artifact is assu
 Before `requirement-splitting` finishes, `module_flow` may be `null`.
 After `requirement-splitting` finishes for a PRD-driven request, `module_flow` becomes required.
 For direct-change, bugfix, and other non-split requests, keep `module_flow=null` and use top-level `approvals.spec_approved` and `approvals.plan_approved`.
+Approval fields are automatic framework gates:
+
+- `spec_approved=true` means the framework accepted the active delivery unit's spec against templates, policies, source traceability, scope alignment, and state-machine gates.
+- `plan_approved=true` means the framework accepted the active delivery unit's plan against the framework-approved spec, templates, policies, task completeness, verification strategy, and state-machine gates.
+- `spec` and `plan` stages must not use user approval prompts to set these flags.
+- Human-confirmed needs, questions, rules, and product decisions must be resolved or blocked in `requirement-analysis`, `intake`, or `bugfix-intake` before downstream authoring.
 
 Loop field rules:
 
@@ -113,7 +119,7 @@ Rules:
 - `completed_module_ids` stores only modules that already passed `review`
 - `modules.<module-id>.status` only allows `pending`, `in_progress`, `blocked`, or `completed`
 - `modules.<module-id>.page_design_required` and `modules.<module-id>.architecture_design_required` drive downstream stage routing for that module
-- `modules.<module-id>.approvals.spec_approved` and `modules.<module-id>.approvals.plan_approved` are scoped to that module only
+- `modules.<module-id>.approvals.spec_approved` and `modules.<module-id>.approvals.plan_approved` are scoped to that module only and are set by framework automatic approval, not by user approval at `spec` or `plan`
 - after a module passes `review`, set its status to `completed` before advancing queue state
 - when pending modules remain after that transition, the next promoted module must be marked `in_progress`
 - when no pending modules remain, set `current_module_id=null`, `stage=complete`, and `loop.state=complete`
@@ -136,7 +142,7 @@ For direct-change, bugfix, and other non-split requests:
   - `execution/changelog.md`
   - `verification/verification.md`
   - `review/review.md`
-- approval gates use top-level `approvals.spec_approved` and `approvals.plan_approved`
+- approval gates use top-level `approvals.spec_approved` and `approvals.plan_approved`, set by framework automatic approval
 - after request-level `review` passes, set `stage=complete` and `loop.state=complete`
 
 ## `artifacts/prd-snapshot.md`

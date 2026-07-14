@@ -33,8 +33,8 @@ For direct-change, bugfix, and other non-split requests, stages after intake app
 - architecture design artifact for the active delivery unit before `spec` when that delivery unit is code-architecture-sensitive
 - requirement-splitting artifacts before `page-design`, `architecture-design`, or `spec` for PRD-driven requests
 - raw snapshot plus Markdown-normalized snapshot before `spec` for every requirement-splitting module that required Markdown normalization
-- approved active-delivery-unit spec before `plan`
-- approved active-delivery-unit plan before `execute`
+- framework-approved active-delivery-unit spec before `plan`
+- framework-approved active-delivery-unit plan before `execute`
 - active-delivery-unit execution artifact before `verify`
 - active-delivery-unit verification artifact before `review`
 - active-delivery-unit review artifact with no blockers before advancing to the next module or `complete`
@@ -51,10 +51,10 @@ For direct-change, bugfix, and other non-split requests, stages after intake app
 | Current split module passes `review` and no pending split modules remain | complete | mark the current module completed, clear `current_module_id`, set `stage=complete`, and set `loop.state=complete` |
 | Non-split request passes `review` | complete | set `stage=complete` and set `loop.state=complete` |
 | Gate missing but recoverable from repository state, artifacts, or evidence | recover gate | stay in the same lifecycle position, repair the prerequisite, then re-check the gate |
-| Gate missing and depends on user approval or external resource | block | set `loop.state=blocked`, set `loop.pending_gate`, wait for recovery |
+| Gate missing and depends on human confirmation or external resource | front-load or block | route to `requirement-analysis`, `intake`, or `bugfix-intake` when the confirmation belongs upstream; set `loop.state=blocked` only when that front-loaded gate cannot be recovered |
 | Execute discovers architecture-design is materially incompatible with actual code constraints or repository reality | re-enter architecture-design | route to `architecture-design`, then continue the same lifecycle run |
-| Verification fails but implementation can continue under the approved plan | re-enter execute | route to `execute` immediately and continue the loop |
-| Review finds blockers but implementation can continue under the approved plan | re-enter execute | route to `execute` immediately and continue the loop |
+| Verification fails but implementation can continue under the framework-approved plan | re-enter execute | route to `execute` immediately and continue the loop |
+| Review finds blockers but implementation can continue under the framework-approved plan | re-enter execute | route to `execute` immediately and continue the loop |
 | Request reaches completion conditions | complete | set `stage=complete` and `loop.state=complete` |
 
 ## Goal and Workflow Constraints
@@ -65,6 +65,7 @@ For direct-change, bugfix, and other non-split requests, stages after intake app
 - Loop iterations do not themselves prove completion.
 - Workflow-style parallel execution does not create additional lifecycle states or bypass gates.
 - A proactive workflow must declare its trigger, minimum context, and handoff path before the team treats it as reliable automation.
+- `spec_approved` and `plan_approved` are automatic framework-approval flags. They must be set by the relevant stage after artifact quality, source traceability, scope alignment, and policy checks pass, not by user approval prompts in `spec` or `plan`.
 
 ## Re-entry Rules
 
