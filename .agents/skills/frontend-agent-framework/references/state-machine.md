@@ -2,7 +2,9 @@
 
 The lifecycle stage is the delivery state. The loop is the control mechanism that decides how the workflow advances, recovers gates, or re-enters a prior stage.
 The goal contract defines completion. Workflow-style parallelization, when used, only affects execution scale and does not add new states.
+The active delivery unit is either the active split module or the request itself.
 For PRD-driven requests that finished `requirement-splitting`, stages after splitting apply to the active split module identified by `state.json.module_flow.current_module_id`.
+For direct-change, bugfix, and other non-split requests, stages after intake apply to the request-level delivery unit and use request-level downstream artifact paths.
 
 ## Stages
 
@@ -27,14 +29,15 @@ For PRD-driven requests that finished `requirement-splitting`, stages after spli
 ## Required Gates
 
 - requirement-analysis artifact before `requirement-splitting` for PRD-driven requests
-- page design artifact for the active module before `spec` when that module is page-oriented
-- architecture design artifact for the active module before `spec` when that module is code-architecture-sensitive
+- page design artifact for the active delivery unit before `spec` when that delivery unit is page-oriented
+- architecture design artifact for the active delivery unit before `spec` when that delivery unit is code-architecture-sensitive
 - requirement-splitting artifacts before `page-design`, `architecture-design`, or `spec` for PRD-driven requests
 - raw snapshot plus Markdown-normalized snapshot before `spec` for every requirement-splitting module that required Markdown normalization
-- approved active-module spec before `plan`
-- approved active-module plan before `execute`
-- active-module verification artifact before `review`
-- active-module review artifact with no blockers before advancing to the next module or `complete`
+- approved active-delivery-unit spec before `plan`
+- approved active-delivery-unit plan before `execute`
+- active-delivery-unit execution artifact before `verify`
+- active-delivery-unit verification artifact before `review`
+- active-delivery-unit review artifact with no blockers before advancing to the next module or `complete`
 
 ## Loop Decision Table
 
@@ -46,6 +49,7 @@ For PRD-driven requests that finished `requirement-splitting`, stages after spli
 | PRD-driven request has a normalized module missing either raw or normalized companion snapshot | recover gate | stay before `spec`, restore the missing companion artifact, then re-check the gate |
 | Current split module passes `review` and pending split modules remain | advance stage | mark the current module completed, update module queues, promote the next pending module to `current_module_id`, and enter its first required downstream stage |
 | Current split module passes `review` and no pending split modules remain | complete | mark the current module completed, clear `current_module_id`, set `stage=complete`, and set `loop.state=complete` |
+| Non-split request passes `review` | complete | set `stage=complete` and set `loop.state=complete` |
 | Gate missing but recoverable from repository state, artifacts, or evidence | recover gate | stay in the same lifecycle position, repair the prerequisite, then re-check the gate |
 | Gate missing and depends on user approval or external resource | block | set `loop.state=blocked`, set `loop.pending_gate`, wait for recovery |
 | Execute discovers architecture-design is materially incompatible with actual code constraints or repository reality | re-enter architecture-design | route to `architecture-design`, then continue the same lifecycle run |
@@ -57,6 +61,7 @@ For PRD-driven requests that finished `requirement-splitting`, stages after spli
 
 - The request may reach `complete` only when the goal contract is satisfied and verified.
 - For split PRD-driven requests, `complete` additionally requires that every module listed in `state.json.module_flow.modules` has completed `review` successfully.
+- For direct-change, bugfix, and other non-split requests, `complete` requires request-level `review` to pass with no blockers.
 - Loop iterations do not themselves prove completion.
 - Workflow-style parallel execution does not create additional lifecycle states or bypass gates.
 - A proactive workflow must declare its trigger, minimum context, and handoff path before the team treats it as reliable automation.
@@ -83,3 +88,20 @@ For PRD-driven requests that finished `requirement-splitting`, stages after spli
 - `execute -> architecture-design -> spec -> plan -> execute` repeats until architecture design is stable against actual code constraints or a real blocking gate is reached
 - `execute -> verify -> execute -> verify` repeats until verification passes or a real blocking gate is reached
 - These rollback paths are same-run loop continuations unless a real blocking gate requires waiting.
+
+## Artifact Roots
+
+- Split PRD-driven active module: `docs/requests/<request-id>/module-runs/<module-id>/`
+- Direct-change, bugfix, or non-split active delivery unit: `docs/requests/<request-id>/`
+
+Downstream relative paths are the same under either root:
+
+- `design/page-design.md`
+- `design/architecture-design.md`
+- `spec/spec.md`
+- `spec/clarifications.md`
+- `plan/plan.md`
+- `plan/task-board.md`
+- `execution/changelog.md`
+- `verification/verification.md`
+- `review/review.md`

@@ -4,7 +4,7 @@
 
 - `docs/requests/<request-id>/request.md`
 - `docs/requests/<request-id>/state.json`
-- `docs/requests/<request-id>/artifacts/prd-snapshot.md`
+- `docs/requests/<request-id>/artifacts/prd-snapshot.md` as the normalized source snapshot for PRD-driven, direct-change, and bugfix work
 - `docs/requests/<request-id>/analysis/requirement-analysis.md` for PRD-driven requests after requirement analysis
 - `docs/requests/<request-id>/requirements/requirement-map.md` for PRD-driven requests after requirement splitting
 
@@ -13,7 +13,7 @@
 Required sections:
 
 - request identifier
-- source link
+- source link or direct user instruction reference
 - business summary
 - goal statement
 - initial done signal
@@ -45,7 +45,10 @@ Required shape:
   "stage": "requirement-analysis",
   "status": "in_progress",
   "artifacts": {},
-  "approvals": {},
+  "approvals": {
+    "spec_approved": false,
+    "plan_approved": false
+  },
   "module_flow": null,
   "loop": {
     "iteration": 1,
@@ -58,10 +61,12 @@ Required shape:
 ```
 
 For PRD-driven requests, initialize `stage` to `requirement-analysis`.
+For direct-change requests normalized through `intake`, initialize `stage` to the first request-level downstream stage: `page-design` when page design is required, `architecture-design` when code architecture design is required, otherwise `spec`.
 For bugfix requests normalized through `bugfix-intake`, initialize `stage` to `spec` unless the main skill explicitly routes the defect through requirement splitting.
 Before `requirement-analysis` finishes, no requirement-analysis artifact is assumed.
 Before `requirement-splitting` finishes, `module_flow` may be `null`.
 After `requirement-splitting` finishes for a PRD-driven request, `module_flow` becomes required.
+For direct-change, bugfix, and other non-split requests, keep `module_flow=null` and use top-level `approvals.spec_approved` and `approvals.plan_approved`.
 
 Loop field rules:
 
@@ -71,7 +76,7 @@ Loop field rules:
 - `state` only allows `running`, `blocked`, or `complete`
 - `last_completed_stage` stores the most recent fully completed lifecycle stage, or `null`
 - `pending_gate` stores the active blocking gate name, or `null`
-- `reentry_reason` only allows `new_request`, `resume_request`, `gate_recovery`, `requirement_changed`, `verification_failed`, `review_blocked`, or `manual_reopen`
+- `reentry_reason` only allows `new_request`, `resume_request`, `gate_recovery`, `architecture_design_invalidated`, `requirement_changed`, `verification_failed`, `review_blocked`, or `manual_reopen`
 - `loop.state=complete` requires `stage=complete`
 - `loop.state=blocked` is only for real external blocking gates after internal recovery was attempted
 
@@ -115,7 +120,28 @@ Rules:
 - do not move to the next module until the current module has completed `review` without blockers
 - if module boundaries change materially, regenerate `module_flow` through `requirement-splitting`
 
+### Non-split delivery unit
+
+For direct-change, bugfix, and other non-split requests:
+
+- `module_flow` remains `null`
+- direct-change requests must record why PRD-only requirement analysis and requirement splitting are not needed
+- downstream artifacts use request-level paths:
+  - `design/page-design.md`
+  - `design/architecture-design.md`
+  - `spec/spec.md`
+  - `spec/clarifications.md`
+  - `plan/plan.md`
+  - `plan/task-board.md`
+  - `execution/changelog.md`
+  - `verification/verification.md`
+  - `review/review.md`
+- approval gates use top-level `approvals.spec_approved` and `approvals.plan_approved`
+- after request-level `review` passes, set `stage=complete` and `loop.state=complete`
+
 ## `artifacts/prd-snapshot.md`
+
+For direct-change requests, this artifact is still named `prd-snapshot.md` for compatibility, but it acts as a normalized source snapshot of the user's direct instruction and repository context.
 
 Required sections:
 
@@ -125,7 +151,7 @@ Required sections:
 - forms, tables, displays, and interactions extracted from source
 - workflow and state rules extracted from source
 - relevant modules or pages
-- notable open questions from the upstream PRD
+- notable open questions from the upstream PRD or direct instruction
 
 ### `explicit behavior constraints`
 

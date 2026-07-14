@@ -18,7 +18,10 @@ Required sections:
 - change-chain integrity assessment
 - removal cleanup assessment
 - clean-code assessment
+- functional-programming assessment
 - frontend styling assessment
+- API contract assessment
+- TypeScript context assessment
 - design-pattern assessment
 - code-context structural assessment
 - merge readiness summary
@@ -56,12 +59,42 @@ Required sections:
 - key findings
 - required follow-up if failed
 
+`functional-programming assessment` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:
+
+- result (`pass` or `fail`)
+- pure transformation and rule-boundary findings
+- immutability findings
+- side-effect boundary findings
+- adapter / mapper / `fromDetail` semantic-normalization findings
+- hidden mutation or hidden side effects found
+- readability findings for composition, reducer chains, currying, or point-free style
+- required follow-up if failed
+
 `frontend styling assessment` is required when the scoped work adds or changes authored styling. It must include:
 
 - result (`pass` or `fail`)
 - Tailwind CSS-style utility class conformance
 - class length and inline reviewability findings
 - findings for any constants, maps, computed properties, helpers, or imported variables that hide overlong class values
+- required follow-up if failed
+
+`API contract assessment` is required when the scoped work touches backend integration. It must include:
+
+- result (`pass` or `fail`)
+- contract-source fidelity findings
+- backend-owned type reuse findings
+- non-TypeScript contract translation and backend field-name preservation findings
+- adapter / mapper boundary findings
+- request-layer ownership findings
+- required follow-up if failed
+
+`TypeScript context assessment` is required when the scoped work is TypeScript-affecting. It must include:
+
+- result (`pass` or `fail`)
+- governing `tsconfig` recovery findings
+- relevant declaration or generated type source findings
+- alias, ambient global, module resolution, JSX runtime, strictness, or generated-type assumption findings
+- any guessed TypeScript context found or ruled out
 - required follow-up if failed
 
 `design-pattern assessment` must include:

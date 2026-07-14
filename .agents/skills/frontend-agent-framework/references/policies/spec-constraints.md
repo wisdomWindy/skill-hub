@@ -6,7 +6,7 @@ This policy defines the design constraints that must be decided or explicitly bo
 
 ## Core Rule
 
-- Treat clean-code and design-pattern decisions as spec-level constraints whenever they materially affect module boundaries, behavior variation, dependency direction, side-effect placement, or future extension safety.
+- Treat clean-code, functional-programming, and design-pattern decisions as spec-level constraints whenever they materially affect module boundaries, data transformation ownership, behavior variation, dependency direction, side-effect placement, or future extension safety.
 
 ## Required Spec Constraint Categories
 
@@ -33,6 +33,8 @@ This policy defines the design constraints that must be decided or explicitly bo
 - The spec must state where important side effects belong: API calls, persistence, analytics, subscriptions, cache writes, global coordination, or cross-module notifications.
 - The spec must identify dependencies that should be adapted, wrapped, isolated, or kept out of view-level code.
 - If a feature depends on hidden shared state or event fan-out, the spec must make that explicit instead of letting implementation discover it accidentally.
+- The spec must identify deterministic business rules, validators, data mappers, payload builders, and view-model transformations that should remain pure and side-effect-free.
+- The spec must state which data inputs are treated as immutable, especially props, backend DTOs, shared store snapshots, and adapter inputs.
 
 ### 5. Variation and Pattern Constraints
 
@@ -59,7 +61,7 @@ This policy defines the design constraints that must be decided or explicitly bo
 
 - `plan` must turn these spec constraints into concrete tasks, abstraction boundaries, and verification points.
 - `execute` must implement within these constraints instead of inventing a different design shape.
-- `review` must judge code against these declared constraints, not against vague taste alone.
+- `review` must judge code against these declared constraints, including functional-programming boundaries where applicable, not against vague taste alone.
 
 ## Non-Goals
 

@@ -67,6 +67,7 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - Apply when a function both computes and mutates, both validates and performs I/O, or both reads and silently rewrites shared state.
 - Side effects are acceptable when the unit exists to perform them, but they must be easy to locate and reason about.
 - Hidden side effects inside apparently pure helpers are blocking because they make debugging and review unreliable.
+- Prefer pure helpers for deterministic transformations and rule checks. If a helper mutates state or performs I/O, it must be named and placed as an explicit command/effect boundary.
 
 ### 7. Errors and Edge Cases Must Stay Readable
 

@@ -12,19 +12,24 @@ description: Stage subskill for planning. Convert the approved spec into executi
 
 ## 必要输入
 
-- `docs/requests/<request-id>/module-runs/<current-module-id>/spec/spec.md`
-- `docs/requests/<request-id>/module-runs/<current-module-id>/spec/clarifications.md`
+- 当前交付单元的 `spec/spec.md`
+- 当前交付单元的 `spec/clarifications.md`
 - `docs/requests/<request-id>/requirements/requirement-map.md`（如存在）
 - `docs/requests/<request-id>/state.json`
 - `docs/requests/<request-id>/requirements/modules/<current-module-id>.md`（如存在）
 - `docs/requests/<request-id>/artifacts/code-context.md`（如存在）
 
+当前交付单元路径规则：
+
+- 拆分 PRD 模块：`docs/requests/<request-id>/module-runs/<current-module-id>/`
+- bugfix 或非拆分请求：`docs/requests/<request-id>/`
+
 ## 执行步骤
 
 1. 先读：
    - `docs/requests/<request-id>/state.json`
-   - `docs/requests/<request-id>/module-runs/<current-module-id>/spec/spec.md`
-   - `docs/requests/<request-id>/module-runs/<current-module-id>/spec/clarifications.md`
+   - 当前交付单元的 `spec/spec.md`
+   - 当前交付单元的 `spec/clarifications.md`
    - `docs/requests/<request-id>/requirements/requirement-map.md`（如存在）
    - `docs/requests/<request-id>/requirements/modules/<current-module-id>.md`（如存在）
    - `docs/requests/<request-id>/artifacts/code-context.md`（如存在）
@@ -36,14 +41,17 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - `../../references/policies/doc-writing.md`
    - `../../references/policies/clean-code.md`
    - `../../references/policies/frontend-components.md`
+   - `../../references/policies/functional-programming.md`
    - `../../references/policies/spec-constraints.md`
    - `../../references/policies/testing.md`
    - `../../references/policies/typescript-context.md`
    - `../../references/policies/user-intent.md`
-2. 进入本阶段前，要求当前模块 `approvals.spec_approved=true`。
+2. 进入本阶段前，要求当前交付单元 spec 已审批：
+   - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`
+   - bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
 3. 产出：
-   - `module-runs/<current-module-id>/plan/plan.md`
-   - `module-runs/<current-module-id>/plan/task-board.md`
+   - 当前交付单元的 `plan/plan.md`
+   - 当前交付单元的 `plan/task-board.md`
 4. 默认使用中文写计划工件。
 5. 所有任务都必须回溯到已批准 spec。
 6. 保持 spec 颗粒度：
@@ -110,31 +118,39 @@ description: Stage subskill for planning. Convert the approved spec into executi
    - `class` / `className` / class binding 值不得超过项目 formatter 正常行宽或依赖多行包裹
    - 不得用常量、map、computed、helper 或 import 变量隐藏过长 class 值
    - 过长时必须拆分结构、提取更小组件或降低样式复杂度
-21. 把 clean-code guardrails、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
-22. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
-23. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
-24. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
-25. 当前模块 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
+21. 如 scoped work 包含业务规则、校验、筛选排序、payload 构造、状态派生、接口数据到表单或视图模型转换，计划必须把 functional-programming 约束拆进任务：
+   - 把确定性规则和数据转换拆成纯函数或纯 mapper 任务
+   - 把请求、导航、写状态、缓存、埋点等副作用拆到明确 command / action / request / lifecycle 边界
+   - 规定不可直接 mutate props、backend DTO、共享 store snapshot、函数参数或导入常量
+   - 明确 adapter / mapper / `fromDetail` 负责数据语义归一，computed 仅用于视图局部派生
+   - 为纯函数、mapper、payload builder 或 validator 设计可验证路径
+22. 把 clean-code guardrails、functional-programming boundaries、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
+23. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
+24. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
+25. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
+26. 当前交付单元 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
    - 先给全局摘要
    - 再按任务分节
    - 每个任务都用固定小节展示目标、范围、前置条件、交互、状态、风险、测试
    - 避免输出大段连续散文
-26. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
+27. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
    - 起点
    - 关键步骤
    - 分支判断
    - 成功出口
    - 失败/回退出口
-27. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
-28. 保留 `state.json.loop`，不重置、不改写。
-29. 本阶段不写实现代码。
-30. 完成后请求用户审批，再设置当前模块 `approvals.plan_approved=true` 并切到 `stage=execute`。
+28. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
+29. 保留 `state.json.loop`，不重置、不改写。
+30. 本阶段不写实现代码。
+31. 完成后请求用户审批，再设置审批并切到 `stage=execute`：
+   - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`
+   - bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
 
 ## 输出格式
 
 - 必须产出：
-  - `docs/requests/<request-id>/module-runs/<current-module-id>/plan/plan.md`
-  - `docs/requests/<request-id>/module-runs/<current-module-id>/plan/task-board.md`
+  - 当前交付单元的 `plan/plan.md`
+  - 当前交付单元的 `plan/task-board.md`
   - `docs/requests/<request-id>/artifacts/code-context.md`（如需要结构分析）
 - 最终交付物应包含：
   - 利于人眼浏览的任务化排版
@@ -148,16 +164,16 @@ description: Stage subskill for planning. Convert the approved spec into executi
   - 测试与验证策略
   - API 对接与类型策略
   - 风险与回滚说明
-  - clean-code / pattern / boundary 约束
+  - clean-code / functional-programming / pattern / boundary 约束
   - Tailwind CSS-style styling 约束（如适用）
   - trigger / context / handoff 规划（如适用）
 
 ## 验收标准
 
-- 当前模块 `plan/plan.md` 已存在并覆盖任务、依赖、影响面、测试、回滚。
-- 当前模块 `plan/plan.md` 使用了清晰的人眼友好结构，而不是难以扫描的大段文字。
+- 当前交付单元 `plan/plan.md` 已存在并覆盖任务、依赖、影响面、测试、回滚。
+- 当前交付单元 `plan/plan.md` 使用了清晰的人眼友好结构，而不是难以扫描的大段文字。
 - 每个任务都有对应流程图。
-- 当前模块 `plan/task-board.md` 已存在并反映执行单元。
+- 当前交付单元 `plan/task-board.md` 已存在并反映执行单元。
 - 任务颗粒度与已批准 spec 保持一致，不出现产品含义漂移。
 - `execute` 无需猜测表单字段、表格列、展示字段、交互效果、loading 结束条件。
 - `execute` 无需猜测文本输入的隐式边界语义，尤其是纯空格、归一化后空值、长度计算口径、非法字符与校验触发时机。
@@ -169,11 +185,13 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - API 对接项已写清 contract source、type strategy、adapter boundary、request-layer ownership。
 - 若 scoped work 为 greenfield，计划已把脚手架采用或拒绝及其落地改造拆成显式任务。
 - clean-code / pattern 决策已记录。
+- 如涉及规则、校验、数据转换、状态派生或 payload 构造，计划已拆出纯函数、不可变数据、副作用边界和测试 / 验证任务。
 - 如涉及样式变更，计划已拆出 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的执行和验证任务。
 - 串行与可并行任务已区分。
 - 主动式 workflow 的 trigger / context / observation / handoff 已写清（如适用）。
 - 用户已审批 plan。
-- `state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`，`state.json.stage=execute`，且保留原有 `loop`。
+- 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`；bugfix 或非拆分请求已设置 `state.json.approvals.plan_approved=true`。
+- `state.json.stage=execute`，且保留原有 `loop`。
 
 ## 安全边界
 
@@ -197,3 +215,4 @@ description: Stage subskill for planning. Convert the approved spec into executi
 - 不能省略任何任务的流程图。
 - 不能把整份 `plan.md` 写成只有长段落、缺少任务分节的低可读格式。
 - 不能把样式实现方式、class 值长度治理或禁止隐藏过长 class 字符串的检查留给 execute 自行决定。
+- 不能把纯函数边界、不可变数据处理、副作用边界或 adapter / mapper 语义归一留给 execute 自行决定。

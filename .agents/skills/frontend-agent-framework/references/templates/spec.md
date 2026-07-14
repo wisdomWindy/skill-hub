@@ -25,6 +25,7 @@ Required sections:
 - page and module design
 - frontend styling constraints
 - function-complete behavior breakdown
+- functional-programming constraints
 - design constraints
 - project bootstrap and scaffold decision
 - change axes and pattern decision
@@ -90,6 +91,19 @@ Document:
 - adapter / mapper / fromDetail boundaries used to isolate frontend semantics from backend contract semantics
 
 Do not convert server-owned responsibilities into frontend implementation requirements. If the frontend can only proceed with a mock, adapter placeholder, feature flag, or assumption, state that explicitly.
+
+## `functional-programming constraints`
+
+Required when the scoped work includes business rules, validation, filtering, sorting, grouping, payload building, detail-to-form mapping, adapter / mapper normalization, view-model construction, or state derivation.
+
+Document:
+
+- rules and transformations that should be pure functions
+- data inputs that must be treated as immutable, such as props, backend DTOs, store snapshots, function arguments, and adapter inputs
+- approved side-effect boundaries, such as request layer, command function, event handler, store action, or lifecycle hook
+- semantic normalization boundaries, especially adapter / mapper / `fromDetail`
+- derived state that should not be duplicated as writable state
+- whether functional utility libraries or higher-order abstractions are rejected or approved
 
 ## `function-complete behavior breakdown`
 

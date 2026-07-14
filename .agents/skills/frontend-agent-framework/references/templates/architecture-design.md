@@ -18,6 +18,7 @@ Required sections:
 - code relationship and dependency direction
 - responsibility split
 - function design and public entrypoints
+- functional boundaries and side-effect model
 - state ownership and data flow
 - data structures and type strategy
 - contract and adapter boundaries
@@ -25,3 +26,15 @@ Required sections:
 - readability and maintenance guardrails
 - architecture risks
 - open architecture questions
+
+### `functional boundaries and side-effect model`
+
+Required when the design includes business rules, validation, data transformation, payload construction, state derivation, adapter / mapper boundaries, or side-effect orchestration.
+
+Document:
+
+- pure functions or pure transformation modules
+- command / action / request / lifecycle boundaries where side effects are allowed
+- immutable data-flow expectations
+- derived state that should not be duplicated as writable state
+- rejected functional abstractions or libraries if direct code is clearer
