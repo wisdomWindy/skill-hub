@@ -14,6 +14,7 @@ Required sections:
 - analysis carry-forward
 - splitting principles
 - source inventory
+- source grounding carry-forward
 - markdown normalization notes
 - module list
 - module dependency and sequencing notes
@@ -47,6 +48,7 @@ For each module or functional unit, include:
   - interaction flow
   - cross-module rule
 - source section mapping
+- grounding labels inherited from requirement analysis
 - one-sentence scope summary
 - execution order
 - whether `page-design` is required before `spec`
@@ -54,6 +56,21 @@ For each module or functional unit, include:
 - downstream consumer notes for `spec` and `plan`
 - frontend-owned work, server-owned work, shared contract work, and external-interface pending items inherited from requirement analysis
 - downstream run artifact root
+
+### `source grounding carry-forward`
+
+Document how splitting preserves the requirement-analysis source grounding matrix.
+
+For each module, list:
+
+- source-backed items carried into the module
+- code-fact-backed constraints carried into the module
+- confirmed decisions carried into the module
+- safe source-derived consequences carried into the module
+- missing-source items that remain blocked, external-interface pending, or non-blocking
+- out-of-scope adjacent ideas that must not enter this module
+
+Do not split a new module, behavior, field, interaction, or acceptance obligation solely from convention, neighboring-module similarity, or preferred design structure.
 
 ### `markdown normalization notes`
 
@@ -95,6 +112,7 @@ Required sections:
 - source snapshot
 - markdown-normalized snapshot
 - source-trace references
+- source grounding
 - business intent
 - user-visible scope
 - forms, tables, displays, and interactions
@@ -123,3 +141,9 @@ Rules:
 - prefer Markdown tables, images, links, headings, and bullet lists
 - when exact visual structure cannot be preserved, provide an equivalent structured textual representation and record that fallback explicitly
 - this section is a companion copy for downstream consumption, not a replacement for the raw snapshot
+
+### `source grounding`
+
+For this module, list every material carried-forward item with its grounding label and source reference.
+
+Downstream `spec` may only use items labeled `source-backed`, `code-fact-backed`, `confirmed-decision`, or safe `source-derived`.

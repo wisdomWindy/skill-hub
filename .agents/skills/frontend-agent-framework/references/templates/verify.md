@@ -15,6 +15,7 @@ Required top-level sections:
 - change-chain integrity
 - removal cleanup compliance
 - spec constraint compliance
+- source grounding compliance
 - functional-programming compliance
 - frontend styling compliance
 - API contract conformance
@@ -66,6 +67,15 @@ Required fields for each acceptance item:
 
 - result (`pass` or `fail`)
 - checked constraints
+- evidence reference
+- follow-up if failed
+
+`source grounding compliance` must include:
+
+- result (`pass` or `fail`)
+- checked source-grounding labels from spec and plan
+- implementation behavior that was confirmed to map back to source-backed, code-fact-backed, confirmed-decision, or safe source-derived items
+- ungrounded behavior, neighboring-module expansion, sample-content expansion, or convention-based expansion found or ruled out
 - evidence reference
 - follow-up if failed
 

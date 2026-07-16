@@ -11,6 +11,7 @@ When `requirements/requirement-map.md` exists, treat it as a required upstream i
 When `design/page-design.md` or `module-runs/<module-id>/design/page-design.md` exists, treat it as a required upstream input and carry its layout, hierarchy, styling, and interaction decisions into the spec instead of redefining them from scratch.
 When `design/architecture-design.md` or `module-runs/<module-id>/design/architecture-design.md` exists, treat it as a required upstream input and carry its module boundaries, file structure, dependency direction, function structure, data structures, and type decisions into the spec instead of redefining them from scratch.
 The acceptance criteria must function as the request's operational goal contract: concrete, observable, and preferably machine-checkable rather than subjective.
+The spec must not expand source material. Every material behavior, field, interaction, state rule, API contract, dependency, acceptance criterion, and implementation constraint must be source-backed, code-fact-backed, confirmed, or safely source-derived.
 
 Required sections:
 
@@ -20,6 +21,7 @@ Required sections:
 - out of scope
 - trigger and start conditions
 - requirement split summary
+- source grounding and traceability
 - user intent contract
 - user flow
 - page and module design
@@ -52,6 +54,23 @@ Document:
 - verification and review checks
 
 Do not leave practical intent as chat-only context.
+
+## `source grounding and traceability`
+
+For each material spec item, record:
+
+- spec item
+- grounding label: `source-backed`, `code-fact-backed`, `confirmed-decision`, or safe `source-derived`
+- source artifact and section, code fact, or confirmation owner
+- upstream requirement-analysis or requirement-splitting reference when applicable
+- downstream plan obligation
+
+Rules:
+
+- Do not write `missing-source` items as approved behavior.
+- Do not turn adjacent modules, sample request content, or conventions into requirements without confirmation.
+- `source-derived` items must explain why every plausible interpretation leads to the same spec, plan, implementation, and verification result.
+- If the source is missing for material behavior, put it in `spec/clarifications.md` and roll back to the front-loaded confirmation gate when it affects scope, behavior, data semantics, permissions, state flow, frontend/server responsibility, API contract meaning, validation, acceptance, or user intent.
 
 ## `API and data contracts`
 
@@ -130,6 +149,7 @@ For text input controls, the spec must not stop at PRD-explicit constraints only
 
 If any material detail is unknown, record it in `spec/clarifications.md` and reference the approved assumption or open question directly from the spec.
 If the source module files already contain explicit fields, columns, interactions, states, or workflow rules, the spec must carry them forward instead of collapsing them into higher-level prose.
+If a detail is not in source, code facts, or confirmed decisions, the spec must not invent it to make the behavior look complete.
 
 ## `frontend styling constraints`
 
@@ -163,3 +183,4 @@ Required sections:
 - answer
 - final decision
 - affected spec area
+- grounding status and required source

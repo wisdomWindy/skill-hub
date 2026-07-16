@@ -11,6 +11,7 @@ Required sections:
 - analysis summary
 - user intent contract
 - source inventory and reading stance
+- source grounding matrix
 - confirmed scope
 - out-of-scope and non-goals
 - confirmed decisions and invariants
@@ -32,6 +33,7 @@ The artifact must be written as a developer-facing requirement refinement, not a
 It should preserve enough field, state, workflow, permission, dependency, failure, and risk detail that downstream developers can draft `spec` with fewer product follow-up questions.
 Reducing follow-up questions means exposing hidden or unclear points concretely; it does not mean deleting uncertain content.
 Human confirmation must be front-loaded here: downstream `spec` and `plan` approval is automatic framework approval, so needs, questions, rules, ambiguous content, fuzzy content, and product decisions that require a person must be resolved, blocked, or explicitly classified before leaving requirement analysis.
+Source grounding must also be front-loaded here: material behavior, field, interaction, state rule, API contract, dependency, task basis, and acceptance basis must be classified before downstream stages use them.
 
 ### `user intent contract`
 
@@ -56,6 +58,36 @@ Document:
 - the precedence rule when multiple sources conflict
 - any unread sources, why they were not read, and what remains unconfirmed because of that
 
+### `source grounding matrix`
+
+Document the authority basis for every material requirement element.
+
+Use these labels:
+
+- `source-backed`: directly stated in an authoritative source
+- `code-fact-backed`: directly required or constrained by scoped repository code facts
+- `confirmed-decision`: explicitly confirmed and recorded
+- `source-derived`: a narrow consequence of a source-backed item where every plausible interpretation leads to the same downstream result
+- `missing-source`: not supported enough to define behavior
+- `out-of-scope`: adjacent or tempting work that must not be silently absorbed
+
+For each item, record:
+
+- item
+- grounding label
+- exact source reference, code fact, or confirmation owner
+- source clue or quoted source fragment when useful
+- downstream handling
+- whether it can enter `requirement-splitting`, `spec`, and `plan`
+
+Rules:
+
+- Only `source-backed`, `code-fact-backed`, `confirmed-decision`, and safe `source-derived` items may drive downstream behavior.
+- `source-derived` cannot introduce new fields, states, interactions, validations, API requirements, acceptance criteria, modules, or product semantics.
+- `missing-source` items must become clarifications, blockers, external-interface pending items, or non-scope notes.
+- `out-of-scope` items must be listed explicitly when they are likely to be inferred from adjacent modules, conventions, or sample content.
+- Do not use general convention, neighboring modules, or preferred implementation style as source authority for new scope.
+
 ### `confirmed scope`
 
 Document:
@@ -71,6 +103,7 @@ Document:
 - adjacent asks that are not part of the current request
 - tempting cleanup or redesign directions that must not be silently absorbed downstream
 - assumptions that are intentionally not being promoted into scope
+- adjacent module behavior, sample-request behavior, or conventional behavior that must not be imported without confirmation
 
 ### `source-backed behavior inventory`
 
@@ -116,6 +149,7 @@ For each item, document:
 - handling: how downstream stages should carry it without silently inventing behavior
 
 Do not use this section to invent business behavior. Use it to make uncertainty and implications visible.
+Do not promote an implicit item into confirmed scope unless the source clue has only one downstream-safe interpretation; otherwise classify it as `missing-source`, `业务阻塞`, `外部接口待补`, or `非阻塞`.
 
 ### `confirmed decisions and invariants`
 

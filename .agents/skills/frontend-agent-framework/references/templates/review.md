@@ -18,6 +18,7 @@ Required sections:
 - change-chain integrity assessment
 - removal cleanup assessment
 - clean-code assessment
+- source grounding assessment
 - functional-programming assessment
 - frontend styling assessment
 - API contract assessment
@@ -59,6 +60,14 @@ Required sections:
 - key findings
 - findings for constants introduced or moved to a broader scope, including the domain meaning, constraint, snapshot, simplification, or real reuse that justifies each non-obvious declaration
 - unnecessary one-off aliases, speculative module or exported constants, synonym constants, and over-broad constant scope found or ruled out
+- required follow-up if failed
+
+`source grounding assessment` must include:
+
+- result (`pass` or `fail`)
+- whether implementation behavior maps back to framework-approved source-grounding labels
+- ungrounded behavior, neighboring-module expansion, sample-content expansion, convention-based expansion, or preference-based expansion found or ruled out
+- whether any missing-source item was incorrectly implemented as confirmed behavior
 - required follow-up if failed
 
 `functional-programming assessment` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:

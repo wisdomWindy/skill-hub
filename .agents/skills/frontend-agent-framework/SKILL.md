@@ -45,6 +45,7 @@ Keep the repository-local workflow in control through one default entry skill th
 - Enforce change-chain integrity so code modification or removal is preceded by feature-flow and reference analysis, and followed by a clean-chain validation.
 - Enforce design-pattern discipline so abstractions are introduced only when they solve a real change, dependency, or behavior-selection problem.
 - Enforce user-intent fidelity so implementations satisfy the request's practical goal, not just a superficial reading of the words.
+- Enforce source-grounding discipline so downstream artifacts preserve only source-backed, code-fact-backed, confirmed, or narrowly source-derived content instead of expanding the request from convention, neighboring modules, sample content, or preferred design taste.
 - Enforce repository-context discipline by preferring code graph for structural code understanding when existing-code analysis is material to the request.
 - Enforce backend API contract discipline so frontend integration preserves contract sources, type ownership, field semantics, and explicit adapter boundaries.
 - Enforce frontend/backend responsibility separation during requirement analysis so downstream frontend work does not absorb server-owned changes or hide backend dependencies.
@@ -61,6 +62,7 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - PRD-driven requirement: after `intake`, always run `requirement-analysis` before `requirement-splitting`.
 - Human confirmation rule: for PRD-driven work, all needs, questions, rules, ambiguous content, fuzzy content, and product decisions that require human confirmation must be surfaced and resolved or explicitly classified in `requirement-analysis` before `requirement-splitting`.
 - Human confirmation rule: for direct-change and bugfix work that does not enter `requirement-analysis`, the equivalent confirmation gate is `intake` or `bugfix-intake`; unresolved human decisions, ambiguous content, and fuzzy content must be captured before entering `page-design`, `architecture-design`, `spec`, or `plan`.
+- Source-grounding rule: every material behavior, field, interaction, state rule, API contract, dependency, task, and acceptance criterion must trace to an authoritative source, scoped code fact, confirmed decision, or safe source-derived consequence; otherwise it must be recorded as missing-source, clarification, blocker, external-interface pending, or out-of-scope.
 - Automatic approval rule: `spec` and `plan` are approved by framework standards, not by user approval prompts; set the approval flags only after the stage artifact satisfies the relevant template, policy, source-traceability, and gate checks.
 - Page-oriented requirement: after `requirement-splitting`, insert `page-design` before `spec` when layout, styling, or interaction structure is a material part of the request.
 - Code-architecture-sensitive requirement: after `requirement-splitting`, insert `architecture-design` before `spec` when code module design, file structure design, code relationship design, function design, data structure design, or type design is a material part of the request.
@@ -77,6 +79,8 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never let code-architecture-sensitive work enter `spec` without a durable `architecture-design` artifact.
 - Never enter `spec` for a PRD-driven request when any requirement-splitting module that needed Markdown normalization is missing either its raw snapshot or its Markdown-normalized snapshot.
 - Never allow ambiguous or fuzzy requirement content to pass into `spec` or `plan` as an implementation assumption when it affects scope, behavior, data semantics, permissions, state flow, API contract meaning, validation rules, acceptance criteria, or user intent; confirm it in the front-loaded gate first.
+- Never expand requirements from general convention, neighboring modules, sample request content, preferred architecture, preferred UX, or inferred product intent unless that expansion is source-backed or explicitly confirmed in repository artifacts.
+- Never let `source-derived` content create new product behavior, fields, states, interactions, validation rules, API requirements, acceptance criteria, or modules; use it only to expose narrow consequences that all plausible interpretations share.
 - Never request user approval for `spec` or `plan`; if those stages expose a decision that truly needs a person, roll back to `requirement-analysis` or the appropriate source-normalization gate instead of pausing inside `spec` or `plan`.
 - Never implement before the active delivery unit's framework-approved spec and plan artifacts exist.
 - Never implement TypeScript-affecting code before recovering the governing `tsconfig` and the declaration or generated type sources that materially affect the scoped files.
@@ -91,7 +95,9 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, never bypass scaffold selection; prefer the matching project-type scaffold or starter when one exists, and record any justified deviation before implementation.
 - Never declare work complete before the required verification and review artifacts for the active delivery unit exist and pass.
 - Never declare work complete before the required verification artifact explicitly records `spec constraint compliance: pass`.
+- Never declare work complete before the required verification artifact explicitly records `source grounding compliance: pass`.
 - Never declare work complete before the required review artifact explicitly records `clean-code assessment: pass` and `design-pattern assessment: pass`.
+- Never declare work complete before the required review artifact explicitly records `source grounding assessment: pass`.
 - Never treat loop progress as proof of completion; only the goal contract and verification evidence can prove the request is done.
 - When requirements change, update request artifacts first and roll the request back to `spec` or `plan`.
 - When execution proves the current `architecture-design` decisions are materially unfit for actual code constraints, update request artifacts first and roll the request back to `architecture-design`.
@@ -230,6 +236,7 @@ Workflow rules:
 - For PRD-driven requirements, force a durable `requirement-analysis -> requirement-splitting` pass before any design, specification, or planning work begins.
 - Do not force direct-change requests through `requirement-analysis` or `requirement-splitting` unless the instruction expands into a PRD-like multi-module requirement that needs source-preserving decomposition.
 - Treat requirement analysis as the explicit需求理解阶段: it must fix scope, non-goals, ambiguity visibility, fuzzy-content handling, dependency awareness, and splitting rationale before module decomposition begins.
+- Treat requirement analysis as the source-grounding gate: it must separate source-backed facts, code-fact-backed constraints, confirmed decisions, safe source-derived consequences, missing-source items, and out-of-scope temptations before module decomposition begins.
 - Treat requirement analysis as the frontend/backend responsibility separation stage when the request depends on data, APIs, permissions, workflows, backend validation, persistence, async jobs, or cross-system behavior; it must state what frontend implements, what server must provide or change, what is shared contract work, and what blocks frontend progress.
 - Treat requirement splitting as source-preserving normalization: it must split modules and functional units without inventing behavior, implementation, or UX detail that is not grounded in the source.
 - For page-oriented requests, treat page design as a required upstream input to `spec`, not as an implementation detail.
@@ -253,6 +260,7 @@ Workflow rules:
 - Use workflow-style parallelization only as an execution-scale choice after planning, never as a replacement for lifecycle control.
 - Prefer workflows that are observable and steerable: the team must be able to inspect progress, verify evidence, and intervene before completion claims are accepted.
 - For `spec` and `plan` approval gates, use framework automatic approval: validate the artifact against this skill's templates, policies, source traceability, active delivery unit scope, and state-machine gates, then set the relevant approval flag without asking the user.
+- For `spec` and `plan` approval gates, reject any behavior or task that lacks a source-grounding label and traceable authority; roll back to the appropriate front-loaded gate instead of filling the gap.
 - Do not use structured approval UI or free-text confirmation for `spec` or `plan`; human confirmation belongs in requirement analysis or source normalization before downstream artifacts are authored.
 - Unless the user explicitly requests another language, request artifacts should follow the user's working language; for this repository's current workflow, `spec` / `clarifications` / `plan` / `task-board` should default to Chinese.
 - Treat the framework-approved spec and plan as the authoritative implementation contract for all downstream stages.
@@ -410,6 +418,7 @@ Load only what is needed:
 - Design-pattern decision policy: `references/policies/design-patterns.md`
 - User intent fidelity policy: `references/policies/user-intent.md`
 - Spec constraint policy: `references/policies/spec-constraints.md`
+- Source grounding policy: `references/policies/source-grounding.md`
 - Code-graph policy: `references/policies/code-graph.md`
 - TypeScript context policy: `references/policies/typescript-context.md`
 - Frontend components and styling policy: `references/policies/frontend-components.md`
@@ -442,6 +451,7 @@ Load only what is needed:
 - When marking the request `blocked`, `loop.pending_gate` must name the blocking gate and `loop.state` must be `blocked`.
 - Stop only at real blocking gates such as unresolved front-loaded confirmation, missing upstream requirement information, or unavailable external dependency needed for the next stage.
 - Never implement behavior that is not defined, clarified, or accepted in the repository spec artifacts.
+- Never treat ungrounded content as approved scope; missing source support must be resolved, explicitly classified, or excluded before downstream execution.
 - Never treat wording-only compliance as sufficient when the request's practical goal is to reduce complexity, risk, ambiguity, duplication, or review cost.
 - Never treat removal of a call or request as complete until the behavior-owned dependency closure has been checked and cleaned: imports, helpers, constants, types, request wrappers, state, tests, mocks, and comments.
 - Never treat modification or removal of existing code as complete without pre-change chain analysis and post-change chain validation covering feature flow, file references, callers, side effects, downstream consumers, missing links, stale links, and neighboring-feature impact.
@@ -515,6 +525,7 @@ Treat a request as complete only after all of the following are true:
 - implementation matches the framework-approved plan
 - verification evidence exists for acceptance criteria
 - the required verification artifact explicitly records `spec constraint compliance: pass`
+- the required verification artifact explicitly records `source grounding compliance: pass`
 - when applicable, the required verification artifact explicitly records `user intent compliance: pass`
 - when applicable, the required verification artifact explicitly records `change-chain integrity: pass`
 - when applicable, the required verification artifact explicitly records `removal cleanup compliance: pass`
@@ -524,6 +535,7 @@ Treat a request as complete only after all of the following are true:
 - when applicable, the required verification artifact explicitly records `TypeScript context compliance: pass`
 - review records no unresolved blocking issues
 - the required review artifact explicitly records `clean-code assessment: pass`
+- the required review artifact explicitly records `source grounding assessment: pass`
 - when applicable, the required review artifact explicitly records `user intent assessment: pass`
 - when applicable, the required review artifact explicitly records `change-chain integrity assessment: pass`
 - when applicable, the required review artifact explicitly records `removal cleanup assessment: pass`

@@ -35,6 +35,7 @@ description: Stage subskill for verification. Validate the implementation agains
    - `../../references/policies/doc-writing.md`
    - `../../references/policies/frontend-components.md`
    - `../../references/policies/functional-programming.md`
+   - `../../references/policies/source-grounding.md`
    - `../../references/policies/typescript-context.md`
    - `../../references/policies/user-intent.md`
 2. 产出当前交付单元的 `verification/verification.md`。
@@ -43,37 +44,39 @@ description: Stage subskill for verification. Validate the implementation agains
    - result
    - evidence
 4. 验证实现是否符合 framework-approved spec，而不是 undocumented intent。
-5. 验证 spec 与 plan 是否在实现范围内保持同一 function-complete granularity。
-6. 验证可测试行为是否被测试覆盖，若无则检查是否有明确例外说明。
-7. 如果 framework-approved spec 包含 user intent contract，必须同时验证：
+5. 验证实现行为是否全部回溯到 framework-approved spec / plan 的 source-grounding 条目，不能接受无来源行为、相邻模块扩展、样例内容扩展或常规做法扩展。
+6. 验证 spec 与 plan 是否在实现范围内保持同一 function-complete granularity。
+7. 验证可测试行为是否被测试覆盖，若无则检查是否有明确例外说明。
+8. 如果 framework-approved spec 包含 user intent contract，必须同时验证：
    - literal compliance
    - intent compliance
    - forbidden interpretations 未被采用
    - 复杂度、风险、歧义或责任没有被转移到未检查位置
-8. 如果实现修改或移除了既有代码，验证是否具备变更前链路审查与变更后链路复查证据：
+9. 如果实现修改或移除了既有代码，验证是否具备变更前链路审查与变更后链路复查证据：
    - 功能入口到组件、状态、请求、adapter、helper、UI 消费者的链路仍完整
    - 文件引用关系、调用方、事件、watch / computed、测试与 mock 已同步
    - 测试文件引用待改或待删代码时，已被当作测试适配面处理，而不是生产代码保留依据
    - 没有缺少必要环节、残留多余环节、重复路径、冲突路径或未授权邻近功能影响
-9. 如果实现移除了调用、请求、分支、字段、控件或副作用，验证是否同步清理该行为独占的 import、helper、常量、类型、request wrapper、状态、测试、mock 和注释；保留 helper 时必须有真实生产调用方证据，仅测试引用不能作为保留证据。
-10. 如果 framework-approved spec 包含 trigger/context/handoff 假设，也要验证实现是否遵守。
-11. 如涉及后端接口，验证 request/response handling 是否符合 framework-approved backend contract source，包括：
+10. 如果实现移除了调用、请求、分支、字段、控件或副作用，验证是否同步清理该行为独占的 import、helper、常量、类型、request wrapper、状态、测试、mock 和注释；保留 helper 时必须有真实生产调用方证据，仅测试引用不能作为保留证据。
+11. 如果 framework-approved spec 包含 trigger/context/handoff 假设，也要验证实现是否遵守。
+12. 如涉及后端接口，验证 request/response handling 是否符合 framework-approved backend contract source，包括：
    - API docs
    - protobuf contracts
    - backend-owned TypeScript declarations
-12. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，验证实现是否遵守 governing `tsconfig` 与已确认的相关声明来源，尤其是 alias resolution、ambient types、generated contracts 与 strictness-sensitive assumptions。
-13. 如涉及样式变更，验证 authored styling 是否遵守 frontend-components policy：
+13. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，验证实现是否遵守 governing `tsconfig` 与已确认的相关声明来源，尤其是 alias resolution、ambient types、generated contracts 与 strictness-sensitive assumptions。
+14. 如涉及样式变更，验证 authored styling 是否遵守 frontend-components policy：
    - 是否只使用 Tailwind CSS-style utility classes
    - 是否存在新增 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class
    - 是否存在超过项目 formatter 正常行宽或依赖多行包裹的 `class` / `className` / class binding
    - 是否存在用常量、map、computed、helper 或 import 变量隐藏过长 class 值
-14. 如实现包含规则、校验、数据转换、状态派生、payload 构造或 adapter / mapper，验证是否遵守 functional-programming policy：
+15. 如实现包含规则、校验、数据转换、状态派生、payload 构造或 adapter / mapper，验证是否遵守 functional-programming policy：
    - 确定性规则和转换是否可测试且结果符合预期
    - 是否没有在纯 helper 中隐藏副作用
    - 是否没有直接 mutate props、backend DTO、共享 store snapshot、函数参数或导入常量
    - 数据语义归一是否位于 adapter / mapper / `fromDetail`，而不是 computed / watch / template fallback
-15. 在当前交付单元 `verification/verification.md` 中写出明确的 pass/fail 结论：
+16. 在当前交付单元 `verification/verification.md` 中写出明确的 pass/fail 结论：
    - `spec constraint compliance: pass|fail`
+   - `source grounding compliance: pass|fail`
    - `user intent compliance: pass|fail`（如适用）
    - `change-chain integrity: pass|fail`（如适用）
    - `removal cleanup compliance: pass|fail`（如适用）
@@ -81,9 +84,9 @@ description: Stage subskill for verification. Validate the implementation agains
    - `frontend styling compliance: pass|fail`（如适用）
    - `API contract conformance: pass|fail`（如适用）
    - `TypeScript context compliance: pass|fail`（如适用）
-16. 保留 `state.json.loop`，不重置、不改写。
-17. 若验证失败，明确记录失败原因，交回主 skill 回流到 `execute`，并继续同一 workflow run。
-18. 本阶段不能在没有验证工件的情况下宣称完成。
+17. 保留 `state.json.loop`，不重置、不改写。
+18. 若验证失败，明确记录失败原因，交回主 skill 回流到 `execute`，并继续同一 workflow run。
+19. 本阶段不能在没有验证工件的情况下宣称完成。
 
 ## 输出格式
 
@@ -94,6 +97,7 @@ description: Stage subskill for verification. Validate the implementation agains
   - acceptance coverage mapping
   - verification evidence
   - spec-constraint compliance 结论
+  - source grounding compliance 结论
   - user-intent compliance 结论（如适用）
   - change-chain integrity 结论（修改或移除既有代码时适用）
   - functional-programming compliance 结论（如适用）
@@ -110,6 +114,7 @@ description: Stage subskill for verification. Validate the implementation agains
 - 每条 acceptance criterion 都已被检查。
 - 每个验证项都有附件或引用证据。
 - 当前交付单元 `verification/verification.md` 已明确写出 spec constraints pass/fail。
+- 当前交付单元 `verification/verification.md` 已明确写出 source grounding pass/fail，且实现没有未授权扩展。
 - 如存在 user intent contract，当前交付单元 `verification/verification.md` 已明确写出 literal compliance 与 intent compliance pass/fail。
 - 如存在既有代码修改或移除，当前交付单元 `verification/verification.md` 已明确写出变更前链路审查与变更后链路完整性复查结论。
 - 如存在行为移除，当前交付单元 `verification/verification.md` 已明确写出删除依赖闭包清理结论。
@@ -130,7 +135,9 @@ description: Stage subskill for verification. Validate the implementation agains
 - 不能在没有证据时标记完成。
 - 不能忽略失败的 acceptance criteria。
 - 不能把 spec-constraint compliance 当作默认成立而不写 pass/fail。
+- 不能把 source grounding compliance 当作默认成立而不写 pass/fail。
 - 不能接受无法回溯到 framework-approved spec 的实现行为。
+- 不能接受从常规做法、相邻模块、样例内容或个人偏好中扩展出来的实现行为。
 - 不能在实现只满足字面要求但违反用户实际目标时判定验证通过。
 - 不能在缺少变更前链路审查、变更后链路复查，或仍存在缺环、多余环节、重复路径、冲突路径、未授权邻近功能影响时判定验证通过。
 - 不能在移除行为后仍有孤立 helper、unused import、stale request wrapper、obsolete state、测试或注释残留时判定验证通过。

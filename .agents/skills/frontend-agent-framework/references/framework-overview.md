@@ -46,6 +46,7 @@ In this framework:
 - `subskills/` own stage execution only
 - `requirement-analysis` is the explicit需求理解阶段 for PRD-driven work and fixes scope, non-goals, ambiguity, risk, and splitting strategy before decomposition begins
 - `requirement-analysis` is also the front-loaded human-confirmation stage for PRD-driven work: needs, questions, rules, ambiguous content, fuzzy content, and product decisions that require a person must be resolved, blocked, or explicitly classified there before downstream automatic approval begins
+- `requirement-analysis` is the source-grounding gate: it separates source-backed facts, code-fact-backed constraints, confirmed decisions, safe source-derived consequences, missing-source items, and out-of-scope adjacent ideas before downstream artifacts can use them
 - `requirement-splitting` is the source-preserving decomposition stage for PRD-driven work and feeds `page-design`, `architecture-design`, and `spec`
 - for PRD-driven work that has been split into module files, downstream delivery runs one split module at a time inside the same request
 - each split module must complete its own `page-design? -> architecture-design? -> spec -> plan -> execute -> verify -> review` chain before the next split module starts
@@ -54,6 +55,7 @@ In this framework:
 - direct-change, bugfix, and other non-split downstream artifacts live directly under `docs/requests/<request-id>/design|spec|plan|execution|verification|review`
 - direct-change and bugfix work use `intake` or `bugfix-intake` as their source-normalization and human-confirmation gate before request-level downstream stages
 - `spec` and `plan` approval flags are set by framework automatic approval checks, not by user approval prompts
+- `spec` and `plan` automatic approval must reject ungrounded behavior, tasks, or acceptance criteria instead of filling missing details from convention, sample content, neighboring modules, or preferred design taste
 - the goal contract is established in request/spec artifacts and proved by verification/review artifacts
 - the main skill owns loop control, gate recovery, and rollback routing
 - workflow-style parallelization is optional execution scale, not a second lifecycle and not a default
