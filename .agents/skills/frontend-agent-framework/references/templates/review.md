@@ -19,6 +19,8 @@ Required sections:
 - removal cleanup assessment
 - clean-code assessment
 - source grounding assessment
+- architecture reuse assessment
+- production code quality assessment
 - functional-programming assessment
 - frontend styling assessment
 - API contract assessment
@@ -70,6 +72,21 @@ Required sections:
 - whether any missing-source item was incorrectly implemented as confirmed behavior
 - required follow-up if failed
 
+`architecture reuse assessment` is required when the scoped work touches business rules, validation, filtering, sorting, option building, permission checks, payload construction, status mapping, adapter / mapper normalization, view-model construction, helper logic, or state derivation. It must include:
+
+- result (`pass` or `fail`)
+- missed extraction or reuse opportunities found or ruled out
+- whether kept-separate duplicates have real domain, layer, lifecycle, permission, API, dependency, use-site-count, instability, variation-axis, or evolution reasons
+- whether shared owner, dependency direction, public API, type ownership, and side-effect boundary are appropriate
+- whether Anti-DRY reasoning prevented wrong abstraction instead of blindly enforcing DRY
+- whether commonality classification and target owner are correct
+- whether shared code uses dependency injection, strategy, getters, adapters, or thin wrappers instead of hard-coded business fields
+- whether all in-scope production callers were migrated
+- duplicate legacy paths, orphan helpers, dumping-ground utility, premature abstraction, feature-entity import, environment side effect, or merged-interface findings
+- JSDoc `@see` / `@example` traceability findings for promoted shared APIs
+- behavior-equivalence evidence reviewed
+- required follow-up if failed
+
 `functional-programming assessment` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:
 
 - result (`pass` or `fail`)
@@ -79,6 +96,19 @@ Required sections:
 - adapter / mapper / `fromDetail` semantic-normalization findings
 - hidden mutation or hidden side effects found
 - readability findings for composition, reducer chains, currying, or point-free style
+- required follow-up if failed
+
+`production code quality assessment` is required when production code was added or changed. It must include:
+
+- result (`pass` or `fail`)
+- type-first contract findings, including broad types, unsafe assertions, missing interfaces, or missing branded / nominal distinctions for confusable identifiers
+- fail-fast findings for silent failures, swallowed errors, ignored promises, hidden invalid data, or unclear impossible-state handling
+- strict null findings for blurred `null` / `undefined` semantics or fallback display logic masking data contract problems
+- naming findings for booleans, callback props, internal event handlers, and function verbs
+- no magic variable findings, including implicit helper dependencies and misplaced or meaningless configuration constants
+- maintainability-first performance findings, including unjustified memoization, caching, debounce, throttle, virtualization, `useMemo` / `useCallback`, computed caching, or watcher optimization
+- pure function / immutable data findings, including unnecessary classes or mutation-based data shaping
+- boundary UI state findings for touched lists, async operations, and form inputs
 - required follow-up if failed
 
 `frontend styling assessment` is required when the scoped work adds or changes authored styling. It must include:

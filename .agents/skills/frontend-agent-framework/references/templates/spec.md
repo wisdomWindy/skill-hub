@@ -27,7 +27,9 @@ Required sections:
 - page and module design
 - frontend styling constraints
 - function-complete behavior breakdown
+- production code quality constraints
 - functional-programming constraints
+- architecture reuse and shared ownership constraints
 - design constraints
 - project bootstrap and scaffold decision
 - change axes and pattern decision
@@ -123,6 +125,51 @@ Document:
 - semantic normalization boundaries, especially adapter / mapper / `fromDetail`
 - derived state that should not be duplicated as writable state
 - whether functional utility libraries or higher-order abstractions are rejected or approved
+
+## `production code quality constraints`
+
+Required when the scoped work adds or changes production code.
+
+Document the required pre-code reasoning order and the concrete constraints that downstream `plan`, `execute`, `verify`, and `review` must enforce:
+
+- type-first contract: data `type` / `interface` ownership, backend type reuse, branded type or equivalent nominal distinction for confusable identifiers when useful, and forbidden broad typing such as unapproved `any`
+- fail-fast and clear handling: explicit handling for abnormal, empty, nullable, invalid, timeout, rejected, partial-success, and impossible states
+- strict null handling: where `null` and `undefined` have distinct semantics, where `??` / `?.` are appropriate, and where validation must not be replaced by fallback display logic
+- maintainability before micro-optimization: readable implementation preference and any approved reason for memoization, caching, debounce, throttle, virtualization, `useMemo`, `useCallback`, computed caching, or watcher-based optimization
+- pure functions over classes: deterministic business rules, validators, formatters, transformers, payload builders, status mappers, and state derivation should prefer pure functions and immutable data unless a framework or lifecycle reason justifies a class
+- naming and expression rules: booleans use `is` / `has` / `should` / `can`; props callbacks use `on`; internal event handlers use `handle`; data functions use precise verbs such as `get` / `fetch` / `set` / `update` / `transform` / `format` / `check` / `validate`
+- no magic variables: helper inputs must come from parameters, dependency injection, or clearly owned local closure state; real configuration constants must live under the narrowest stable domain owner
+- boundary UI states: lists need empty state, async operations need loading state, and form inputs need visible error state with concrete copy when the scoped work touches those surfaces
+
+Do not let this section duplicate the functional-programming section. This section owns production-code quality gates; the functional-programming section owns transformation purity, immutability, and side-effect placement in detail.
+
+## `architecture reuse and shared ownership constraints`
+
+Required when the scoped work touches business rules, validation, filtering, sorting, grouping, option building, permission checks, payload construction, status mapping, adapter / mapper normalization, view-model construction, helper logic, or state derivation.
+
+Document:
+
+- existing equivalent production logic found in the scoped feature chain or nearby domain modules
+- Anti-DRY decision matrix result, including business semantics, layer, production use-site count, change stability, and variation axes
+- shared logic owner: existing helper, new domain helper, hook, mapper, adapter, or explicit local owner
+- extraction / reuse / keep-separate / defer decision for each candidate
+- reason for keeping separate when logic appears similar
+- commonality classification: technical / infrastructure, business / domain, UI / design-system, or configuration / constants
+- dependency direction and why the chosen owner does not create cycles or reverse feature ownership
+- public API shape for shared functions or hooks
+- dependency injection, strategy, getter, adapter, or thin-wrapper boundary for business-specific variation
+- migration scope for in-scope callers
+- behavior-equivalence verification required downstream
+- JSDoc traceability requirement for promoted shared APIs, including `@see` or representative `@example` references
+
+Rules:
+
+- Behavior-preserving extraction based on duplicated production code facts is allowed as an architecture improvement when it is inside the approved change chain and passes the Anti-DRY abstraction matrix.
+- Do not introduce user-visible behavior changes under the cover of refactoring.
+- Do not defer an approved safe extraction merely because the duplicate appears in another module.
+- Do not extract when similarity is only syntactic, when semantics differ, when layers differ, when fewer than three stable production use sites exist without an approved exception, or when variation axes exceed the benefit of abstraction.
+- Do not create broad generic `utils` modules when a domain-specific owner is clearer.
+- Do not make shared code depend on feature-module private entities, environment side effects, or broad merged interfaces.
 
 ## `function-complete behavior breakdown`
 

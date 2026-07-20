@@ -15,6 +15,7 @@ Required sections:
 - task-board updates
 - changed files and owned symbols
 - implementation decisions
+- production code quality execution notes
 - TDD evidence or documented exception
 - change-chain review evidence
 - removal cleanup evidence
@@ -51,6 +52,22 @@ If TDD is not applied, document:
 - why the behavior is not reasonably testable in this scope
 - fallback verification method
 - risk accepted by the plan
+
+### `production code quality execution notes`
+
+Required when production code was added or changed.
+
+Document:
+
+- type-first order followed: data `type` / `interface` added, reused, narrowed, or intentionally left unchanged before implementation
+- fail-fast and clear handling added for abnormal, empty, nullable, invalid, timeout, rejected, partial-success, or impossible states
+- strict null handling decisions for `null`, `undefined`, `??`, and `?.`
+- naming checks for booleans, callback props, internal event handlers, and ordinary function verbs
+- no magic variables check: helper dependencies come from parameters, dependency injection, or clearly owned local closure state
+- configuration constant ownership for real config/rules/thresholds/enum maps/feature flags, and confirmation that constants were not used to hide one-off values or overlong class strings
+- maintainability-first performance decision, including any approved memoization, cache, debounce, throttle, virtualization, `useMemo` / `useCallback`, computed caching, or watcher optimization and its dependency rationale
+- pure function / immutable data preference followed, or approved reason for class / mutable owner use
+- empty, loading, and form error states implemented for touched lists, async operations, and form inputs
 
 ### `change-chain review evidence`
 

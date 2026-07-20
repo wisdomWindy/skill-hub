@@ -48,6 +48,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - `../../references/policies/frontend-architecture.md`
    - `../../references/policies/frontend-components.md`
    - `../../references/policies/functional-programming.md`
+   - `../../references/policies/production-code-quality.md`
    - `../../references/policies/spec-constraints.md`
    - `../../references/policies/source-grounding.md`
    - `../../references/policies/typescript-context.md`
@@ -83,25 +84,44 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - acceptable approaches
    - verification / review checks
    不能把“后续实现自己理解用户意图”作为策略。
-14. 把可维护性、抽象边界、side effect、duplication ownership、命名、函数式边界与模式决策写成 spec constraints，而不是留给下游凭感觉判断。
-15. 如 scoped work 包含业务规则、表单校验、筛选排序、状态派生、payload 构造、详情到表单回填、接口到视图模型转换，spec 必须记录 functional-programming constraints：
+14. 把可维护性、抽象边界、side effect、duplication ownership、命名、函数式边界、生产代码质量边界与模式决策写成 spec constraints，而不是留给下游凭感觉判断。
+15. 如 scoped work 添加或修改生产代码，spec 必须记录 production code quality constraints：
+   - 先类型契约后实现：需要新增、复用或收窄的 `type` / `interface`，以及是否需要 branded type 或等价名义区分来避免传错 ID / token
+   - fail-fast：空值、异常、非法值、超时、请求失败、部分成功和不可能状态如何显式处理
+   - strict null handling：`null` 与 `undefined` 的业务语义是否不同，哪里允许 `??` / `?.` 防御，哪里必须验证而不能展示兜底
+   - maintainability first：是否存在真实性能问题；如需 memoization、cache、debounce、throttle、virtualization、`useMemo` / `useCallback` / computed caching，必须写明理由
+   - pure functions over classes：确定性规则、校验、转换、format、payload builder、状态派生优先纯函数和不可变数据；引入 class 必须有框架、生命周期、封装状态或多态理由
+   - naming：布尔变量使用 `is` / `has` / `should` / `can`，props 回调用 `on`，内部事件处理用 `handle`，普通函数动词使用 `get` / `fetch` / `set` / `update` / `transform` / `format` / `check` / `validate` 等精确动词
+   - no magic variables：helper 输入来自参数、依赖注入或明确本地闭包；真实配置常量集中到最窄稳定 domain owner，不能用常量隐藏一次性值或过长 class
+   - boundary UI states：列表空状态、异步 loading 状态、表单错误状态与结束条件
+16. 如 scoped work 包含业务规则、表单校验、筛选排序、状态派生、payload 构造、详情到表单回填、接口到视图模型转换，spec 必须记录 functional-programming constraints：
    - 哪些规则或转换应该是纯函数
    - 哪些输入必须按不可变数据处理，例如 props、backend DTO、store snapshot、adapter input
    - 哪些副作用只能出现在 request layer、event handler、store action、command function 或 lifecycle boundary
    - 哪些数据语义归一必须在 adapter / mapper / `fromDetail`，不能落在 computed / watch / template fallback
    - 是否明确拒绝引入函数式工具库或过度抽象
-16. 如涉及新增或修改样式，spec 必须记录 Tailwind CSS-style utility class 约束：
+17. 如 scoped work 触碰业务规则、校验、筛选排序、option 构造、权限判断、payload 构造、状态派生、状态映射、adapter / mapper、view-model 构造或 helper 逻辑，spec 必须记录 architecture reuse and shared ownership constraints：
+   - 已发现的等价生产逻辑位置与调用方
+   - Anti-DRY 矩阵结论：业务语义、分层、真实生产使用点数量、变化稳定性、变因数量
+   - 抽取 / 复用 / 保持分离 / 暂缓决策
+   - 共性分类：技术/基础设施、业务/领域、UI/设计系统、配置/常量
+   - 公共 owner、依赖方向、公开 API、输入输出、类型来源、依赖注入 / 策略边界和副作用边界
+   - 需要迁移的生产调用方、测试与 mock
+   - 新晋升 shared API 的 JSDoc `@see` / `@example` traceability 要求
+   - 行为等价验证要求
+   如果存在重复语义逻辑但没有 architecture-design 工件，必须回退到 `architecture-design`；不能在 spec 阶段自行略过。
+18. 如涉及新增或修改样式，spec 必须记录 Tailwind CSS-style utility class 约束：
    - authored styling 只能使用 Tailwind CSS-style utilities
    - `class` / `className` / class binding 值必须保持可在模板内直接审查，超过项目 formatter 正常行宽或需要多行包裹即视为过长
    - 不允许用常量、map、computed、helper 或 import 变量隐藏过长 class 值
    - 条件 class binding 只能承载小型状态切换，不能承载大段基础样式
-17. 如果存在当前交付单元 `architecture-design`，spec 必须承接其中的模块边界、文件结构、依赖方向、函数分层、数据结构与类型策略，不能在 spec 阶段重新发明或悄悄改写。
-18. 如果 scoped work 是从 0 开始搭建项目、应用、包或前端业务面，必须在 spec 中明确脚手架或 starter 决策：
+19. 如果存在当前交付单元 `architecture-design`，spec 必须承接其中的模块边界、文件结构、依赖方向、函数分层、数据结构、类型策略、复用候选和公共抽象决策，不能在 spec 阶段重新发明、悄悄改写或降级为局部复制。
+20. 如果 scoped work 是从 0 开始搭建项目、应用、包或前端业务面，必须在 spec 中明确脚手架或 starter 决策：
    - 优先判断是否存在合适的同类型项目脚手架
    - 有可复用脚手架时，默认复用并写明来源
    - 不复用时，必须记录不适配、不可用或改造成本不合理的原因
    - 允许偏离脚手架的范围也要提前写明
-19. 如涉及后端接口：
+21. 如涉及后端接口：
    - 识别权威 contract source
    - 记录 direct contract consumption 还是 adapter boundary
    - 服务端有 TypeScript 声明则优先复用
@@ -109,16 +129,16 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - protobuf 需说明是复用生成类型还是由 proto 导出前端可用类型
    - 承接 requirement-analysis / requirement-splitting 中的前端 / 服务端职责拆分，不得把服务端负责的字段生产、权限、持久化、状态流转、审计、异步任务或同步能力写成前端实现任务
    - 前端只定义消费、展示、交互、adapter / mapper / fromDetail 归一、错误处理和状态呈现等前端职责；缺失服务端契约必须写入 clarifications 或外部接口待补
-20. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，spec 必须记录：
+22. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，spec 必须记录：
    - 哪个 `tsconfig` 实际 governs 当前作用域文件
    - 哪些 compiler options 会 materially 影响实现或类型理解，例如路径别名、ambient globals、JSX runtime、strictness、module resolution
    - 哪些声明或生成类型来源属于当前改动必须读取的闭包范围
    - 明确禁止把“后面执行时再猜 tsconfig / 再扫全仓 `.d.ts`”当作实现策略
-21. 如涉及既有代码结构调整：
+23. 如涉及既有代码结构调整：
    - 优先用 code graph 识别真实边界、依赖方向和 impact scope
    - 如结构理解加深，更新 `artifacts/code-context.md`
-22. 不写实现代码。
-23. 完成后执行框架自动审批检查，只有在 spec 满足模板、政策、source grounding、source traceability、当前交付单元范围、已确认需求口径和状态机门禁时，才设置审批并切到 `stage=plan`；不得请求用户审批：
+24. 不写实现代码。
+25. 完成后执行框架自动审批检查，只有在 spec 满足模板、政策、source grounding、source traceability、当前交付单元范围、已确认需求口径、生产代码质量约束、架构复用决策和状态机门禁时，才设置审批并切到 `stage=plan`；不得请求用户审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`
    - direct-change、bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
 
@@ -135,7 +155,9 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
   - API 与数据合同决策
   - 前端 / 服务端职责边界承接结果
   - API contract source / type reuse / protobuf handling / adapter-boundary 决策
+  - production code quality constraints
   - functional-programming constraints
+  - architecture reuse and shared ownership constraints
   - design constraints
   - frontend styling constraints
   - pattern decision
@@ -148,6 +170,9 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 行为颗粒度已达到与 `plan` 对齐的 function-complete granularity。
 - 如存在 user intent contract，spec 已保留 practical goal、forbidden interpretations、success criteria 和 intent-level verification checks。
 - spec 已记录 responsibility boundaries、side-effect placement、duplication ownership、complexity guardrails、pattern use / rejection。
+- 如添加或修改生产代码，spec 已记录 type-first、fail-fast、strict null、naming、no magic variables、maintainability-first、pure functions over classes、boundary UI states 约束。
+- spec 已记录架构复用候选、公共 owner、抽取 / 复用 / 保持分离 / 暂缓决策，以及行为等价验证要求（如适用）。
+- spec 已记录 Anti-DRY 矩阵、共性分类、依赖注入 / 策略边界、反模式红线和 JSDoc traceability 要求（如适用）。
 - spec 已记录纯函数边界、不可变输入、副作用归属、adapter / mapper / fromDetail 归一边界（如适用）。
 - 如涉及样式变更，spec 已记录 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的约束。
 - 当前交付单元 `spec/clarifications.md` 已记录开放问题与已定决策。
@@ -159,6 +184,7 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 若存在 requirement-splitting 工件，当前模块 spec 已完整承接当前模块显式行为约束。
 - 若上游包含前端 / 服务端职责拆分，spec 已承接该边界，且没有把服务端职责写成前端实现任务。
 - 若存在 architecture-design 工件，当前交付单元 spec 已完整承接当前交付单元代码架构决策。
+- 若存在重复语义逻辑，spec 没有把抽取或复用决策留给 plan / execute 自行判断。
 - 若 scoped work 为 greenfield，spec 已明确脚手架或 starter 决策及允许偏离范围。
 - framework 已自动审批 spec，并记录其满足模板、政策、source grounding、source traceability、范围、需求口径和状态机门禁。
 - 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`；direct-change、bugfix 或非拆分请求已设置 `state.json.approvals.spec_approved=true`。
@@ -181,5 +207,8 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 不能把服务端字段生产、权限校验、持久化、状态流转、审计、异步任务或同步职责伪装成前端可独立完成的 spec。
 - 不能把重大抽象/协作问题留给下游自己决定。
 - 不能把关键 responsibility / side-effect / duplication / readability 约束留空。
+- 不能把类型契约、fail-fast、严格空值、命名、配置常量归属、性能取舍或边界 UI 状态留给 plan / execute 自行判断。
+- 不能把跨模块重复语义逻辑留给 plan 或 execute 自行决定是否抽取。
+- 不能把 Anti-DRY 抽象矩阵、共性分类、依赖倒置策略或错误抽象红线留给 plan / execute 自行判断。
 - 不能把纯函数边界、数据不可变性、副作用归属或语义归一位置留给下游自己猜。
 - 不能把样式实现方式、class 值长度治理或禁止隐藏过长 class 字符串的规则留给下游自己决定。

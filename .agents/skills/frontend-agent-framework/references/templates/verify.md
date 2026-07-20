@@ -16,6 +16,8 @@ Required top-level sections:
 - removal cleanup compliance
 - spec constraint compliance
 - source grounding compliance
+- architecture reuse compliance
+- production code quality compliance
 - functional-programming compliance
 - frontend styling compliance
 - API contract conformance
@@ -79,6 +81,22 @@ Required fields for each acceptance item:
 - evidence reference
 - follow-up if failed
 
+`architecture reuse compliance` is required when the scoped work touches business rules, validation, filtering, sorting, option building, permission checks, payload construction, status mapping, adapter / mapper normalization, view-model construction, helper logic, or state derivation. It must include:
+
+- result (`pass` or `fail`)
+- reuse candidates checked
+- Anti-DRY matrix verified: semantic owner, layer, production use-site count, change stability, and variation axes
+- extraction / reuse / keep-separate / defer decisions verified
+- shared owner, dependency direction, public API, and side-effect boundary checks
+- commonality classification and target owner checks
+- dependency injection / strategy / adapter boundary checks for business-specific variation
+- migrated production callers, tests, mocks, imports, and exports
+- JSDoc `@see` / `@example` traceability for promoted shared APIs
+- duplicate legacy paths found or ruled out
+- premature abstraction, God utils, business-entity imports in shared utilities, environment side effects, and merged mega-interfaces found or ruled out
+- behavior-equivalence evidence
+- follow-up if failed
+
 `functional-programming compliance` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:
 
 - result (`pass` or `fail`)
@@ -88,6 +106,20 @@ Required fields for each acceptance item:
 - adapter / mapper / `fromDetail` semantic-normalization checks
 - hidden mutation or hidden side effects found or ruled out
 - readability of functional composition
+- evidence reference
+- follow-up if failed
+
+`production code quality compliance` is required when production code was added or changed. It must include:
+
+- result (`pass` or `fail`)
+- type-first contract checks, including precise type / interface ownership and branded type or equivalent nominal distinctions when needed
+- fail-fast checks for abnormal, empty, nullable, invalid, timeout, rejected, partial-success, and impossible states
+- strict null checks for `null` / `undefined` distinction and proper use of `??` / `?.`
+- naming checks for booleans, callback props, internal event handlers, and function verbs
+- no magic variable checks, including helper dependency inputs and configuration constant ownership
+- maintainability-first performance checks, including justification for memoization, caching, debounce, throttle, virtualization, `useMemo` / `useCallback`, computed caching, or watcher optimization
+- pure function / immutable data checks, including any approved exception for classes or mutable owners
+- boundary UI state checks for list empty states, async loading states, and form input error states
 - evidence reference
 - follow-up if failed
 

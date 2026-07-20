@@ -42,6 +42,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
    - `../../references/policies/clean-code.md`
    - `../../references/policies/frontend-components.md`
    - `../../references/policies/functional-programming.md`
+   - `../../references/policies/production-code-quality.md`
    - `../../references/policies/spec-constraints.md`
    - `../../references/policies/source-grounding.md`
    - `../../references/policies/testing.md`
@@ -127,25 +128,46 @@ description: Stage subskill for planning. Convert the framework-approved spec in
    - 规定不可直接 mutate props、backend DTO、共享 store snapshot、函数参数或导入常量
    - 明确 adapter / mapper / `fromDetail` 负责数据语义归一，computed 仅用于视图局部派生
    - 为纯函数、mapper、payload builder 或 validator 设计可验证路径
-24. 把 clean-code guardrails、functional-programming boundaries、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
-25. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
-26. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
-27. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
-28. 当前交付单元 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
+24. 如 scoped work 添加或修改生产代码，计划必须把 production-code-quality 约束拆进任务：
+   - 先定义或复用精确 `type` / `interface`，再实现依赖这些数据的逻辑；必要时规划 branded type 或等价名义区分
+   - 把异常、空值、非法值、请求失败、超时、部分成功和不可能状态拆成显式处理与验证点
+   - 明确 `null` 与 `undefined` 语义，规定 `??` / `?.` 的防御位置，以及禁止用展示兜底替代业务校验的位置
+   - 优先规划可读实现；只有真实性能或引用稳定性需求时才规划 memoization、cache、debounce、throttle、virtualization、`useMemo` / `useCallback` / computed caching，并写明依赖合理性说明
+   - 把确定性规则、校验、转换、format、payload builder、状态派生规划为纯函数和不可变数据更新；class 只能在 spec 已说明理由时使用
+   - 把布尔命名、props 回调 `on*`、内部事件 `handle*`、函数精准动词作为执行检查项
+   - 明确 helper 依赖来源，避免 magic variables；真实配置常量集中到最窄稳定 owner，禁止把一次性值或过长 class 放进常量规避审查
+   - 对列表空状态、异步 loading 状态、表单输入错误状态拆出实现与验证任务
+25. 如 spec 或 architecture-design 包含复用候选，计划必须把 architecture reuse 决策拆成执行任务：
+   - 抽取或复用已有公共函数 / hook / mapper / adapter
+   - 对每个候选承接 Anti-DRY 矩阵结论：业务语义、分层、真实生产使用点数量、变化稳定性、变因数量
+   - 承接共性分类：技术/基础设施、业务/领域、UI/设计系统、配置/常量
+   - 迁移所有 in-scope 生产调用方
+   - 更新 import / export、测试、mock 和调用文档
+   - 删除重复旧路径或保留有真实差异的分支
+   - 通过参数、依赖注入、getter、config、HOF、strategy object、adapter 或薄封装传入业务差异
+   - 为新晋升 shared API 添加 JSDoc `@see` / `@example` traceability
+   - 为共享逻辑补行为等价验证
+   - 对保持分离或暂缓项写清真实语义差异、分层差异、不足三处稳定生产使用、变化点不确定、变因过多、依赖风险或范围边界
+   不能把“不同模块”作为不抽取的唯一理由，不能把“两处相似代码”作为必须抽取的理由，不能让 execute 自行决定是否抽取。
+26. 把 clean-code guardrails、production-code-quality constraints、architecture reuse decisions、functional-programming boundaries、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
+27. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
+28. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
+29. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
+30. 当前交付单元 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
    - 先给全局摘要
    - 再按任务分节
    - 每个任务都用固定小节展示目标、范围、前置条件、交互、状态、风险、测试
    - 避免输出大段连续散文
-29. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
+31. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
    - 起点
    - 关键步骤
    - 分支判断
    - 成功出口
    - 失败/回退出口
-30. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
-31. 保留 `state.json.loop`，不重置、不改写。
-32. 本阶段不写实现代码。
-33. 完成后执行 framework 自动审批检查，只有在 plan 满足 framework-approved spec、模板、政策、source grounding、任务完整性、验证策略、影响面、前置确认口径和状态机门禁时，才设置审批并切到 `stage=execute`；不得请求用户审批：
+32. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
+33. 保留 `state.json.loop`，不重置、不改写。
+34. 本阶段不写实现代码。
+35. 完成后执行 framework 自动审批检查，只有在 plan 满足 framework-approved spec、模板、政策、source grounding、production-code-quality、architecture reuse、任务完整性、验证策略、影响面、前置确认口径和状态机门禁时，才设置审批并切到 `stage=execute`；不得请求用户审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`
    - direct-change、bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
 
@@ -169,6 +191,8 @@ description: Stage subskill for planning. Convert the framework-approved spec in
   - API 对接与类型策略
   - 风险与回滚说明
   - clean-code / functional-programming / pattern / boundary 约束
+  - production-code-quality 执行与验证任务（如适用）
+  - architecture reuse / shared extraction 任务（如适用）
   - Tailwind CSS-style styling 约束（如适用）
   - trigger / context / handoff 规划（如适用）
 
@@ -191,11 +215,14 @@ description: Stage subskill for planning. Convert the framework-approved spec in
 - API 对接项已写清 contract source、type strategy、adapter boundary、request-layer ownership。
 - 若 scoped work 为 greenfield，计划已把脚手架采用或拒绝及其落地改造拆成显式任务。
 - clean-code / pattern 决策已记录。
+- 如添加或修改生产代码，计划已把 type-first、fail-fast、strict null、naming、no magic variables、maintainability-first、pure functions over classes、boundary UI states 拆成执行和验证任务。
+- 如存在复用候选，计划已拆出公共逻辑抽取 / 复用 / 保持分离 / 暂缓任务，并明确调用方迁移和行为等价验证。
+- 如存在复用候选，计划已承接 Anti-DRY 矩阵、共性分类、依赖注入 / 策略边界、JSDoc traceability 和抽象反模式红线。
 - 如涉及规则、校验、数据转换、状态派生或 payload 构造，计划已拆出纯函数、不可变数据、副作用边界和测试 / 验证任务。
 - 如涉及样式变更，计划已拆出 Tailwind CSS-style utility class、class 值长度、禁止隐藏过长 class 字符串的执行和验证任务。
 - 串行与可并行任务已区分。
 - 主动式 workflow 的 trigger / context / observation / handoff 已写清（如适用）。
-- framework 已自动审批 plan，并记录其满足 framework-approved spec、模板、政策、source grounding、任务完整性、验证策略、影响面、前置确认口径和状态机门禁。
+- framework 已自动审批 plan，并记录其满足 framework-approved spec、模板、政策、source grounding、architecture reuse、任务完整性、验证策略、影响面、前置确认口径和状态机门禁。
 - 拆分 PRD 模块已设置 `state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`；direct-change、bugfix 或非拆分请求已设置 `state.json.approvals.plan_approved=true`。
 - `state.json.stage=execute`，且保留原有 `loop`。
 
@@ -208,11 +235,16 @@ description: Stage subskill for planning. Convert the framework-approved spec in
 - 不能把样例计划当捷径直接套用。
 - 对可测试行为，不能把测试设计拖到实现之后。
 - 不能把明显的复杂度、重复、混责问题留成未规划状态。
+- 不能把重复语义逻辑的抽取 / 复用 / 保持分离决策留给 execute 自行判断。
+- 不能用“不同模块”作为拒绝公共逻辑抽取的唯一理由。
+- 不能因为两处代码相似就规划抽取；必须先通过 Anti-DRY 矩阵。
+- 不能规划 God Utils、shared 导入业务私有 entity、shared 内部直接读写环境副作用，或为了复用合并接口。
 - 不能在没有明确 change axis / rejected alternative 的前提下引入 pattern。
 - 不能把 trivial / tightly-coupled 任务包装成 workflow-style parallel execution。
 - 不能把 trigger / context / intervention points 留成隐式。
 - 不能把页面结构、字段定义、列定义、交互结果、loading 规则留空。
 - 不能让 `execute` 自行补产品行为。
+- 不能让 `execute` 自行补类型契约、失败处理、严格空值语义、命名标准、性能取舍、配置常量归属或边界 UI 状态。
 - 不能让 `execute` 自行理解用户真实意图或自行发现 forbidden interpretations。
 - 不能让 `execute` 在未规划功能链路、文件引用关系、调用方、副作用和影响面审查的情况下修改或移除既有代码。
 - 不能让 `execute` 自行发现行为移除后的 orphan helper、unused import、stale request wrapper、obsolete state、测试或注释残留。

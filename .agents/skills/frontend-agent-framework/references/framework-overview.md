@@ -50,6 +50,8 @@ In this framework:
 - `requirement-splitting` is the source-preserving decomposition stage for PRD-driven work and feeds `page-design`, `architecture-design`, and `spec`
 - for PRD-driven work that has been split into module files, downstream delivery runs one split module at a time inside the same request
 - each split module must complete its own `page-design? -> architecture-design? -> spec -> plan -> execute -> verify -> review` chain before the next split module starts
+- repeated semantic logic is architecture-sensitive: when scoped work touches duplicated production rules, validation, adapter / mapper normalization, payload construction, option building, permission checks, state derivation, status mapping, or helper behavior, the workflow must decide shared ownership before implementation
+- `architecture-design` must record reuse candidates and extract / reuse / keep-separate / defer decisions; safe duplicated semantic rules should be owned once instead of copied locally
 - split-module downstream artifacts live under `docs/requests/<request-id>/module-runs/<module-id>/`
 - direct-change, bugfix, and other non-split downstream delivery uses the same `page-design? -> architecture-design? -> spec -> plan -> execute -> verify -> review` chain at request level
 - direct-change, bugfix, and other non-split downstream artifacts live directly under `docs/requests/<request-id>/design|spec|plan|execution|verification|review`
@@ -57,6 +59,7 @@ In this framework:
 - `spec` and `plan` approval flags are set by framework automatic approval checks, not by user approval prompts
 - `spec` and `plan` automatic approval must reject ungrounded behavior, tasks, or acceptance criteria instead of filling missing details from convention, sample content, neighboring modules, or preferred design taste
 - the goal contract is established in request/spec artifacts and proved by verification/review artifacts
+- completion can require `architecture reuse compliance: pass` and `architecture reuse assessment: pass` when shared extraction or repeated semantic logic is relevant
 - the main skill owns loop control, gate recovery, and rollback routing
 - workflow-style parallelization is optional execution scale, not a second lifecycle and not a default
 - proactive workflows must make trigger, context, steerability, and handoff explicit in repository artifacts
