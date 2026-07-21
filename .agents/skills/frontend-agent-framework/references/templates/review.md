@@ -19,6 +19,7 @@ Required sections:
 - removal cleanup assessment
 - clean-code assessment
 - source grounding assessment
+- expert frontend engineering assessment
 - architecture reuse assessment
 - production code quality assessment
 - functional-programming assessment
@@ -85,6 +86,18 @@ Required sections:
 - duplicate legacy paths, orphan helpers, dumping-ground utility, premature abstraction, feature-entity import, environment side effect, or merged-interface findings
 - JSDoc `@see` / `@example` traceability findings for promoted shared APIs
 - behavior-equivalence evidence reviewed
+- required follow-up if failed
+
+`expert frontend engineering assessment` is required when the scoped work adds or changes user-facing frontend behavior, state flow, data flow, component composition, frontend architecture, or production integration. It must include:
+
+- result (`pass` or `fail`)
+- end-to-end user journey findings
+- state ownership and data lifecycle findings
+- async correctness findings for loading, dedupe, cancellation, stale response, race semantics, idempotency, and retry when applicable
+- interaction resilience findings for keyboard, focus, semantic controls, disabled states, destructive confirmations, permissions, and feedback when applicable
+- performance and rendering boundary findings
+- evolution safety findings for migration, compatibility, rollback, cleanup trigger, or dual-path behavior when applicable
+- testability and diagnostic evidence findings
 - required follow-up if failed
 
 `functional-programming assessment` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:

@@ -36,18 +36,8 @@ description: Stage subskill for planning. Convert the framework-approved spec in
    - `../../references/state-machine.md`
    - `../../references/templates/plan.md`
    - `../../references/templates/code-context.md`
-   - `../../references/policies/design-patterns.md`
-   - `../../references/policies/code-graph.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/clean-code.md`
-   - `../../references/policies/frontend-components.md`
-   - `../../references/policies/functional-programming.md`
-   - `../../references/policies/production-code-quality.md`
-   - `../../references/policies/spec-constraints.md`
-   - `../../references/policies/source-grounding.md`
-   - `../../references/policies/testing.md`
-   - `../../references/policies/typescript-context.md`
-   - `../../references/policies/user-intent.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `plan` 阶段映射读取本次 scoped work 适用的 policy 文件；默认至少读取 `source-grounding.md`、`testing.md`、`doc-writing.md`
 2. 进入本阶段前，要求当前交付单元 spec 已通过 framework 自动审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.spec_approved=true`
    - direct-change、bugfix 或非拆分请求：`state.json.approvals.spec_approved=true`
@@ -137,7 +127,15 @@ description: Stage subskill for planning. Convert the framework-approved spec in
    - 把布尔命名、props 回调 `on*`、内部事件 `handle*`、函数精准动词作为执行检查项
    - 明确 helper 依赖来源，避免 magic variables；真实配置常量集中到最窄稳定 owner，禁止把一次性值或过长 class 放进常量规避审查
    - 对列表空状态、异步 loading 状态、表单输入错误状态拆出实现与验证任务
-25. 如 spec 或 architecture-design 包含复用候选，计划必须把 architecture reuse 决策拆成执行任务：
+25. 如 scoped work 新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，计划必须把 expert frontend engineering 约束拆进任务：
+   - 用户旅程、可见状态、失败/重试/取消/交接
+   - 状态所有权、数据生命周期、derived state 与 writable state 边界
+   - 异步 loading owner、去重、取消、过期响应、竞态、幂等、重试
+   - 键盘、焦点、语义控件、disabled、确认、权限、反馈
+   - render scope、大列表、昂贵派生、bundle、响应式 fan-out
+   - migration、兼容边界、回滚面、清理触发器、双路径 owner
+   - 测试与诊断证据
+26. 如 spec 或 architecture-design 包含复用候选，计划必须把 architecture reuse 决策拆成执行任务：
    - 抽取或复用已有公共函数 / hook / mapper / adapter
    - 对每个候选承接 Anti-DRY 矩阵结论：业务语义、分层、真实生产使用点数量、变化稳定性、变因数量
    - 承接共性分类：技术/基础设施、业务/领域、UI/设计系统、配置/常量
@@ -149,25 +147,25 @@ description: Stage subskill for planning. Convert the framework-approved spec in
    - 为共享逻辑补行为等价验证
    - 对保持分离或暂缓项写清真实语义差异、分层差异、不足三处稳定生产使用、变化点不确定、变因过多、依赖风险或范围边界
    不能把“不同模块”作为不抽取的唯一理由，不能把“两处相似代码”作为必须抽取的理由，不能让 execute 自行决定是否抽取。
-26. 把 clean-code guardrails、production-code-quality constraints、architecture reuse decisions、functional-programming boundaries、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
-27. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
-28. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
-29. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
-30. 当前交付单元 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
+27. 把 clean-code guardrails、expert frontend engineering constraints、production-code-quality constraints、architecture reuse decisions、functional-programming boundaries、pattern decisions、side-effect boundaries、request-layer ownership 写进计划。
+28. 既有代码影响面较大时，优先用 code graph 明确 impact scope，并更新 `artifacts/code-context.md`。
+29. 区分串行任务与可并行任务，仅在确实值得时建议 workflow-style parallel execution。
+30. 如果请求本质是主动式 workflow，写清 trigger / context / observation points / handoff。
+31. 当前交付单元 `plan/plan.md` 必须使用利于人眼快速扫描的结构：
    - 先给全局摘要
    - 再按任务分节
    - 每个任务都用固定小节展示目标、范围、前置条件、交互、状态、风险、测试
    - 避免输出大段连续散文
-31. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
+32. 每个任务都必须附一个流程图，默认使用 Mermaid，至少覆盖：
    - 起点
    - 关键步骤
    - 分支判断
    - 成功出口
    - 失败/回退出口
-32. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
-33. 保留 `state.json.loop`，不重置、不改写。
-34. 本阶段不写实现代码。
-35. 完成后执行 framework 自动审批检查，只有在 plan 满足 framework-approved spec、模板、政策、source grounding、production-code-quality、architecture reuse、任务完整性、验证策略、影响面、前置确认口径和状态机门禁时，才设置审批并切到 `stage=execute`；不得请求用户审批：
+33. 如果任务很小，也不能省略流程图；可以使用最小闭环流程图，但不能缺失。
+34. 保留 `state.json.loop`，不重置、不改写。
+35. 本阶段不写实现代码。
+36. 完成后执行 framework 自动审批检查，只有在 plan 满足 framework-approved spec、模板、政策、source grounding、expert-frontend-engineering、production-code-quality、architecture reuse、任务完整性、验证策略、影响面、前置确认口径和状态机门禁时，才设置审批并切到 `stage=execute`；不得请求用户审批：
    - 拆分 PRD 模块：`state.json.module_flow.modules.<current-module-id>.approvals.plan_approved=true`
    - direct-change、bugfix 或非拆分请求：`state.json.approvals.plan_approved=true`
 
@@ -191,6 +189,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
   - API 对接与类型策略
   - 风险与回滚说明
   - clean-code / functional-programming / pattern / boundary 约束
+  - expert-frontend-engineering 执行与验证任务（如适用）
   - production-code-quality 执行与验证任务（如适用）
   - architecture reuse / shared extraction 任务（如适用）
   - Tailwind CSS-style styling 约束（如适用）
@@ -216,6 +215,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
 - 若 scoped work 为 greenfield，计划已把脚手架采用或拒绝及其落地改造拆成显式任务。
 - clean-code / pattern 决策已记录。
 - 如添加或修改生产代码，计划已把 type-first、fail-fast、strict null、naming、no magic variables、maintainability-first、pure functions over classes、boundary UI states 拆成执行和验证任务。
+- 如新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，计划已把 expert frontend engineering 约束拆成执行和验证任务。
 - 如存在复用候选，计划已拆出公共逻辑抽取 / 复用 / 保持分离 / 暂缓任务，并明确调用方迁移和行为等价验证。
 - 如存在复用候选，计划已承接 Anti-DRY 矩阵、共性分类、依赖注入 / 策略边界、JSDoc traceability 和抽象反模式红线。
 - 如涉及规则、校验、数据转换、状态派生或 payload 构造，计划已拆出纯函数、不可变数据、副作用边界和测试 / 验证任务。
@@ -245,6 +245,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
 - 不能把页面结构、字段定义、列定义、交互结果、loading 规则留空。
 - 不能让 `execute` 自行补产品行为。
 - 不能让 `execute` 自行补类型契约、失败处理、严格空值语义、命名标准、性能取舍、配置常量归属或边界 UI 状态。
+- 不能让 `execute` 自行补用户旅程、状态所有权、数据生命周期、异步竞态、交互韧性、性能边界、演进安全或测试证据。
 - 不能让 `execute` 自行理解用户真实意图或自行发现 forbidden interpretations。
 - 不能让 `execute` 在未规划功能链路、文件引用关系、调用方、副作用和影响面审查的情况下修改或移除既有代码。
 - 不能让 `execute` 自行发现行为移除后的 orphan helper、unused import、stale request wrapper、obsolete state、测试或注释残留。

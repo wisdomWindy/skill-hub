@@ -15,6 +15,7 @@ Required sections:
 - task-board updates
 - changed files and owned symbols
 - implementation decisions
+- expert frontend engineering execution notes
 - production code quality execution notes
 - TDD evidence or documented exception
 - change-chain review evidence
@@ -68,6 +69,20 @@ Document:
 - maintainability-first performance decision, including any approved memoization, cache, debounce, throttle, virtualization, `useMemo` / `useCallback`, computed caching, or watcher optimization and its dependency rationale
 - pure function / immutable data preference followed, or approved reason for class / mutable owner use
 - empty, loading, and form error states implemented for touched lists, async operations, and form inputs
+
+### `expert frontend engineering execution notes`
+
+Required when user-facing frontend behavior, state flow, data flow, component composition, frontend architecture, or production integration was added or changed.
+
+Document:
+
+- user journey states implemented or intentionally unchanged
+- state ownership and data lifecycle decisions followed
+- async race, stale response, cancellation, dedupe, idempotency, retry, and loading decisions followed
+- interaction resilience implemented for keyboard, focus, semantic controls, disabled states, destructive confirmations, permissions, and feedback when applicable
+- render scope, large-list, expensive derivation, bundle, and reactive fan-out decisions followed
+- migration, compatibility, rollback, cleanup trigger, or dual-path decisions followed
+- testability and diagnostic evidence handed to verification
 
 ### `change-chain review evidence`
 

@@ -28,7 +28,8 @@ description: Stage subskill for intake. Create the request workspace from a PRD-
    - `../../references/state-machine.md`
    - `../../references/authoring-guide.md`
    - `../../references/templates/request.md`
-   - `../../references/policies/source-grounding.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `intake` 阶段映射读取本次输入适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`
 2. 读取 PRD 文档、解析稳定 PRD 引用，或归一化稳定直接变更指令，再开始创建下游工件。
 3. 创建 `docs/requests/<request-id>/` 作为标准请求工作区。
 4. 只写 intake 阶段工件，不写 `spec/spec.md`，不写实现代码。

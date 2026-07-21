@@ -37,9 +37,8 @@ description: Stage subskill for page design. Define page layout, visual hierarch
    - `../../references/framework-overview.md`
    - `../../references/state-machine.md`
    - `../../references/templates/page-design.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/frontend-components.md`
-   - `../../references/policies/frontend-architecture.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `page-design` 阶段映射读取本次页面设计适用的 policy 文件；默认至少读取 `frontend-components.md`、`doc-writing.md`
 2. 只在页面型需求中使用本阶段。
 3. 仅为当前交付单元产出页面设计；拆分 PRD 工作不得跨模块混写。
 4. 产出当前交付单元的 `design/page-design.md`。

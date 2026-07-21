@@ -42,9 +42,8 @@ description: Use when a PRD-driven frontend request needs developer-facing requi
    - `../../references/state-machine.md`
    - `../../references/templates/request.md`
    - `../../references/templates/requirement-analysis.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/source-grounding.md`
-   - `../../references/policies/user-intent.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `requirement-analysis` 阶段映射读取本次需求适用的 policy 文件；默认至少读取 `source-grounding.md`、`user-intent.md`、`doc-writing.md`
 2. 仅用于 PRD 驱动需求；bugfix 输入默认不走本阶段，除非主 skill 明确把缺陷提升为等价需求分析问题。
 3. 先消费 intake 工件；如果 `artifacts/prd-snapshot.md` 相比原始 PRD 丢失了关键业务约束、流程、字段、状态或依赖关系，必须回看原始 PRD 或稳定引用。
 4. 若原始 PRD 中显式引用了其他会改变范围判断的资料，必须补建“资料来源与阅读口径”：

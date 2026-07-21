@@ -27,6 +27,7 @@ Required sections:
 - page and module design
 - frontend styling constraints
 - function-complete behavior breakdown
+- expert frontend engineering constraints
 - production code quality constraints
 - functional-programming constraints
 - architecture reuse and shared ownership constraints
@@ -125,6 +126,21 @@ Document:
 - semantic normalization boundaries, especially adapter / mapper / `fromDetail`
 - derived state that should not be duplicated as writable state
 - whether functional utility libraries or higher-order abstractions are rejected or approved
+
+## `expert frontend engineering constraints`
+
+Required when the scoped work adds or changes user-facing frontend behavior, state flow, data flow, component composition, frontend architecture, or production integration.
+
+Document:
+
+- end-to-end user journey: entrypoints, preconditions, visible states, success, failure, retry, cancellation, and handoff
+- state ownership: source state, derived state, form state, server state, route state, cache state, and persistence boundaries
+- data lifecycle: backend DTO, adapter / mapper, view model, form model, payload, and response handling
+- async correctness: loading owner, dedupe, cancellation, stale response handling, race semantics, idempotency, and retry semantics
+- interaction resilience: keyboard, focus, semantic controls, disabled states, destructive confirmations, permission-denied behavior, and actionable feedback
+- performance and rendering boundary: render scope, large-list strategy, expensive derivation, bundle impact, and reactive fan-out risk
+- evolution safety: extension seams, compatibility boundary, feature flag or migration need, rollback surface, and cleanup trigger
+- testability and observability: deterministic units, component interaction coverage, integration seams, useful errors, and debuggable evidence
 
 ## `production code quality constraints`
 

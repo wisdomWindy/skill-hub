@@ -16,6 +16,7 @@ Required top-level sections:
 - removal cleanup compliance
 - spec constraint compliance
 - source grounding compliance
+- expert frontend engineering compliance
 - architecture reuse compliance
 - production code quality compliance
 - functional-programming compliance
@@ -95,6 +96,18 @@ Required fields for each acceptance item:
 - duplicate legacy paths found or ruled out
 - premature abstraction, God utils, business-entity imports in shared utilities, environment side effects, and merged mega-interfaces found or ruled out
 - behavior-equivalence evidence
+- follow-up if failed
+
+`expert frontend engineering compliance` is required when the scoped work adds or changes user-facing frontend behavior, state flow, data flow, component composition, frontend architecture, or production integration. It must include:
+
+- result (`pass` or `fail`)
+- user journey integrity checks
+- state ownership and data lifecycle checks
+- async correctness checks for loading, dedupe, cancellation, stale responses, race semantics, idempotency, and retry when applicable
+- interaction resilience checks for keyboard, focus, semantic controls, disabled states, destructive confirmations, permissions, and feedback when applicable
+- performance and rendering boundary checks
+- evolution safety checks for migration, compatibility, rollback, cleanup trigger, or dual-path behavior when applicable
+- testability and diagnostic evidence
 - follow-up if failed
 
 `functional-programming compliance` is required when the scoped work includes business rules, validation, data transformations, payload construction, state derivation, adapter / mapper normalization, or side-effect orchestration. It must include:

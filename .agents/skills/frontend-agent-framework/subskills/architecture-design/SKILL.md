@@ -46,14 +46,8 @@ description: Stage subskill for code architecture design. Define frontend module
    - `../../references/framework-overview.md`
    - `../../references/state-machine.md`
    - `../../references/templates/architecture-design.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/frontend-architecture.md`
-   - `../../references/policies/frontend-components.md`
-   - `../../references/policies/functional-programming.md`
-   - `../../references/policies/design-patterns.md`
-   - `../../references/policies/spec-constraints.md`
-   - `../../references/policies/api-contracts.md`
-   - `../../references/policies/code-graph.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `architecture-design` 阶段映射读取本次 scoped work 适用的 policy 文件；默认至少读取 `frontend-architecture.md`、`functional-programming.md`、`design-patterns.md`、`doc-writing.md`
 2. 只在代码架构敏感型前端需求中使用本阶段。
 3. 仅为当前交付单元产出架构设计；拆分 PRD 工作不得跨模块混写。
 4. 产出当前交付单元的 `design/architecture-design.md`。

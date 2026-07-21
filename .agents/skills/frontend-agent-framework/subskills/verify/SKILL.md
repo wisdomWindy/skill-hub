@@ -31,15 +31,9 @@ description: Stage subskill for verification. Validate the implementation agains
    - 当前交付单元的 `execution/changelog.md`
    - `../../references/state-machine.md`
    - `../../references/templates/verify.md`
-   - `../../references/policies/testing.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/frontend-architecture.md`
-   - `../../references/policies/frontend-components.md`
-   - `../../references/policies/functional-programming.md`
-   - `../../references/policies/production-code-quality.md`
-   - `../../references/policies/source-grounding.md`
-   - `../../references/policies/typescript-context.md`
-   - `../../references/policies/user-intent.md`
+   - `../../references/policies/policy-index.md`
+   - `../../references/policies/constraint-model.md`
+   - 按 `policy-index.md` 的 `verify` 阶段映射读取本次 scoped work 适用的 policy 文件；默认至少读取 `testing.md`、`source-grounding.md`
 2. 产出当前交付单元的 `verification/verification.md`。
 3. 将每条 acceptance criterion 映射到：
    - verification method
@@ -85,7 +79,15 @@ description: Stage subskill for verification. Validate the implementation agains
    - memoization、cache、debounce、throttle、virtualization、`useMemo` / `useCallback`、computed caching 或 watcher 优化是否有真实理由和依赖说明
    - 确定性逻辑是否优先纯函数和不可变数据，class 或 mutable owner 是否有批准理由
    - touched list / async operation / form input 是否具备空状态、loading 状态、错误状态和终止条件
-17. 如 scoped work 触碰业务规则、校验、筛选排序、option 构造、权限判断、payload 构造、状态派生、状态映射、adapter / mapper、view-model 构造或 helper 逻辑，验证 architecture reuse compliance：
+17. 如 scoped work 新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，验证 expert frontend engineering compliance：
+   - 用户旅程是否覆盖入口、前置、可见状态、成功、失败、重试、取消和交接
+   - 状态 owner 与数据生命周期是否清晰，没有重复 writable state 或 derived state 误存
+   - 异步 loading、去重、取消、过期响应、竞态、幂等、重试语义是否符合 spec / plan
+   - 键盘、焦点、语义控件、disabled、确认、权限、反馈是否有证据或合理不适用说明
+   - render scope、大列表、昂贵派生、bundle、响应式 fan-out 风险是否被验证
+   - migration、兼容边界、回滚面、清理触发器或双路径 owner 是否清楚
+   - 测试与诊断证据是否足以支撑该前端链路
+18. 如 scoped work 触碰业务规则、校验、筛选排序、option 构造、权限判断、payload 构造、状态派生、状态映射、adapter / mapper、view-model 构造或 helper 逻辑，验证 architecture reuse compliance：
    - 是否检查了 spec / plan / architecture-design 中的复用候选
    - 是否验证了 Anti-DRY 矩阵：业务语义、分层、真实生产使用点数量、变化稳定性、变因数量
    - 抽取 / 复用 / 保持分离 / 暂缓决策是否被执行
@@ -96,21 +98,22 @@ description: Stage subskill for verification. Validate the implementation agains
    - 新晋升 shared API 是否具备 JSDoc `@see` / `@example` traceability
    - 是否仍有重复旧路径、孤立 helper、dumping-ground utility、premature abstraction、业务私有 entity import、环境副作用或合并接口
    - 是否有行为等价验证证据
-18. 在当前交付单元 `verification/verification.md` 中写出明确的 pass/fail 结论：
+19. 在当前交付单元 `verification/verification.md` 中写出明确的 pass/fail 结论：
    - `spec constraint compliance: pass|fail`
    - `source grounding compliance: pass|fail`
    - `user intent compliance: pass|fail`（如适用）
    - `change-chain integrity: pass|fail`（如适用）
    - `removal cleanup compliance: pass|fail`（如适用）
+   - `expert frontend engineering compliance: pass|fail`（如适用）
    - `production code quality compliance: pass|fail`（如适用）
    - `functional-programming compliance: pass|fail`（如适用）
    - `architecture reuse compliance: pass|fail`（如适用）
    - `frontend styling compliance: pass|fail`（如适用）
    - `API contract conformance: pass|fail`（如适用）
    - `TypeScript context compliance: pass|fail`（如适用）
-19. 保留 `state.json.loop`，不重置、不改写。
-20. 若验证失败，明确记录失败原因，交回主 skill 回流到 `execute`，并继续同一 workflow run。
-21. 本阶段不能在没有验证工件的情况下宣称完成。
+20. 保留 `state.json.loop`，不重置、不改写。
+21. 若验证失败，明确记录失败原因，交回主 skill 回流到 `execute`，并继续同一 workflow run。
+22. 本阶段不能在没有验证工件的情况下宣称完成。
 
 ## 输出格式
 
@@ -124,6 +127,7 @@ description: Stage subskill for verification. Validate the implementation agains
   - source grounding compliance 结论
   - user-intent compliance 结论（如适用）
   - change-chain integrity 结论（修改或移除既有代码时适用）
+  - expert-frontend-engineering compliance 结论（如适用）
   - production-code-quality compliance 结论（如适用）
   - functional-programming compliance 结论（如适用）
   - architecture reuse compliance 结论（如适用）
@@ -145,6 +149,7 @@ description: Stage subskill for verification. Validate the implementation agains
 - 如存在既有代码修改或移除，当前交付单元 `verification/verification.md` 已明确写出变更前链路审查与变更后链路完整性复查结论。
 - 如存在行为移除，当前交付单元 `verification/verification.md` 已明确写出删除依赖闭包清理结论。
 - 如测试文件引用待改或待删代码，当前交付单元 `verification/verification.md` 已明确写出测试适配结论，且未把测试引用当成生产代码保留依据。
+- 如新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，当前交付单元 `verification/verification.md` 已明确写出 expert frontend engineering compliance pass/fail。
 - 如添加或修改生产代码，当前交付单元 `verification/verification.md` 已明确写出 production code quality compliance pass/fail。
 - 如涉及样式变更，当前交付单元 `verification/verification.md` 已明确写出 Tailwind CSS-style styling 与 class 值长度检查结论。
 - 如涉及规则、校验、转换、状态派生或 payload 构造，当前交付单元 `verification/verification.md` 已明确写出 functional-programming compliance pass/fail。
@@ -171,6 +176,7 @@ description: Stage subskill for verification. Validate the implementation agains
 - 不能在移除行为后仍有孤立 helper、unused import、stale request wrapper、obsolete state、测试或注释残留时判定验证通过。
 - 不能因为测试文件引用待改或待删生产代码就判定该生产代码仍有真实调用方；测试必须适配新需求。
 - 不能在 spec / plan 存在行为颗粒度冲突时仍判定验证通过。
+- 不能在用户旅程不完整、状态 owner 不清、异步竞态未定义、交互韧性缺失、性能边界未验证、演进双路径无 owner，或证据不足时判定 expert frontend engineering compliance 通过。
 - 不能在存在缺失类型契约、silent failure、空值语义混淆、命名违规、magic variables、无理由微优化、无批准 class / mutable owner，或缺少边界 UI 状态时判定 production code quality compliance 通过。
 - 不能在 request/response handling 与 framework-approved backend contract source 冲突时仍判定验证通过。
 - 不能在 authored styling 违反 Tailwind CSS-style utility class、class 值长度或禁止隐藏过长 class 字符串规则时判定验证通过。

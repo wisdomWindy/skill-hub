@@ -33,9 +33,8 @@ description: Stage subskill for defect intake. Normalize a Feishu/Lark project d
    - `../../references/templates/request.md`
    - `../../references/templates/bugfix-intake.md`
    - `../../references/templates/code-context.md`
-   - `../../references/policies/code-graph.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/source-grounding.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `bugfix-intake` 阶段映射读取本次缺陷适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`、`code-graph.md`
 2. 先解析 defect 来源，再创建下游工件。
 3. 如果是 Feishu/Lark defect 且环境里有 `meegle`：
    - 默认使用 `meegle`

@@ -31,8 +31,8 @@ description: Stage subskill for requirement splitting. Normalize a PRD-driven re
    - `../../references/templates/request.md`
    - `../../references/templates/requirement-analysis.md`
    - `../../references/templates/requirement-splitting.md`
-   - `../../references/policies/doc-writing.md`
-   - `../../references/policies/source-grounding.md`
+   - `../../references/policies/policy-index.md`
+   - 按 `policy-index.md` 的 `requirement-splitting` 阶段映射读取本次需求适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`
 2. 仅用于 PRD 驱动需求；bugfix 输入默认不走本阶段，除非主 skill 明确把缺陷提升为等价需求拆分问题。
 3. 先消费 `requirement-analysis` 工件，把其中确认过的范围、非目标、source-grounding matrix、前端 / 服务端职责拆分、依赖、风险、歧义和拆分依据视为本阶段上游输入，而不是重新从零发明拆分逻辑。
 4. 在正式拆分前，先检查原始内容里是否存在 Markdown 不能稳定表达或下游 `.md` 工件不易识别的格式。

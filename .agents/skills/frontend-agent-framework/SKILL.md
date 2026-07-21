@@ -17,14 +17,8 @@ Keep the repository-local workflow in control through one default entry skill th
 
 - Establish and preserve the request goal contract so "done" is explicit and checkable.
 - Establish the proactive workflow contract: trigger, context, steerability, and handoff.
-- Enforce the canonical lifecycle:
-  `intake -> requirement-analysis -> requirement-splitting -> spec -> plan -> execute -> verify -> review -> complete`
-- Enforce the optional page-design lifecycle for page-oriented requests:
-  `intake -> requirement-analysis -> requirement-splitting -> page-design -> spec -> plan -> execute -> verify -> review -> complete`
-- Enforce the optional architecture-design lifecycle for frontend code-architecture-sensitive requests:
-  `intake -> requirement-analysis -> requirement-splitting -> architecture-design -> spec -> plan -> execute -> verify -> review -> complete`
-- Enforce the combined design lifecycle for requests that are both page-oriented and code-architecture-sensitive:
-  `intake -> requirement-analysis -> requirement-splitting -> page-design -> architecture-design -> spec -> plan -> execute -> verify -> review -> complete`
+- Enforce the canonical lifecycle with optional `page-design` and `architecture-design` inserted before `spec` when required:
+  `intake -> requirement-analysis? -> requirement-splitting? -> page-design? -> architecture-design? -> spec -> plan -> execute -> verify -> review -> complete`
 - Build or recover the active request's lifecycle execution path.
 - For PRD-driven requests that were split into module files, enforce sequential module delivery within the same request:
   one module completes `page-design? -> architecture-design? -> spec -> plan -> execute -> verify -> review` before the next module starts.
@@ -40,6 +34,7 @@ Keep the repository-local workflow in control through one default entry skill th
 - Enforce front-loaded human confirmation: needs, questions, rules, and product decisions that require a person must be handled in requirement analysis or source normalization before downstream stages proceed.
 - Enforce TDD for testable behavior changes unless the current task is explicitly non-testable and that exception is recorded.
 - Enforce clean-code discipline so shipped changes remain readable, low-surprise, and maintainable.
+- Enforce expert frontend engineering discipline so user journeys, state ownership, async correctness, interaction resilience, performance boundaries, evolution safety, and evidence are designed before implementation.
 - Enforce production-code-quality discipline so production code is type-first, fail-fast, explicit about nullability and boundary states, readable before micro-optimized, and named consistently.
 - Enforce expert frontend architecture discipline so repeated semantic rules are discovered, evaluated against Anti-DRY abstraction criteria, owned once only when the abstraction is stable and safe, and intentionally kept separate when abstraction would couple different semantics, layers, or unstable change points.
 - Enforce meaningful-constant discipline so constants carry domain meaning, correctness constraints, necessary snapshots, material simplification, or real reuse instead of merely renaming one-off values.
@@ -83,35 +78,16 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never let repeated semantic logic across production modules proceed as local copy-paste when the approved change touches that logic; first record an extract / reuse / keep-separate / defer decision with evidence.
 - Never enter `spec` for a PRD-driven request when any requirement-splitting module that needed Markdown normalization is missing either its raw snapshot or its Markdown-normalized snapshot.
 - Never allow ambiguous or fuzzy requirement content to pass into `spec` or `plan` as an implementation assumption when it affects scope, behavior, data semantics, permissions, state flow, API contract meaning, validation rules, acceptance criteria, or user intent; confirm it in the front-loaded gate first.
-- Never expand requirements from general convention, neighboring modules, sample request content, preferred architecture, preferred UX, or inferred product intent unless that expansion is source-backed or explicitly confirmed in repository artifacts.
-- Never let `source-derived` content create new product behavior, fields, states, interactions, validation rules, API requirements, acceptance criteria, or modules; use it only to expose narrow consequences that all plausible interpretations share.
 - Never request user approval for `spec` or `plan`; if those stages expose a decision that truly needs a person, roll back to `requirement-analysis` or the appropriate source-normalization gate instead of pausing inside `spec` or `plan`.
 - Never implement before the active delivery unit's framework-approved spec and plan artifacts exist.
 - Never write production code before type contracts, null/edge/failure handling, naming expectations, boundary UI states, and performance tradeoffs have been reasoned through for the scoped change.
 - Never implement TypeScript-affecting code before recovering the governing `tsconfig` and the declaration or generated type sources that materially affect the scoped files.
-- Never satisfy a user request by relocating the unwanted complexity, risk, ambiguity, or responsibility elsewhere; capture the practical goal and forbidden interpretations before downstream work when intent could be gamed.
-- Never implement authored styling outside Tailwind CSS-style utility classes; never bypass overlong class values by moving them into constants, maps, computed properties, helpers, or imported variables.
-- Never introduce a constant that only renames an obvious one-off literal or simple expression, expands scope for hypothetical reuse, or aliases an existing domain constant without adding meaning.
-- Never duplicate business rules, validation, data normalization, payload builders, adapter / mapper conversions, option builders, permission checks, state derivation, status mapping, or helper logic across modules when a stable shared owner exists inside the approved change chain.
-- Never reject common extraction solely because the duplicated logic currently lives in different modules; prove a real domain, lifecycle, permission, API, dependency, or evolution difference.
-- Never extract shared code solely because two snippets look similar; first prove shared business or technical semantics, stable variation axes, acceptable dependency direction, and enough real production use sites.
-- Never create dumping-ground shared utilities for incidental similarity; shared logic must have a clear semantic owner, explicit API, stable dependency direction, and behavior-equivalence verification.
-- Never let shared utilities import feature-module private entities, read environment side effects directly, or merge unrelated module interfaces into broad union types just to enable reuse.
-- Never silently swallow failures, blur `null` and `undefined` semantics, add bare boolean names, hide dependencies as magic variables, or add memoization / caching hooks without a documented reason.
-- Never omit empty, loading, or form error states for user-facing lists, async operations, or form inputs touched by the scoped work.
-- Never hide mutation, I/O, navigation, analytics, cache writes, request calls, or state writes inside helpers that appear to be pure value transformations.
-- Never mutate props, backend DTOs, shared module state, function arguments, or imported constants as a shortcut for data shaping; use explicit owner updates or immutable transformations.
+- Never violate applicable source, intent, expert-frontend-engineering, styling, constants, architecture, production-code-quality, functional-programming, API-contract, TypeScript-context, clean-code, or design-pattern policies; `references/policies/policy-index.md` defines policy ownership and `references/policies/constraint-model.md` defines verdict and conflict resolution.
 - Never modify or remove existing code before reviewing the affected feature flow, file reference relationships, callers, side effects, and downstream consumers enough to understand what each touched symbol owns.
 - Never treat a modification or removal as complete until the post-change feature flow and reference chain have been rechecked for missing links, orphan links, stale callers, unintended side effects, and collateral impact on neighboring features.
 - Never treat test-file imports or references as real production owners for code that the approved request requires modifying or removing; update or remove the tests to match the requested behavior instead of preserving obsolete production code for tests.
 - For greenfield work that starts a project, app, package, or frontend surface from scratch, never bypass scaffold selection; prefer the matching project-type scaffold or starter when one exists, and record any justified deviation before implementation.
-- Never declare work complete before the required verification and review artifacts for the active delivery unit exist and pass.
-- Never declare work complete before the required verification artifact explicitly records `spec constraint compliance: pass`.
-- Never declare work complete before the required verification artifact explicitly records `source grounding compliance: pass`.
-- Never declare work complete before the required review artifact explicitly records `clean-code assessment: pass` and `design-pattern assessment: pass`.
-- Never declare work complete before the required review artifact explicitly records `source grounding assessment: pass`.
-- Never declare work complete before applicable architecture reuse verification and review verdicts explicitly record `pass`.
-- Never declare work complete before applicable production-code-quality verification and review verdicts explicitly record `pass`.
+- Never declare work complete before the Completion Rule passes.
 - Never treat loop progress as proof of completion; only the goal contract and verification evidence can prove the request is done.
 - When requirements change, update request artifacts first and roll the request back to `spec` or `plan`.
 - When execution proves the current `architecture-design` decisions are materially unfit for actual code constraints, update request artifacts first and roll the request back to `architecture-design`.
@@ -130,6 +106,8 @@ If a repository also provides `.agents/AGENTS.md`, treat it as an optional local
 ## Preconditions
 
 - Read `references/framework-overview.md` and `references/state-machine.md` before dispatching.
+- Read `references/policies/policy-index.md` before selecting policy files for a stage or gate.
+- Read `references/policies/constraint-model.md` before evaluating hard gates, resolving policy conflicts, or declaring completion.
 - If `.agents/AGENTS.md` exists, read it as a repository-local override layer after reading this skill.
 - For existing work, read `docs/requests/<request-id>/state.json` before choosing a stage.
 - For existing work, require `state.json.loop` to exist; if it is missing or malformed, repair it before continuing.
@@ -158,15 +136,7 @@ Follow this order:
 7. If no `module_flow.current_module_id` exists, treat the request itself as the active delivery unit.
 8. If the current delivery unit is page-oriented, insert `page-design` between the current stage and the next design-or-spec stage.
 9. If the current delivery unit is code-architecture-sensitive, insert `architecture-design` before `spec`.
-10. Build or recover the lifecycle execution path for:
-   - `intake -> requirement-analysis -> requirement-splitting -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> requirement-analysis -> requirement-splitting -> page-design -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> requirement-analysis -> requirement-splitting -> architecture-design -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> requirement-analysis -> requirement-splitting -> page-design -> architecture-design -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> page-design -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> architecture-design -> spec -> plan -> execute -> verify -> review -> complete`
-   - `intake -> page-design -> architecture-design -> spec -> plan -> execute -> verify -> review -> complete`
+10. Build or recover the lifecycle path from the canonical sequence, inserting `page-design` and `architecture-design` only when their gates require them and skipping PRD-only analysis/splitting only for direct-change, bugfix, or non-split work.
 11. Validate lifecycle gates against this skill's built-in constitution and `references/state-machine.md`.
 12. Load only the subskill for the current stage.
 13. After the current stage finishes, determine whether the current delivery unit can advance, must roll back, or has completed its closed loop.
@@ -292,16 +262,7 @@ Workflow rules:
 - Do not let execution, verification, or review leave duplicated semantic logic in place when the approved architecture decision requires extraction or reuse, and do not let them introduce wrong abstractions when Anti-DRY criteria require keeping logic separate.
 - Do not let execution, verification, or review satisfy only the literal words of a request while violating the user's practical goal or using a forbidden interpretation recorded upstream.
 - For behavior that can be covered by tests, plan and execute the work using a red -> green -> refactor loop.
-- Apply `references/policies/clean-code.md` as a durable rule set for naming, responsibility boundaries, duplication control, side-effect containment, and maintainability judgment.
-- Apply `references/policies/functional-programming.md` as the rule set for pure transformations, immutable data handling, side-effect boundaries, and readable composition.
-- Apply `references/policies/design-patterns.md` as a durable rule set for deciding when a pattern is justified, which pattern family fits, and when direct code remains the better choice.
-- Apply `references/policies/user-intent.md` as the rule set for preserving practical user goals, anti-bypass constraints, and intent-level verification.
-- Apply `references/policies/spec-constraints.md` as the upstream rule that forces maintainability and abstraction decisions into `spec/spec.md` before planning and coding.
-- Apply `references/policies/production-code-quality.md` as the rule set for type-first implementation, fail-fast behavior, strict null handling, naming, no magic variables, maintainability-first performance choices, pure functions, and boundary UI states.
-- Apply `references/policies/code-graph.md` as the rule set for when to use code graph, when to auto-bootstrap it, and when fallback search is acceptable.
-- Apply `references/policies/api-contracts.md` as the rule set for regular API docs, protobuf-backed interfaces, backend-owned TypeScript contract types, and non-TypeScript contract typing.
-- Apply `references/policies/typescript-context.md` as the rule set for recovering governing `tsconfig` context and scoped declaration sources before TypeScript-affecting implementation.
-- Apply `references/policies/frontend-components.md` as the rule set for component reuse, Tailwind CSS-style authored styling, class-value length, and class-binding reviewability.
+- Apply durable policies through `references/policies/policy-index.md`: load the owning policy files for the current stage, touched code, and risk surface, then use `constraint-model.md` for required verdicts and conflicts.
 
 ## Loop State Contract
 
@@ -428,18 +389,10 @@ Load only what is needed:
 - Workflow overview: `references/framework-overview.md`
 - State machine and rollback rules: `references/state-machine.md`
 - Framework authoring constraints: `references/authoring-guide.md`
+- Policy routing and ownership: `references/policies/policy-index.md`
+- Constraint model and verdict registry: `references/policies/constraint-model.md`
 - Feishu/Lark bug retrieval rules: `references/bugfix-feishu-project.md`
-- Durable standards: `references/policies/*.md`
-- Clean-code maintainability policy: `references/policies/clean-code.md`
-- Functional-programming policy: `references/policies/functional-programming.md`
-- Design-pattern decision policy: `references/policies/design-patterns.md`
-- User intent fidelity policy: `references/policies/user-intent.md`
-- Spec constraint policy: `references/policies/spec-constraints.md`
-- Production code quality policy: `references/policies/production-code-quality.md`
-- Source grounding policy: `references/policies/source-grounding.md`
-- Code-graph policy: `references/policies/code-graph.md`
-- TypeScript context policy: `references/policies/typescript-context.md`
-- Frontend components and styling policy: `references/policies/frontend-components.md`
+- Durable policy details: load only the specific `references/policies/*.md` files routed by `policy-index.md` for the current stage and touched risk surface.
 - Pattern catalog: `references/patterns/*.md`
 - Artifact shape requirements: `references/templates/*.md`
 - Requirement analysis artifact shape: `references/templates/requirement-analysis.md`
@@ -451,46 +404,20 @@ Load only what is needed:
 
 ## Hard Gates
 
-- Never code before the request workspace exists.
-- Never let a PRD-driven request enter `requirement-splitting` without a requirement-analysis artifact that fixes scope, non-goals, visible ambiguities, and splitting rationale.
-- Never let a PRD-driven request enter `requirement-splitting` when frontend-owned work, server-owned work, shared API/DTO contract work, external-interface pending work, and blocker ownership are materially relevant but not separated in `analysis/requirement-analysis.md`.
-- Never implement before the active delivery unit's framework-approved spec and plan exist.
-- Never let a stage read or write split-module artifacts for a non-split request, or request-level downstream artifacts for a split module.
-- Never let page-oriented work enter `spec` without a page design artifact when layout, styling, or interaction structure is a material requirement.
-- Never let code-architecture-sensitive work enter `spec` without an architecture design artifact when module boundaries, file structure, code relationships, function structure, data structures, or type strategy materially affect the solution shape.
-- Never declare work complete before verification and review artifacts both exist and pass.
-- Never treat missing compliance verdicts as implied pass results.
-- Never declare work complete before applicable user-intent, change-chain, removal-cleanup, frontend-styling, API-contract, and TypeScript-context verification or review verdicts explicitly record `pass`.
-- Never declare work complete before applicable functional-programming verification and review verdicts explicitly record `pass`.
-- Never declare work complete before applicable production-code-quality verification and review verdicts explicitly record `pass`.
-- When requirements change, update request artifacts first and roll the stage back to `spec` or `plan`.
-- Do not bypass the local workflow by jumping straight to code.
-- When a gate fails, resolve the missing prerequisite first instead of forcing stage progression.
-- Mark the request `blocked` only when a front-loaded human confirmation gate, unavailable external system, credential, or resource remains unresolved after internal recovery was attempted.
-- When marking the request `blocked`, `loop.pending_gate` must name the blocking gate and `loop.state` must be `blocked`.
-- Stop only at real blocking gates such as unresolved front-loaded confirmation, missing upstream requirement information, or unavailable external dependency needed for the next stage.
-- Never implement behavior that is not defined, clarified, or accepted in the repository spec artifacts.
-- Never treat ungrounded content as approved scope; missing source support must be resolved, explicitly classified, or excluded before downstream execution.
-- Never treat wording-only compliance as sufficient when the request's practical goal is to reduce complexity, risk, ambiguity, duplication, or review cost.
-- Never treat removal of a call or request as complete until the behavior-owned dependency closure has been checked and cleaned: imports, helpers, constants, types, request wrappers, state, tests, mocks, and comments.
-- Never treat modification or removal of existing code as complete without pre-change chain analysis and post-change chain validation covering feature flow, file references, callers, side effects, downstream consumers, missing links, stale links, and neighboring-feature impact.
-- Never keep production code solely because it is referenced by test files when the approved request requires that production code to change or disappear; test references are empty references for retention decisions and must be adapted to the new behavior.
-- Never implement authored styling with scoped CSS, CSS modules, Sass/Less, inline style objects, or non-utility semantic class names.
-- Never accept overlong `class`, `className`, or class-binding values, and never hide them in constants, maps, computed properties, helper functions, or imported variables to make markup appear shorter.
-- Never guess a TypeScript target file's active compiler context, path aliases, visible ambient declarations, or generated contract types when the scoped work depends on them; recover that context first.
-- Never hand-roll a greenfield project bootstrap when a suitable project-type scaffold or starter is available unless the framework-approved spec or plan explicitly records why scaffold reuse is unsuitable or unavailable.
-- Never continue `execute` on top of an already-known-invalid `architecture-design` artifact; route back and repair the design first.
-- Never skip test-first execution for testable behavior changes unless the reason is explicitly recorded in repository artifacts.
-- Never allow materially misleading names, hidden side effects, duplicate business rules, or mixed-responsibility structures to pass review as if they were style-only concerns.
-- Never allow production code with missing type contracts, silent failure, unclear null handling, invalid boolean / handler / function names, implicit magic dependencies, unjustified micro-optimization, or missing required UI boundary states to pass review.
-- Never allow missed shared extraction, copied semantic rules, or unowned common helpers to pass review when the duplicate is inside the approved change chain and has passed the Anti-DRY abstraction matrix.
-- Never allow premature shared abstractions, God utils, shared utilities with business-entity imports, environment side effects, or merged mega-interfaces to pass review.
-- Never allow hidden mutation, hidden side effects, duplicated derived state, or mutation-based data shaping to pass review when a clear pure transformation or explicit owner update would preserve behavior and improve safety.
-- Never introduce pattern layers, factories, managers, handlers, or indirection objects without a concrete problem statement in the framework-approved spec or plan.
-- Never treat maintainability, boundary, side-effect, or pattern choices as purely downstream concerns when they materially affect the shape of the solution; record them in the spec first.
-- Never skip code-context recovery for an existing-code request that clearly depends on dependency structure, impact scope, or ownership boundaries; use code graph when available and fall back explicitly when not.
-- Never hide the workflow's starting conditions, context sources, or human handoff path in chat-only instructions.
-- Never stop after a failed `verify` or blocking `review` if the next required action is more implementation work and no real blocking gate exists.
+Use `references/policies/policy-index.md` as the single-source map for policy ownership and loading. Use `references/policies/constraint-model.md` for allowed redundancy, conflict resolution, and verdict registration.
+
+Non-bypassable gate categories:
+
+- Workspace and state gates: never code before the request workspace exists; never skip state recovery; never read or write the wrong active delivery-unit artifact root.
+- Upstream requirement gates: PRD-driven work needs `requirement-analysis` before `requirement-splitting`; direct-change and bugfix work must resolve human decisions, ambiguity, fuzzy content, and source grounding in their front-loaded gate.
+- Design gates: page-oriented work requires page design; architecture-sensitive work requires architecture design; invalidated architecture must roll back before execution continues.
+- Approval gates: `spec` and `plan` use framework automatic approval only; execution requires framework-approved spec and plan.
+- Source and intent gates: implementation must map to source-grounded spec / plan items and preserve the user intent contract without unapproved expansion or forbidden interpretations.
+- Existing-code gates: modification and removal require pre-change chain review, post-change chain validation, dependency-closure cleanup, and test adaptation when tests reference changed or removed production code.
+- Code-quality gates: apply the relevant policies for production-code-quality, clean-code, functional-programming, frontend-architecture, design-patterns, frontend-components, api-contracts, and typescript-context.
+- Review blocker gates: do not pass review with missing required verdicts, unresolved blockers, misleading names, hidden side effects, wrong abstraction, hidden mutation, contract drift, styling violations, or skipped TypeScript context recovery.
+- Completion gates: do not complete until verification and review artifacts exist and every applicable verdict in the constraint-model registry explicitly records `pass`.
+- Recovery gates: when a gate fails, repair the missing prerequisite or roll back to the owning stage; mark `blocked` only for a real unresolved external or human-confirmation gate after internal recovery was attempted.
 
 ## Required State Discipline
 
@@ -499,13 +426,6 @@ Load only what is needed:
 - Treat `state.json.module_flow` as the source of truth for which split module is currently active.
 - If `state.json` and filesystem artifacts disagree, repair the state or missing artifacts before continuing.
 - If `loop` is missing on a legacy request, backfill it before continuing the workflow.
-
-## Sample Request Baseline
-
-Use `docs/requests/prd-material-delivery-config-center/` only as a structure and quality reference.
-
-- Reuse directory shape and artifact density when helpful.
-- Do not copy its business scope, flows, contracts, decisions, tasks, or conclusions into a new request.
 
 ## Responsibilities
 
@@ -544,35 +464,14 @@ Stage actions belong only to subskills.
 Treat a request as complete only after all of the following are true:
 
 - the goal contract is satisfied by observable results
-- implementation matches the framework-approved plan
-- verification evidence exists for acceptance criteria
-- the required verification artifact explicitly records `spec constraint compliance: pass`
-- the required verification artifact explicitly records `source grounding compliance: pass`
-- when applicable, the required verification artifact explicitly records `user intent compliance: pass`
-- when applicable, the required verification artifact explicitly records `change-chain integrity: pass`
-- when applicable, the required verification artifact explicitly records `removal cleanup compliance: pass`
-- when applicable, the required verification artifact explicitly records `functional-programming compliance: pass`
-- when applicable, the required verification artifact explicitly records `architecture reuse compliance: pass`
-- when applicable, the required verification artifact explicitly records `production code quality compliance: pass`
-- when applicable, the required verification artifact explicitly records `frontend styling compliance: pass`
-- when applicable, the required verification artifact explicitly records `API contract conformance: pass`
-- when applicable, the required verification artifact explicitly records `TypeScript context compliance: pass`
+- implementation matches the framework-approved spec and plan
+- verification evidence exists for every acceptance criterion
 - review records no unresolved blocking issues
-- the required review artifact explicitly records `clean-code assessment: pass`
-- the required review artifact explicitly records `source grounding assessment: pass`
-- when applicable, the required review artifact explicitly records `user intent assessment: pass`
-- when applicable, the required review artifact explicitly records `change-chain integrity assessment: pass`
-- when applicable, the required review artifact explicitly records `removal cleanup assessment: pass`
-- when applicable, the required review artifact explicitly records `functional-programming assessment: pass`
-- when applicable, the required review artifact explicitly records `architecture reuse assessment: pass`
-- when applicable, the required review artifact explicitly records `production code quality assessment: pass`
-- when applicable, the required review artifact explicitly records `frontend styling assessment: pass`
-- when applicable, the required review artifact explicitly records `API contract assessment: pass`
-- when applicable, the required review artifact explicitly records `TypeScript context assessment: pass`
-- the required review artifact explicitly records `design-pattern assessment: pass`
+- every applicable verification and review verdict in `references/policies/constraint-model.md` explicitly records `pass`
+- missing verdicts are treated as failures, not implied passes
 - when module splitting applies, every module in `state.json.module_flow.modules` is marked `completed`
-- `state.json` is updated to `stage="complete"`
-- `state.json.loop.state` is updated to `complete`
+- `state.json.stage` is `complete`
+- `state.json.loop.state` is `complete`
 
 ## Non-Goals
 
