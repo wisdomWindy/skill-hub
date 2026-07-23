@@ -5,6 +5,7 @@ The goal contract defines completion. Workflow-style parallelization, when used,
 The active delivery unit is either the active split module or the request itself.
 For PRD-driven requests that finished `requirement-splitting`, stages after splitting apply to the active split module identified by `state.json.module_flow.current_module_id`.
 For direct-change, bugfix, and other non-split requests, stages after intake apply to the request-level delivery unit and use request-level downstream artifact paths.
+`state.json.speed_profile` controls context breadth and artifact density only; it does not create a lifecycle stage and does not waive gates.
 
 ## Stages
 
@@ -25,6 +26,15 @@ For direct-change, bugfix, and other non-split requests, stages after intake app
 - running
 - blocked
 - complete
+
+## State Metadata
+
+- `speed_profile.level` must be one of `S0 trivial`, `S1 local`, `S2 scoped`, or `S3 broad`.
+- `speed_profile.context_budget` must describe the intended context breadth: `narrow`, `scoped`, or `full`.
+- `speed_profile.artifact_density` must describe whether downstream artifacts use `compact` or `full` density.
+- Missing `speed_profile` on legacy requests should be backfilled before the next stage decision.
+- If a later stage discovers broader impact than the current profile covers, update `speed_profile` upward before continuing or rolling back.
+- Do not downgrade `speed_profile` to avoid required analysis, verification, or review.
 
 ## Required Gates
 
@@ -64,6 +74,7 @@ For direct-change, bugfix, and other non-split requests, stages after intake app
 - For direct-change, bugfix, and other non-split requests, `complete` requires request-level `review` to pass with no blockers.
 - Loop iterations do not themselves prove completion.
 - Workflow-style parallel execution does not create additional lifecycle states or bypass gates.
+- `speed_profile` does not create additional lifecycle states or bypass gates; it only narrows irrelevant context and allows compact artifacts for low-risk requests.
 - A proactive workflow must declare its trigger, minimum context, and handoff path before the team treats it as reliable automation.
 - `spec_approved` and `plan_approved` are automatic framework-approval flags. They must be set by the relevant stage after artifact quality, source traceability, scope alignment, and policy checks pass, not by user approval prompts in `spec` or `plan`.
 

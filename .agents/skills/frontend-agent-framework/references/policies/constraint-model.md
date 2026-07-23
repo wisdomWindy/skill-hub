@@ -11,6 +11,7 @@ For policy discovery, stage-specific loading, and ownership routing, read `polic
 - Main skill owns lifecycle routing, hard-gate categories, state transitions, completion criteria, and policy loading.
 - `policy-index.md` owns policy discovery, policy ownership routing, and stage-specific policy loading.
 - Policy files own durable rule definitions and conflict-resolution logic.
+- `workflow-efficiency.md` owns speed profile, context budget, compact artifact density, and safe parallelism; it may narrow process depth but must not remove applicable quality verdicts.
 - Template files own artifact shape, required sections, required fields, and verdict names.
 - Stage subskills own stage-local procedure, inputs, outputs, rollback triggers, and stage-specific checks.
 - Memory records recent decisions only; it is not an authoritative policy source.
@@ -55,12 +56,14 @@ If a rule spans multiple families, put the detailed definition in the most speci
 
 Completion requires these verdicts when applicable:
 
-- Always required in verification: `spec constraint compliance: pass`, `source grounding compliance: pass`.
+- Always required in verification: `spec constraint compliance: pass`, `source grounding compliance: pass`, `design-pattern compliance: pass`.
 - Always required in review: `clean-code assessment: pass`, `source grounding assessment: pass`, `design-pattern assessment: pass`.
 - Required when the spec contains a user intent contract: `user intent compliance: pass`, `user intent assessment: pass`.
 - Required when modifying or removing existing code: `change-chain integrity: pass`, `change-chain integrity assessment: pass`.
 - Required when removing calls, requests, branches, fields, controls, or side effects: `removal cleanup compliance: pass`, `removal cleanup assessment: pass`.
 - Required when adding or changing production code: `production code quality compliance: pass`, `production code quality assessment: pass`.
+- Required when adding or changing production code: `code review checklist assessment: pass`.
+- Required when changing production code, tests, mocks, contracts, or generated-facing files: `human review readiness compliance: pass`, `human review readiness assessment: pass`.
 - Required when adding or changing user-facing frontend behavior, state flow, data flow, component composition, frontend architecture, or production integration: `expert frontend engineering compliance: pass`, `expert frontend engineering assessment: pass`.
 - Required when touching transformations, rules, payloads, state derivation, adapters, mappers, or side-effect orchestration: `functional-programming compliance: pass`, `functional-programming assessment: pass`.
 - Required when touching repeated semantic logic or shared abstraction decisions: `architecture reuse compliance: pass`, `architecture reuse assessment: pass`.
@@ -78,7 +81,12 @@ When constraints appear to conflict:
 - Source-grounding blocks implementation scope expansion even if a code-quality policy suggests an improvement.
 - User intent blocks technically compliant work that relocates complexity, risk, ambiguity, or responsibility.
 - Architecture reuse can require extraction only after Anti-DRY criteria pass; wrong abstraction is a blocker.
+- Locality-first can block file extraction even when a helper is pure or makes an owning file shorter; a single-caller helper needs an approved boundary reason before it becomes a separate file.
+- Design-pattern discipline requires pattern-fit evaluation for every delivery unit, but direct code remains valid when the artifact records why pattern candidates are heavier than the current problem.
+- Workflow efficiency can choose compact artifacts, scoped reads, scoped checks, and fast paths for low-risk work, but it cannot override source grounding, business-logic completeness, approval gates, verification, review, or any applicable verdict in this registry.
+- Human-review-readiness can reject technically correct code when the diff is unreviewable, unrelated changes are mixed in, local conventions were ignored, or evidence is insufficient for a reviewer to trust the change.
 - Production-code-quality sets baseline implementation discipline; functional-programming provides the detailed rule for transformations and side-effect boundaries.
+- Code-review checklist assessment is planned before execution, followed during execution, and finalized in review for robustness, maintainability, performance / memory, and technology-stack anchoring; it can fail code that otherwise passes implementation-level policies when reviewer-facing production risks remain or when execute did not follow the approved plan contract.
 - Expert-frontend-engineering coordinates end-to-end frontend concerns across state ownership, async correctness, interaction resilience, performance boundaries, evolution safety, and evidence. It should reference specific policies instead of duplicating them.
 - Frontend-components owns styling mechanics; production-code-quality owns boundary UI states.
 - API-contracts and TypeScript-context own contract/type sources; production-code-quality owns local type precision and null/failure handling.

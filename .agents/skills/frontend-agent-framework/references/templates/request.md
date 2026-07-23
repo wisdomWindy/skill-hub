@@ -33,6 +33,7 @@ Required fields:
 - `status`
 - `artifacts`
 - `approvals`
+- `speed_profile`
 - `loop`
 - `module_flow`（PRD 驱动需求在 requirement-splitting 之后必需）
 
@@ -48,6 +49,12 @@ Required shape:
   "approvals": {
     "spec_approved": false,
     "plan_approved": false
+  },
+  "speed_profile": {
+    "level": "S1 local",
+    "reason": "...",
+    "context_budget": "scoped",
+    "artifact_density": "compact"
   },
   "module_flow": null,
   "loop": {
@@ -73,6 +80,15 @@ Approval fields are automatic framework gates:
 - `plan_approved=true` means the framework accepted the active delivery unit's plan against the framework-approved spec, templates, policies, task completeness, verification strategy, and state-machine gates.
 - `spec` and `plan` stages must not use user approval prompts to set these flags.
 - Human-confirmed needs, questions, rules, and product decisions must be resolved or blocked in `requirement-analysis`, `intake`, or `bugfix-intake` before downstream authoring.
+
+Speed profile fields:
+
+- `level` only allows `S0 trivial`, `S1 local`, `S2 scoped`, or `S3 broad`
+- `reason` records why this is the lowest safe profile
+- `context_budget` records whether downstream context should be `narrow`, `scoped`, or `full`
+- `artifact_density` records whether downstream artifacts should be `compact` or `full`
+- `S0` / `S1` may use compact artifacts with required sections present and non-applicable sections written as concise `不适用：<reason>`
+- If later evidence shows broader impact, update `speed_profile` upward and record the reason; never lower quality gates for speed
 
 Loop field rules:
 

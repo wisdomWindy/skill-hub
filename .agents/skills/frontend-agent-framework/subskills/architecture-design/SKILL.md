@@ -15,6 +15,7 @@ description: Stage subskill for code architecture design. Define frontend module
   - 复杂流程需要先定义代码关系和依赖方向
   - 函数组织、状态归属、数据结构或 TypeScript 类型策略会显著影响后续实现
   - 多个页面、模块、hook、adapter、mapper 或 helper 存在相同或相似业务规则、校验、转换、payload 构造、状态派生、状态映射或请求结果适配，需要先判断是否应该抽象，再决定公共逻辑抽取边界
+  - 设计模式选择会改变模块边界、文件归属、依赖方向、共享抽象、副作用编排或跨文件协作；小需求、局部修改和 bugfix 只有出现这些结构性信号时才进入本阶段
 
 ## 必要输入
 
@@ -61,12 +62,14 @@ description: Stage subskill for code architecture design. Define frontend module
    - 共性分类：技术/基础设施、业务/领域、UI/设计系统、配置/常量
    - page/container、business component、shared component、hook、adapter、type 的职责切分
    - 函数分层与公开入口
+   - 单页面私有 helper / hook / mapper 的 locality decision：就近放置还是单独文件
    - 纯函数边界、组合方式与副作用边界
    - 状态归属与数据流
    - 数据结构与类型设计策略
    - adapter / mapper / request-layer 边界
    - 命名口径与共享抽象约束
    - 需要使用或明确拒绝的 pattern 决策
+   - pattern-fit decision 对文件结构、依赖方向、协作关系和未来变更轴的影响；若决策为 direct code，说明为什么不需要本阶段引入额外模式层
 7. 对当前交付单元涉及的业务规则、校验、转换、payload 构造、adapter / mapper、状态派生、状态映射、option 构造、权限判断、格式化或 helper 逻辑，必须做复用候选扫描：
    - 当前模块内是否已有重复
    - 同业务域邻近模块是否已有等价逻辑
@@ -83,8 +86,10 @@ description: Stage subskill for code architecture design. Define frontend module
    - 抽取公共函数 / hook / mapper / adapter
    - 复用已有公共逻辑
    - 保持分离
+   - 就近放置在 owning page / component / hook
    - 暂缓并记录 follow-up
    保持分离必须说明真实差异，例如不同业务语义、不同分层、不同领域 owner、生命周期、权限、API 语义、校验语义、不足三处稳定使用、变化点不确定、变因过多或预期独立演进；不能只写“不同模块暂不抽取”。
+   对只有一个真实生产调用方的 helper / mapper / hook，默认决策为就近放置；只有存在 adapter / service / request 层边界、独立生命周期、独立测试面、框架模块约束、生成 / 合同隔离或同文件可读性无法接受时，才允许设计为独立文件。
 10. 当三个或更多稳定生产位置存在同一语义规则，且本次需求会触碰该规则，默认应抽取到最低稳定 owner；除非抽取会造成依赖反向、循环依赖、范围外改动过大、变因过多、或语义其实不同。
 11. 对批准抽取的公共逻辑必须分类并选择 owner：
    - 技术/基础设施共性进入 shared utils / hooks 等稳定基础 owner
@@ -119,20 +124,24 @@ description: Stage subskill for code architecture design. Define frontend module
   - 文件结构
   - 代码关系
   - 函数设计
+  - locality decision：单调用方 helper 是就近放置还是单独文件，以及理由
   - 复用候选清单、Anti-DRY 矩阵与抽取 / 不抽取决策
   - 共性分类、依赖注入 / 策略边界与 traceability 要求
   - 数据结构与类型策略
+  - pattern-fit decision、拒绝的模式替代方案、以及对架构边界的影响
   - 架构风险与未决问题
 
 ## 验收标准
 
 - 当前交付单元 `design/architecture-design.md` 已存在。
 - 文档已定义模块边界、文件结构、依赖方向、职责分层、函数组织、数据结构和类型策略。
+- 文档已记录单页面私有 helper / hook / mapper 的 locality decision；单调用方逻辑默认就近放置，若单独文件则有明确边界收益。
 - 文档已扫描并记录复用候选；对重复业务规则、转换、校验、payload 构造、adapter / mapper、状态派生或 helper 逻辑给出抽取、复用、保持分离或暂缓决策。
 - 对每个候选，文档已写清 Anti-DRY 矩阵结果：业务语义、分层、真实生产使用点数量、变化稳定性、变因数量。
 - 对保持分离的候选，文档已写清真实语义差异、分层差异、不足三处稳定使用、变化点不确定、变因过多或依赖风险；没有用“不同模块”作为拒绝抽取的唯一理由。
 - 对抽取的候选，文档已写清共性分类、目标 owner、依赖方向、公开 API、注入 / 策略边界、调用方迁移、JSDoc traceability 和行为等价验证方式。
 - 文档已定义哪些规则 / 转换适合纯函数，哪些行为属于明确副作用边界。
+- 文档已记录 pattern-fit decision 如何影响或不影响架构边界；如选择 direct code，已说明没有必要创建 adapter / strategy / command / facade / proxy / manager 等新结构层。
 - 若存在 page-design，架构设计已与页面结构决策对齐。
 - 若 scoped work 为 greenfield，架构设计已与脚手架策略对齐并写明允许偏离范围。
 - 若本阶段来自 `execute` 回退，文档已吸收执行期暴露的实际代码约束并修正原有不合理设计。
@@ -147,6 +156,9 @@ description: Stage subskill for code architecture design. Define frontend module
 - 不能因为逻辑在不同模块就默认不抽取；必须证明语义不同、依赖不允许或范围不安全。
 - 不能因为两个片段长得像就默认抽取；必须通过 Anti-DRY 矩阵证明抽象收益高于错误抽象风险。
 - 不能为了显得高级而抽取没有共同语义 owner 的偶然相似代码。
+- 不能为了“应用设计模式”而给小需求、局部修改或 bugfix 增加没有真实变化轴、依赖边界或协作收益的模式层。
+- 不能把一个页面、一个真实生产调用方的函数设计成独立文件，除非有已记录的具体边界收益。
+- 不能用单函数文件、局部 `utils.ts`、局部 `helpers.ts` 或单调用方 mapper 文件制造不必要阅读跳转。
 - 不能创建 God Utils、导入业务模块私有 entity 的 shared helper、含环境副作用的 shared pure helper，或为了复用合并接口的 mega type。
 - 不能把函数式编程写成口号；必须落到纯函数边界、不可变数据流、组合方式或副作用归属。
 - 不能绕过上游 requirement-splitting 直接凭印象做架构。

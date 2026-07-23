@@ -29,7 +29,7 @@ description: Stage subskill for intake. Create the request workspace from a PRD-
    - `../../references/authoring-guide.md`
    - `../../references/templates/request.md`
    - `../../references/policies/policy-index.md`
-   - 按 `policy-index.md` 的 `intake` 阶段映射读取本次输入适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`
+   - 按 `policy-index.md` 的 `intake` 阶段映射读取本次输入适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`、`workflow-efficiency.md`
 2. 读取 PRD 文档、解析稳定 PRD 引用，或归一化稳定直接变更指令，再开始创建下游工件。
 3. 创建 `docs/requests/<request-id>/` 作为标准请求工作区。
 4. 只写 intake 阶段工件，不写 `spec/spec.md`，不写实现代码。
@@ -44,12 +44,18 @@ description: Stage subskill for intake. Create the request workspace from a PRD-
 8. 如果上游来源结构不一致或信息不完整，区分“已确认事实”和“开放问题”，不要混成模糊总结。
 9. 对直接变更请求，本阶段是其 source-grounding 与人工确认前置 gate：用户直接指令是主来源，仓库事实只能用于定位影响面、引用链和必要清理闭包，不能扩展为相邻重构、额外优化或未请求的功能。
 10. 对直接变更请求，如果目标、范围、预期结果、禁止解释、关键规则、歧义内容、模糊内容、来源依据或可观察完成条件仍需用户确认，必须停在 intake 并记录阻塞原因；不能把确认推迟到 `spec` 或 `plan`。
-11. 初始化 `state.json.loop`，并把 `stage` 设为：
+11. 初始化 `state.json.speed_profile`，按 `workflow-efficiency.md` 选择最低安全档位：
+   - `S0 trivial`：单点局部修改 / 删除 / 文案 / 显式清理，影响闭包清楚
+   - `S1 local`：单页面、单组件、单 hook / composable 或单请求链路
+   - `S2 scoped`：多文件、完整功能链、API / adapter / validation / removal cleanup / reuse decision
+   - `S3 broad`：PRD、多模块、跨系统、迁移、架构敏感或需求边界不清
+   对 `S0` / `S1` 记录 compact artifact 与 scoped context；若发现风险扩大，后续阶段必须升级 profile。
+12. 初始化 `state.json.loop`，并把 `stage` 设为：
    - PRD 驱动需求：`requirement-analysis`
    - 直接变更请求：若页面布局、样式或交互结构是主要工作则为 `page-design`；否则若代码结构、文件关系、函数结构、数据结构或类型策略是主要工作则为 `architecture-design`；否则为 `spec`
-12. 对 PRD 驱动需求，将 `state.json.module_flow` 初始化为 `null`；先由 `requirement-analysis` 固化范围、风险与拆分依据，再由 `requirement-splitting` 负责补全顺序执行队列。
-13. 对直接变更请求，将 `state.json.module_flow` 初始化为 `null`，并在 `request.md` 和 `artifacts/prd-snapshot.md` 中记录为什么该请求不需要 PRD-only requirement-analysis / requirement-splitting。
-14. 参考样例 `docs/requests/prd-material-delivery-config-center/` 时，只复用结构和质量基线：
+13. 对 PRD 驱动需求，将 `state.json.module_flow` 初始化为 `null`；先由 `requirement-analysis` 固化范围、风险与拆分依据，再由 `requirement-splitting` 负责补全顺序执行队列。
+14. 对直接变更请求，将 `state.json.module_flow` 初始化为 `null`，并在 `request.md` 和 `artifacts/prd-snapshot.md` 中记录为什么该请求不需要 PRD-only requirement-analysis / requirement-splitting。
+15. 参考样例 `docs/requests/prd-material-delivery-config-center/` 时，只复用结构和质量基线：
    - 可参考目录结构
    - 必须重写 `README.md`、`request.md`、`state.json`、`artifacts/prd-snapshot.md`
    - 不得沿用样例中的 `spec/plan/execution/verification/review` 业务内容
@@ -71,6 +77,7 @@ description: Stage subskill for intake. Create the request workspace from a PRD-
 - 请求工作区已创建。
 - `request.md` 与 `state.json` 已记录来源链接。
 - `request.md` 已记录明确目标、初始 done signal、触发条件、最小上下文、人工交接点。
+- `state.json.speed_profile` 已记录最低安全档位、原因、context budget 和 artifact density。
 - `artifacts/prd-snapshot.md` 已生成。
 - `artifacts/prd-snapshot.md` 没有把上游明确行为约束压缩成过粗摘要。
 - `artifacts/prd-snapshot.md` 已按请求适用区分 source-backed、code-fact-backed、confirmed-decision、source-derived、missing-source 和 out-of-scope 内容。

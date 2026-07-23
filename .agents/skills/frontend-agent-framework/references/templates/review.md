@@ -10,6 +10,7 @@
 Required sections:
 
 - delivery unit identifier
+- workflow efficiency assessment
 - blocking issues
 - non-blocking issues
 - accepted risks
@@ -22,6 +23,8 @@ Required sections:
 - expert frontend engineering assessment
 - architecture reuse assessment
 - production code quality assessment
+- code review checklist assessment
+- human review readiness assessment
 - functional-programming assessment
 - frontend styling assessment
 - API contract assessment
@@ -29,6 +32,14 @@ Required sections:
 - design-pattern assessment
 - code-context structural assessment
 - merge readiness summary
+
+`workflow efficiency assessment` must include:
+
+- `speed_profile.level`
+- whether review used compact changed-hunk review or full review
+- whether context breadth was sufficient for the impact found
+- whether any broader impact should have upgraded the profile earlier
+- confirmation that speed did not skip applicable quality verdicts
 
 `user intent assessment` is required when the spec contains a user intent contract. It must include:
 
@@ -63,6 +74,8 @@ Required sections:
 - key findings
 - findings for constants introduced or moved to a broader scope, including the domain meaning, constraint, snapshot, simplification, or real reuse that justifies each non-obvious declaration
 - unnecessary one-off aliases, speculative module or exported constants, synonym constants, and over-broad constant scope found or ruled out
+- findings for helper / hook / mapper / utility files introduced or moved out of their owner, including real production caller count and approved boundary reason
+- single-page single-caller one-function files, local catch-all `utils.ts` / `helpers.ts`, or single-caller mapper files found or ruled out
 - required follow-up if failed
 
 `source grounding assessment` must include:
@@ -81,6 +94,7 @@ Required sections:
 - whether shared owner, dependency direction, public API, type ownership, and side-effect boundary are appropriate
 - whether Anti-DRY reasoning prevented wrong abstraction instead of blindly enforcing DRY
 - whether commonality classification and target owner are correct
+- whether single-use locality decisions are correct, and whether page-private logic stayed colocated unless a real boundary reason justified extraction
 - whether shared code uses dependency injection, strategy, getters, adapters, or thin wrappers instead of hard-coded business fields
 - whether all in-scope production callers were migrated
 - duplicate legacy paths, orphan helpers, dumping-ground utility, premature abstraction, feature-entity import, environment side effect, or merged-interface findings
@@ -124,6 +138,28 @@ Required sections:
 - boundary UI state findings for touched lists, async operations, and form inputs
 - required follow-up if failed
 
+`code review checklist assessment` is required when production code was added or changed. It must include:
+
+- result (`pass` or `fail`)
+- plan contract findings: whether `plan/plan.md` contains the code-review checklist contract and whether execute followed it without ad hoc guessing
+- robustness findings: external data optional chaining / null checks, API exception handling, explicit abnormal-state handling, and missing guards found or ruled out
+- maintainability findings: functions over 150 lines found or ruled out, giant mixed-responsibility functions found or ruled out, and magic numbers without meaningful constants found or ruled out
+- performance and memory findings: high-frequency events found or ruled out, debounce / throttle decision-table conformance when applicable, and side effects without cleanup functions found or ruled out
+- project convention consistency findings: component library, styling scheme, directory layout, import alias / relative path style, and technology-stack anchoring conformance
+- unauthorized technology-stack changes found or ruled out; if found, result must be `fail`, the issue must be marked as a blocker, and the implementation must be rewritten instead of accepted
+- required follow-up if failed
+
+`human review readiness assessment` is required when production code, tests, mocks, contracts, or generated-facing files were changed. It must include:
+
+- result (`pass` or `fail`)
+- whether the diff is scoped, necessary, and reviewer-readable
+- unrelated changes, broad formatting churn, or drive-by refactors found or ruled out
+- local convention mismatches found or ruled out
+- changed hunks without approved task / cleanup / test-adaptation mapping found or ruled out
+- debug code, dead code, commented-out code, stale TODOs, stale comments, temporary names, unused imports / exports, stale tests, and stale mocks found or ruled out
+- whether tests, type checks, lint checks, manual checks, and unrun-command reasons are sufficient for reviewer trust
+- required follow-up if failed
+
 `frontend styling assessment` is required when the scoped work adds or changes authored styling. It must include:
 
 - result (`pass` or `fail`)
@@ -155,4 +191,23 @@ Required sections:
 
 - result (`pass` or `fail`)
 - key findings
+- whether pattern-fit evaluation exists for the delivery unit, including small/local/bugfix work
+- decision depth reviewed: Level 0, Level 1, Level 2, or Level 3
+- selected decision: `direct code`, `reuse existing pattern`, `adapt lightweight pattern`, or `introduce pattern`
+- triggered candidate signals found or ruled out at the appropriate depth
+- direct-code no-signal rationale when no pattern was selected
+- triggered rejected alternatives and whether the rejection is reasonable
+- frontend syntax shape findings for React, Vue, TypeScript, component, hook / composable, store, request, adapter, and event boundaries
+- mechanical enumeration of unrelated pattern families found or ruled out
+- overbuilt pattern ceremony, fake extensibility, or missed lightweight pattern opportunities found or ruled out
 - required follow-up if failed
+
+`merge readiness summary` must include:
+
+- final result (`merge-ready` or `not merge-ready`)
+- confirmation that every applicable verification and review verdict registered in `constraint-model.md` is present and `pass`
+- confirmation that `code review checklist assessment` is present and `pass` when production code changed
+- confirmation that `human review readiness assessment` is present and `pass` when production code, tests, mocks, contracts, or generated-facing files changed
+- blocking issues that prevent merge readiness, or `none`
+- reviewer-facing evidence summary: tests, type checks, lint checks, manual checks, commands not run with reason, and accepted risks
+- out-of-scope changes found or ruled out

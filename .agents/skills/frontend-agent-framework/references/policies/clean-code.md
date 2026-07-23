@@ -23,6 +23,7 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - Blocking: deleted behavior that leaves unused imports, dead helpers, orphan request wrappers, stale constants, obsolete computed/watch state, or comments/tests that describe behavior no longer present.
 - Blocking: production code retained solely because test files still import or reference it after the approved behavior requires that code to change or be removed.
 - Blocking: newly introduced constants that add indirection without carrying domain meaning, enforcing a constraint, preserving a required snapshot, materially simplifying a complex expression, or serving real reuse.
+- Blocking: extracting a function, hook, mapper, constant group, or helper into a new standalone file when it has only one real production owner and no approved boundary reason; this is needless indirection, not architecture.
 - Non-blocking: local naming improvements, light extraction opportunities, optional polish, or cleanup that improves clarity but is not required for safe delivery.
 
 ## Principles
@@ -126,6 +127,15 @@ This policy defines durable clean-code standards for frontend work. Apply it dur
 - Local `const` bindings remain appropriate when they capture a meaningful intermediate result, avoid repeated or expensive evaluation, preserve one evaluation of a non-deterministic or stateful read, enable type narrowing, or make multi-step control flow materially clearer.
 - Judge the declaration by whether removing it would lose meaning, correctness, or real duplication control. If removal only eliminates a name and leaves equally readable code, keep the value inline.
 
+### 14. File Extraction Must Earn Its Boundary
+
+- Keep single-use page-owned helpers colocated with the page, component, hook, or adapter that owns them by default.
+- Do not create a new `utils.ts`, `helpers.ts`, mapper file, hook file, constant file, or one-function module only because a function exists, is pure, or makes the page file shorter.
+- A separate file is justified only when it provides a real boundary: multiple real production owners, an approved shared abstraction, a request/service/adapter layer, a cohesive business component or hook with its own lifecycle, independent deterministic testing for complex logic, framework-required module shape, generated/contract code, or a file-size/readability problem that cannot be solved by same-file local helpers.
+- When a helper has exactly one production caller, prefer a same-file local function near the owning flow. If it is large, first consider splitting the page into cohesive sections or local private helpers before creating an exported utility.
+- If a single-use helper is extracted for an approved non-reuse reason, keep it under the narrow owning feature directory, do not export it through shared barrels, and record why same-file locality was worse.
+- Review the import path cost: if the reader must jump to another file to understand a short or page-specific rule, the extraction probably made the code worse.
+
 ## Review Triggers
 
 Treat the following as explicit clean-code review checks:
@@ -139,6 +149,8 @@ Treat the following as explicit clean-code review checks:
 - Are side effects obvious and placed in the right layer?
 - Does the control flow read clearly from top to bottom?
 - Does every new constant provide domain meaning, a correctness constraint, a necessary snapshot, meaningful simplification, or real reuse instead of merely renaming a one-off value?
+- Does every new file-level helper extraction have more than one real production owner or an approved boundary reason?
+- Would colocating a single-use helper in the owning page/component make the code easier to read than a new import?
 - Did the change add flags, branches, or parameters that indicate a missing abstraction?
 - Did the change improve or degrade the immediate area it touched?
 
@@ -148,3 +160,4 @@ Treat the following as explicit clean-code review checks:
 - This policy does not ban `const` or require repeated evaluation; it rejects declarations whose only effect is unnecessary indirection.
 - This policy does not require refactoring unrelated files for aesthetic consistency.
 - This policy does not justify bypassing the approved spec, plan, or verification flow.
+- This policy does not ban all file extraction; it requires file boundaries to improve ownership, testability, lifecycle separation, or real reuse.

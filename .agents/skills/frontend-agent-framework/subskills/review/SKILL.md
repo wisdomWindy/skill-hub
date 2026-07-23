@@ -36,8 +36,9 @@ description: Stage subskill for review. Review correctness, standards compliance
    - `../../references/templates/code-context.md`
    - `../../references/policies/policy-index.md`
    - `../../references/policies/constraint-model.md`
-   - 按 `policy-index.md` 的 `review` 阶段映射读取本次 scoped work 适用的 policy 文件；默认至少读取 `clean-code.md`、`source-grounding.md`、`design-patterns.md`
+   - 按 `policy-index.md` 的 `review` 阶段映射读取本次 scoped work 适用的 policy 文件；默认至少读取 `clean-code.md`、`source-grounding.md`、`design-patterns.md`；代码改动默认读取 `code-review-checklist.md` 与 `human-review-readiness.md`；如需 compact changed-hunk review，读取 `workflow-efficiency.md`
 2. 先读变更后的代码，再开始评审。
+   - 按 `speed_profile` 控制评审范围：`S0` / `S1` 聚焦 changed hunks、直接调用链、相关测试和适用 verdict；`S2` / `S3` 或共享影响面扩大到完整功能链和跨模块风险。
 3. 产出当前交付单元的 `review/review.md`。
 4. 把评审结论分成：
    - blocking issues
@@ -50,7 +51,21 @@ description: Stage subskill for review. Review correctness, standards compliance
    - 名称只是复述值或下一步操作，移除常量后代码同样清晰且不损失正确性
    - 为假想复用创建模块级 / 导出常量，或为已有领域常量创建同义 / 透传别名
    - 常量作用域大于当前真实 owner 和调用方所需范围
-7. 检查引入或修改的 pattern 是否真的必要、是否与问题匹配。
+   同时逐个检查新增独立 helper / hook / mapper / adapter / utility 文件是否具有真实边界收益；以下情况按 blocker 处理：
+   - 只有一个页面或一个真实生产调用方，却抽成单函数文件、局部 `utils.ts`、局部 `helpers.ts` 或单调用方 mapper 文件
+   - 抽取理由只是让页面短一点、函数是纯函数、命名更整齐、未来可能复用，或为了制造架构感
+   - same-file local helper 可以更直接表达 owning flow，但实现强迫读者跨文件跳转
+   - spec / plan 未批准该单调用方文件边界，或执行记录没有说明具体边界收益
+7. 检查 pattern-fit evaluation 是否真的执行，并判断结果是否匹配问题：
+   - 小需求、局部修改、bugfix 是否也记录了 pattern-fit decision
+   - 是否记录 pattern depth level：Level 0 / Level 1 / Level 2 / Level 3
+   - direct code 是否有明确理由，而不是默认空白结论
+   - Level 0 direct code 是否只做短的无信号说明，没有机械枚举所有未触发模式
+   - 如果存在具体候选信号，是否检查过被触发的 Adapter、Strategy、State、Command、Chain of Responsibility、Observer / Pub-Sub、Decorator、Facade、Proxy、Composite、Builder 或项目既有模式的适配性
+   - pattern 实现形态是否符合当前前端栈语法特点，是否优先使用函数、对象映射、typed record、discriminated union、hook / composable、组件边界、store action、request module、adapter / mapper 或 higher-order function
+   - 引入或修改的 pattern 是否真的必要、是否与问题匹配
+   - 是否存在本应使用轻量 Adapter / Strategy / Command / State table / Facade / Proxy 等模式，却继续堆叠脆弱条件分支、重复适配逻辑或散落副作用
+   - 是否存在为了显得高级而引入 fake extensibility、manager、factory、strategy、command object 或 wrapper ceremony
 8. 依据 spec 中声明的设计约束审查实现，不做脱离工件的主观审美评审。
 9. 检查 spec 与 plan 是否保持同一 function-complete behavior granularity；若有漂移，按 blocker 处理。
 10. 如存在 user intent contract，检查实现是否同时满足 literal request 与 practical goal；如果实现只是转移复杂度、风险、歧义、责任或采用 forbidden interpretation，按 blocker 处理。
@@ -95,15 +110,31 @@ description: Stage subskill for review. Review correctness, standards compliance
    - 共享代码是否通过参数、依赖注入、getter、config、HOF、strategy object、adapter 或薄封装接收业务差异
    - 是否存在 dumping-ground utility、未迁移调用方、重复旧路径或孤立 helper
    - 是否存在 premature abstraction、shared 导入业务私有 entity、shared 内部环境副作用、合并接口或 God Utils
+   - 是否存在单调用方文件抽象、无必要 one-function module、局部 dumping-ground utility，或把页面私有逻辑外置造成阅读跳转
    - 新晋升 shared API 是否有 JSDoc `@see` / `@example` traceability
    - 行为等价证据是否充分
    漏抽已通过 Anti-DRY 矩阵且安全可抽取的重复语义逻辑、仅以“不同模块”为理由拒绝抽取，或引入错误抽象，均按 blocker 处理。
-18. 明确写出：
+18. 检查 human-review-readiness policy 是否被正确应用；以下情况按 blocker 处理：
+   - diff 包含无关改动、宽泛格式化、顺手重构、未批准重命名或无法映射到 plan 的 hunk
+   - 实现没有遵守相邻项目惯例，或新结构让 reviewer 必须跨过不必要文件才能理解局部行为
+   - 残留 debug log、commented-out code、stale TODO、临时变量名、dead code、unused import / export、orphan helper、stale mock、stale test 或过期注释
+   - 测试、类型检查、lint、手工验证、未运行命令原因或剩余风险记录不足，reviewer 无法判断风险是否被覆盖
+   - 最终说明不能回答“改了什么、为什么改、影响哪些文件、如何验证、哪些未改”
+19. 如添加或修改生产代码，必须执行 code-review checklist assessment；以下情况按 blocker 处理：
+   - plan 缺少 code-review checklist contract，或 execute 没有按 plan 合同实现
+   - 健壮性：外部数据没有完整可选链 / 判空 / 合法性保护，API 调用没有异常捕获或 rejected promise 处理，异常、空值、边界状态被静默吞掉或伪装成成功
+   - 可维护性：存在超过 150 行且混合多个职责的巨型函数，或函数虽未超过 150 行但已混合编排、请求、转换、渲染、副作用和校验；魔法数字没有被提取为具备语义的最窄作用域常量
+   - 性能与内存：涉及 resize、scroll、input、mousemove、drag、轮询、订阅、watcher、effect 等高频事件却没有按 spec / plan 决策使用防抖、节流、取消、去重或边界控制；副作用、订阅、定时器、监听器、请求取消句柄或外部资源缺少 cleanup / dispose / unmount 清理
+   - 项目规范一致性：组件库、样式方案、目录结构、import alias / 相对路径、状态管理、请求封装或技术栈实现形态没有严格遵循 spec / plan、`code-context.md`、相邻代码和项目 AGENTS 形成的技术栈锚定
+   - 如果实现擅自更改技术栈、替换组件库、绕过既有样式方案、改变目录引用方式或引入未批准框架 / 库，必须标记 `code review checklist assessment: fail`，在 review 中说明这是未授权技术栈变更，并回流重写；对用户最终说明中要明确承认该实现不应被接受
+20. 明确写出：
    - `clean-code assessment: pass|fail`
    - `source grounding assessment: pass|fail`
    - `expert frontend engineering assessment: pass|fail`（如适用）
    - `architecture reuse assessment: pass|fail`（如适用）
    - `production code quality assessment: pass|fail`（如适用）
+   - `code review checklist assessment: pass|fail`（生产代码改动适用）
+   - `human review readiness assessment: pass|fail`（如适用）
    - `functional-programming assessment: pass|fail`
    - `design-pattern assessment: pass|fail`
    - `user intent assessment: pass|fail`（如适用）
@@ -112,23 +143,23 @@ description: Stage subskill for review. Review correctness, standards compliance
    - `frontend styling assessment: pass|fail`（如适用）
    - `API contract assessment: pass|fail`（如适用）
    - `TypeScript context assessment: pass|fail`（如适用）
-19. 如涉及样式变更，检查 authored styling 是否遵守 frontend-components policy；以下情况按 blocker 处理：
+21. 如涉及样式变更，检查 authored styling 是否遵守 frontend-components policy；以下情况按 blocker 处理：
    - 使用未批准的 scoped CSS、CSS modules、Sass/Less、inline style object 或非 utility semantic class
    - `class` / `className` / class binding 值超过项目 formatter 正常行宽或依赖多行包裹
    - 用常量、map、computed、helper 或 import 变量隐藏过长 class 值
    - 用条件 class binding 承载大段基础样式而不是小型状态切换
-20. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，检查实现是否先恢复了 governing `tsconfig` 与相关声明来源，再进行编码与类型决策；把靠猜测 path aliases、ambient globals、generated types 落地的行为视为流程缺陷。
-21. 如果结论依赖真实依赖方向、ownership boundary、side-effect spread、abstraction fan-out，优先使用 code graph 证据。
-22. 如果 review 扩展或推翻了早先结构理解，更新 `artifacts/code-context.md`。
-23. 保留 `state.json.loop`，不重置、不改写。
-24. 若仍有 blocker，记录后交回主 skill 回流到 `execute`，并在同一 workflow run 中继续。
-25. 若当前拆分模块通过 review，必须要求主 skill 执行模块收口状态迁移：
+22. 如 scoped work 涉及 TypeScript 或依赖 TypeScript 声明才能正确实现的 JavaScript，检查实现是否先恢复了 governing `tsconfig` 与相关声明来源，再进行编码与类型决策；把靠猜测 path aliases、ambient globals、generated types 落地的行为视为流程缺陷。
+23. 如果结论依赖真实依赖方向、ownership boundary、side-effect spread、abstraction fan-out，优先使用 code graph 证据。
+24. 如果 review 扩展或推翻了早先结构理解，更新 `artifacts/code-context.md`。
+25. 保留 `state.json.loop`，不重置、不改写。
+26. 若仍有 blocker，记录后交回主 skill 回流到 `execute`，并在同一 workflow run 中继续。
+27. 若当前拆分模块通过 review，必须要求主 skill 执行模块收口状态迁移：
    - 将当前模块标记为 `completed`
    - 更新 `pending_module_ids` 与 `completed_module_ids`
    - 若仍有待处理模块，则提升下一个模块并切到其首个下游阶段
    - 若无待处理模块，则切到 `stage=complete` 且令 `loop.state=complete`
-26. 若 direct-change、bugfix 或非拆分请求通过 review，必须要求主 skill 设置 `state.json.stage=complete` 与 `state.json.loop.state=complete`。
-27. 在 blocker 未清零前，不允许标记 complete。
+28. 若 direct-change、bugfix 或非拆分请求通过 review，必须要求主 skill 设置 `state.json.stage=complete` 与 `state.json.loop.state=complete`。
+29. 在 blocker 未清零前，不允许标记 complete。
 
 ## 输出格式
 
@@ -145,6 +176,8 @@ description: Stage subskill for review. Review correctness, standards compliance
   - clean-code findings
   - expert-frontend-engineering findings（如适用）
   - production-code-quality findings（如适用）
+  - code-review checklist findings（生产代码改动适用）
+  - human-review-readiness findings（如适用）
   - architecture reuse findings（如适用）
   - functional-programming findings（如适用）
   - frontend styling findings（如适用）
@@ -158,24 +191,32 @@ description: Stage subskill for review. Review correctness, standards compliance
 ## 验收标准
 
 - 当前交付单元 `review/review.md` 已存在并按严重级别记录发现项。
+- review 范围符合 `speed_profile`，小改动没有重复政策样板，大影响改动没有压缩必要风险审查。
 - 已明确说明实现是否全部回溯到 source-grounding 条目，且没有未授权扩展。
 - 如存在 user intent contract，已明确说明实现是否满足用户实际目标并避开 forbidden interpretations。
 - 如存在既有代码修改或移除，已明确说明操作前链路审查是否充分、操作后链路是否干净、是否存在缺环或多余环节、是否影响邻近功能。
 - 已明确说明 changed area 是否仍有 clean-code blocker。
 - 如新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，已明确说明 expert frontend engineering assessment pass/fail。
 - 如添加或修改生产代码，已明确说明 production code quality assessment pass/fail。
+- 如添加或修改生产代码，已明确说明 code review checklist assessment pass/fail，覆盖健壮性、可维护性、性能与内存、项目规范一致性。
+- 如修改生产代码、测试、mock、契约或生成类型可见文件，已明确说明 human review readiness assessment pass/fail。
 - 如涉及复用候选或可能重复的语义逻辑，已明确说明 architecture reuse assessment pass/fail。
 - 已明确说明新增或扩大作用域的常量是否均有可证明的语义、约束、快照、简化或复用价值，且无意义常量已作为 blocker 处理。
+- 已明确说明新增独立 helper / hook / mapper / utility 文件是否均有多个真实生产调用方或已批准边界理由；单调用方无理由外置已作为 blocker 处理。
 - 如存在行为移除，已明确说明是否仍有 orphan helper、unused import、stale request wrapper、obsolete state、测试或注释残留。
 - 已明确说明测试文件是否已按需求适配；没有把测试引用当作待改或待删生产代码的真实调用方。
 - 如涉及样式变更，已明确说明 Tailwind CSS-style styling、class 值长度、禁止隐藏过长 class 字符串是否合规。
 - 如涉及 API 合同，已明确说明 API contract assessment pass/fail。
 - 如涉及 TypeScript context，已明确说明 TypeScript context assessment pass/fail。
 - 已明确说明 pattern choice 是 justified / overbuilt / unnecessary。
+- 已明确说明 pattern implementation shape 是否符合前端语法特点。
+- 已明确说明 pattern-fit evaluation 是否覆盖小需求、局部修改和 bugfix；direct code 选择有明确无信号理由或被触发模式候选的拒绝理由。
 - 当前交付单元 `review/review.md` 已明确写出 `clean-code assessment: pass|fail` 与 `design-pattern assessment: pass|fail`。
 - 当前交付单元 `review/review.md` 已明确写出 `source grounding assessment: pass|fail`。
 - 当前交付单元 `review/review.md` 已明确写出 `expert frontend engineering assessment: pass|fail`（如适用）。
 - 当前交付单元 `review/review.md` 已明确写出 `production code quality assessment: pass|fail`（如适用）。
+- 当前交付单元 `review/review.md` 已明确写出 `code review checklist assessment: pass|fail`（生产代码改动适用）。
+- 当前交付单元 `review/review.md` 已明确写出 `human review readiness assessment: pass|fail`（如适用）。
 - 当前交付单元 `review/review.md` 已明确写出 `architecture reuse assessment: pass|fail`（如适用）。
 - 当前交付单元 `review/review.md` 已明确写出 `functional-programming assessment: pass|fail`（如适用）。
 - 已明确说明 spec 与 plan 是否保持所需行为颗粒度对齐。
@@ -188,12 +229,17 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 不能把 review 压缩成一句批准语。
 - 不能接受没有来源锚定的行为或从常规做法、相邻模块、样例内容、个人偏好扩展出来的行为。
 - 不能因为“功能能跑”就忽略严重的可维护性问题。
+- 不能因为自动化验证通过就忽略人工评审可读性、diff scope、局部惯例、证据质量或 reviewer trust。
 - 不能接受局部实现正确但端到端用户旅程、状态生命周期、异步正确性、交互韧性、性能边界、演进安全或证据不足的前端改动。
 - 不能接受缺少类型契约、silent failure、空值语义混淆、命名违规、magic variables、无理由微优化、无批准 class / mutable owner，或缺少边界 UI 状态的生产代码。
+- 不能接受未通过 code-review checklist 的生产代码：plan 缺少预检合同、execute 未按合同实现、外部数据缺少判空 / 可选链、API 缺少异常处理、巨型混责函数、魔法数字无语义常量、高频事件缺少合适防抖 / 节流 / 取消 / 去重决策、副作用缺少 cleanup，或组件库 / 样式方案 / 目录引用方式 / 技术栈锚定不一致。
+- 不能接受擅自更改技术栈、替换组件库、绕过既有样式方案、改变目录引用方式或引入未批准框架 / 库；这类问题必须标 ❌、说明不应接受，并回流重写。
 - 不能把已通过 Anti-DRY 矩阵且批准抽取但未抽取的重复语义逻辑降级为非阻塞建议。
 - 不能接受仅以“不同模块”为理由拒绝公共逻辑抽取。
 - 不能接受未通过 Anti-DRY 矩阵的提前抽象、God Utils、shared 导入业务私有 entity、shared 内部环境副作用、合并接口或缺少 traceability 的新晋升 shared API。
 - 不能接受没有清晰领域 owner 的 dumping-ground utility。
+- 不能接受只有一个页面、一个真实生产调用方的函数被无理由抽成独立文件；这属于错误抽象，不是 clean-code。
+- 不能接受用 one-function module、局部 `utils.ts`、局部 `helpers.ts` 或单调用方 mapper 文件制造不必要阅读跳转。
 - 不能因为“函数式”就接受更难读、更难调试或隐藏副作用的实现。
 - 不能接受只给一次性显然值换名、为假想复用导出、创建同义别名或无依据扩大作用域的常量。
 - 不能接受只满足字面要求但违背用户实际目标的实现。
@@ -202,6 +248,10 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 不能接受删除行为后残留孤立 helper、unused import、stale request wrapper、obsolete state、测试或注释。
 - 不能接受因为测试文件仍引用待改或待删代码而保留生产代码；测试引用视为空引用，测试应适配新需求。
 - 不能接受没有实际问题支撑的 pattern layer / fake extensibility / framework-shaped indirection。
+- 不能接受把前端 pattern 机械实现成后端式 class hierarchy、abstract base、manager、factory、handler 或 one-method wrapper ceremony，除非项目惯例和已批准边界理由同时成立。
+- 不能接受为了证明考虑过设计模式而机械枚举所有未触发模式，或把这种枚举当成真实 pattern-fit evaluation。
+- 不能接受缺失 pattern-fit evaluation 的 spec / plan，即使实现是小改动或 bugfix。
+- 不能接受没有理由的 direct code，当代码事实已经出现适配、选择、状态、命令、流程、通知、代理、组合或构建候选信号。
 - 不能把 clean-code 或 design-pattern 合规性当成默认成立而不写 pass/fail。
 - 不能把 functional-programming 合规性当成默认成立而不写 pass/fail（如适用）。
 - 不能接受违反 Tailwind CSS-style utility class、class 值长度或禁止隐藏过长 class 字符串规则的 authored styling。

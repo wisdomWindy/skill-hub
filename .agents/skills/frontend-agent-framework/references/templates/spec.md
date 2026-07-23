@@ -22,6 +22,7 @@ Required sections:
 - trigger and start conditions
 - requirement split summary
 - source grounding and traceability
+- workflow efficiency profile
 - user intent contract
 - user flow
 - page and module design
@@ -29,8 +30,10 @@ Required sections:
 - function-complete behavior breakdown
 - expert frontend engineering constraints
 - production code quality constraints
+- human review readiness constraints
 - functional-programming constraints
 - architecture reuse and shared ownership constraints
+- locality and file-extraction constraints
 - design constraints
 - project bootstrap and scaffold decision
 - change axes and pattern decision
@@ -74,6 +77,22 @@ Rules:
 - Do not turn adjacent modules, sample request content, or conventions into requirements without confirmation.
 - `source-derived` items must explain why every plausible interpretation leads to the same spec, plan, implementation, and verification result.
 - If the source is missing for material behavior, put it in `spec/clarifications.md` and roll back to the front-loaded confirmation gate when it affects scope, behavior, data semantics, permissions, state flow, frontend/server responsibility, API contract meaning, validation, acceptance, or user intent.
+
+## `workflow efficiency profile`
+
+Document:
+
+- current `speed_profile.level`
+- why this is the lowest safe profile for the delivery unit
+- whether spec uses compact or full artifact density
+- context breadth allowed downstream
+- conditions that must upgrade the profile before implementation continues
+
+Rules:
+
+- Compact spec is allowed for `S0` / `S1`, but required sections remain present.
+- Non-applicable sections should be concise `不适用：<reason>` entries instead of repeated policy prose.
+- Compact spec must still preserve source grounding, business behavior, pattern decision, applicable quality constraints, and verification obligations.
 
 ## `API and data contracts`
 
@@ -159,6 +178,19 @@ Document the required pre-code reasoning order and the concrete constraints that
 
 Do not let this section duplicate the functional-programming section. This section owns production-code quality gates; the functional-programming section owns transformation purity, immutability, and side-effect placement in detail.
 
+## `human review readiness constraints`
+
+Required when the scoped work changes production code, tests, mocks, contracts, or generated-facing files.
+
+Document:
+
+- local conventions that implementation must follow, including nearby component, hook / composable, request, store, adapter, naming, test, and error-handling patterns
+- expected diff scope and files that are allowed to change
+- files or behaviors explicitly not in scope
+- review-sensitive risks, such as large diff, touched shared code, migration, compatibility, request side effects, state ownership, or test adaptation
+- required self-review evidence before verification: changed hunks mapped to plan tasks, unrelated changes ruled out, debug/dead/stale artifacts removed, and verification commands or fallback checks recorded
+- reviewer-readable explanation needed for non-obvious changes
+
 ## `architecture reuse and shared ownership constraints`
 
 Required when the scoped work touches business rules, validation, filtering, sorting, grouping, option building, permission checks, payload construction, status mapping, adapter / mapper normalization, view-model construction, helper logic, or state derivation.
@@ -177,6 +209,59 @@ Document:
 - migration scope for in-scope callers
 - behavior-equivalence verification required downstream
 - JSDoc traceability requirement for promoted shared APIs, including `@see` or representative `@example` references
+
+## `locality and file-extraction constraints`
+
+Required when the scoped work adds or moves helpers, hooks, mappers, adapters, constants, utilities, or feature-local modules.
+
+Document:
+
+- proposed helper / hook / mapper / utility name
+- owning page, component, hook, adapter, or service
+- real production caller count
+- decision: same-file local helper, feature-local private file, shared owner, or no extraction
+- approved reason for any separate file
+- why same-file locality is insufficient when there is only one real production caller
+
+Rules:
+
+- Single-page, single-caller logic defaults to same-file local helper.
+- A separate file requires a concrete boundary reason: multiple production owners, adapter/service/request layer, cohesive component or hook lifecycle, independent test surface, framework-required module shape, generated/contract isolation, or unavoidable file-size/readability pressure.
+- Do not approve one-function modules, local catch-all `utils.ts` / `helpers.ts`, or single-caller mapper files only to shorten the owning page or prepare for hypothetical reuse.
+
+## `change axes and pattern decision`
+
+Required for every delivery unit, including small changes, local modifications, and bug fixes.
+
+Document:
+
+- scoped behavior or structure being changed
+- pattern candidate signals found or ruled out:
+  - selection by type, state, role, environment, feature flag, permission, or provider
+  - contract or shape adaptation
+  - creation logic or provider selection
+  - ordered workflow, validation, fallback, upload, submit, or request pipeline
+  - side-effect coordination, notification, analytics, retry, caching, tracing, or permission wrapping
+  - state-dependent behavior spreading across conditionals
+  - tree or nested structure handling
+  - access control, lazy loading, cache, request dedupe, or expensive object access
+- existing project pattern or local convention to preserve
+- decision depth: Level 0 direct code, Level 1 local lightweight shape, Level 2 reused / formalized project pattern, or Level 3 structural pattern introduction
+- selected decision: `direct code`, `reuse existing pattern`, `adapt lightweight pattern`, or `introduce pattern`
+- selected pattern family or `none`
+- frontend syntax shape: function, object map, typed record, discriminated union, hook / composable, component boundary, store action, request module, adapter / mapper, higher-order function, or justified class
+- triggered rejected alternatives and why they are heavier, less local, less readable, or unsupported by current variation
+- downstream verification or review signal that would prove the decision is still fitting
+
+Rules:
+
+- Direct code is a valid decision, not an omitted decision.
+- If Level 0 direct code is selected and no pattern signal exists, record the no-signal rationale briefly. Do not enumerate every untriggered pattern family.
+- If direct code is selected despite a real pattern signal, explain why only the triggered candidate families or project patterns are not the lightest useful fit for the current change.
+- If a pattern is selected, prefer JavaScript/frontend-native shapes such as functions, object maps, strategy maps, command records, adapters, hooks, composables, components, or small modules before class hierarchies.
+- The implementation shape must match the frontend stack: React should favor props, composition, hooks, reducers, refs, context when needed, and event handlers; Vue should favor props / emits, slots, composables, refs / computed, stores, directives, and SFC boundaries.
+- Do not use backend-style class hierarchies, abstract base classes, one-method interfaces, managers, factories, or handlers unless the existing project convention and approved boundary reason both justify them.
+- Do not introduce a named pattern layer for hypothetical future variants.
 
 Rules:
 

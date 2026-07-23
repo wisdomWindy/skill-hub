@@ -7,6 +7,7 @@ This policy defines the design constraints that must be decided or explicitly bo
 ## Core Rule
 
 - Treat clean-code, functional-programming, and design-pattern decisions as spec-level constraints whenever they materially affect module boundaries, data transformation ownership, behavior variation, dependency direction, side-effect placement, or future extension safety.
+- Every delivery unit must record a pattern-fit decision in the spec, even when the decision is direct code and no named pattern is introduced.
 
 ## Required Spec Constraint Categories
 
@@ -14,6 +15,7 @@ This policy defines the design constraints that must be decided or explicitly bo
 
 - The spec must state the intended responsibility split for the main changed modules, components, hooks, services, or utilities.
 - The spec must identify boundaries that must stay explicit, such as page orchestration vs business logic, UI rendering vs data shaping, command logic vs side effects, adapter boundary vs raw upstream contract.
+- The spec must state locality decisions for new helpers, hooks, mappers, constants, and utility files. Single-page, single-caller logic defaults to same-file local helpers unless the spec records a concrete boundary reason for a new file.
 - If the request touches an already tangled area, the spec must say whether the change is allowed to preserve the existing structure temporarily or must improve the boundary as part of the work.
 
 ### 2. Naming and Domain Language Constraints
@@ -40,6 +42,8 @@ This policy defines the design constraints that must be decided or explicitly bo
 
 - The spec must identify real variation axes such as behavior by type, state, role, environment, provider, or workflow stage.
 - The spec must state whether each major variation axis should use direct branching, remain intentionally simple, or be isolated by an approved pattern family.
+- The spec must evaluate pattern candidates for small changes, local modifications, and bug fixes, including adaptation, strategy selection, state-dependent behavior, command/action sequencing, pipelines, notification fan-out, wrappers, facades, proxies, tree handling, and construction complexity.
+- If direct code is selected, the spec must record why it is clearer than a pattern for the current change.
 - If a named pattern is justified, the spec must record the problem being solved, the pattern family, and what simpler alternative was rejected.
 - If a named pattern is not justified, the spec should say so explicitly when that decision avoids future overengineering.
 
@@ -48,6 +52,7 @@ This policy defines the design constraints that must be decided or explicitly bo
 - The spec must identify parts of the request where control flow, state transitions, or orchestration could become hard to read.
 - The spec must define any readability guardrails that downstream code should preserve, such as explicit state transitions, limited branching surfaces, or one clear entrypoint per workflow step.
 - When a request can be solved in a simpler direct form, the spec should prefer that and forbid speculative abstraction.
+- When a helper would have only one real production caller, the spec should prefer colocation and forbid standalone helper files unless a clear readability, lifecycle, adapter/service, framework, generated-code, or testing boundary is approved.
 
 ### 7. Project Bootstrap and Scaffold Constraints
 

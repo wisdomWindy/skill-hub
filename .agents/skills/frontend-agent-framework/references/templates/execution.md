@@ -17,6 +17,7 @@ Required sections:
 - implementation decisions
 - expert frontend engineering execution notes
 - production code quality execution notes
+- human review readiness notes
 - TDD evidence or documented exception
 - change-chain review evidence
 - removal cleanup evidence
@@ -69,6 +70,19 @@ Document:
 - maintainability-first performance decision, including any approved memoization, cache, debounce, throttle, virtualization, `useMemo` / `useCallback`, computed caching, or watcher optimization and its dependency rationale
 - pure function / immutable data preference followed, or approved reason for class / mutable owner use
 - empty, loading, and form error states implemented for touched lists, async operations, and form inputs
+
+### `human review readiness notes`
+
+Required when production code, tests, mocks, contracts, or generated-facing files were changed.
+
+Document:
+
+- final changed files and why each file needed to change
+- changed hunks mapped to approved tasks, cleanup obligations, or test adaptations
+- local conventions checked and followed
+- unrelated changes, broad formatting churn, debug code, dead code, stale comments, and temporary names found or ruled out
+- unused imports / exports, orphan helpers, stale mocks, stale tests, and obsolete comments found or ruled out
+- reviewer-facing evidence: tests, type checks, lint checks, manual checks, commands not run with reason, and accepted risks
 
 ### `expert frontend engineering execution notes`
 

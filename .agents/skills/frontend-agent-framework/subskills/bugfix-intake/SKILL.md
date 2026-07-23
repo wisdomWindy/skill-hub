@@ -34,7 +34,7 @@ description: Stage subskill for defect intake. Normalize a Feishu/Lark project d
    - `../../references/templates/bugfix-intake.md`
    - `../../references/templates/code-context.md`
    - `../../references/policies/policy-index.md`
-   - 按 `policy-index.md` 的 `bugfix-intake` 阶段映射读取本次缺陷适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`、`code-graph.md`
+   - 按 `policy-index.md` 的 `bugfix-intake` 阶段映射读取本次缺陷适用的 policy 文件；默认至少读取 `source-grounding.md`、`doc-writing.md`、`workflow-efficiency.md`；只有根因、调用方、依赖或影响面分析需要时才读取 `code-graph.md`
 2. 先解析 defect 来源，再创建下游工件。
 3. 如果是 Feishu/Lark defect 且环境里有 `meegle`：
    - 默认使用 `meegle`
@@ -61,8 +61,9 @@ description: Stage subskill for defect intake. Normalize a Feishu/Lark project d
 12. 归一化缺陷内容，输出为下游 `spec/plan` 可消费的标准工件。
 13. 本阶段是 bugfix 的 source-grounding 与人工确认前置 gate：observed behavior、expected behavior、复现范围和受影响模块是主来源；仓库事实用于定位根因、影响面和回归面，不能扩展成未要求的重构或产品行为变更。
 14. 如果 observed behavior、expected behavior、复现范围、修复目标、禁止解释、来源依据、歧义内容、模糊内容或完成条件仍需用户 / 缺陷来源确认，必须停在 bugfix-intake 并记录阻塞原因；不能把确认推迟到 `spec` 或 `plan`。
-15. 初始化 `state.json.loop`，并把 `stage` 设为 `spec`。
-16. 对 bugfix 请求，将 `state.json.module_flow` 初始化为 `null`；本框架的模块顺序执行仅适用于 requirement-splitting 之后的 PRD 驱动请求。
+15. 初始化 `state.json.speed_profile`，按 `workflow-efficiency.md` 选择最低安全档位；单点缺陷默认从 `S1 local` 起评估，只有影响面清楚且无新业务规则 / API / 架构风险时才允许 `S0 trivial`。
+16. 初始化 `state.json.loop`，并把 `stage` 设为 `spec`。
+17. 对 bugfix 请求，将 `state.json.module_flow` 初始化为 `null`；本框架的模块顺序执行仅适用于 requirement-splitting 之后的 PRD 驱动请求。
 
 ## 输出格式
 
@@ -87,6 +88,7 @@ description: Stage subskill for defect intake. Normalize a Feishu/Lark project d
 - 请求工作区已创建。
 - `request.md` 与 `state.json` 已记录 bug 来源。
 - `request.md` 已记录明确 bugfix 目标与初始 done signal。
+- `state.json.speed_profile` 已记录最低安全档位、原因、context budget 和 artifact density。
 - `artifacts/bugfix-source.md` 已完成缺陷上下文归一化。
 - 如需要结构分析，`artifacts/code-context.md` 已存在。
 - 下游标准摘要已写入 `artifacts/prd-snapshot.md`。

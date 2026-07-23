@@ -8,7 +8,8 @@ This policy defines stable frontend architecture standards that stage subskills 
 
 - Separate page containers, business components, and shared components by responsibility.
 - Keep each file or module focused on a single clear purpose where practical.
-- Split complex business logic into focused hooks or modules instead of growing page files indefinitely.
+- Split complex business logic into focused hooks, components, adapters, services, or modules only when the extracted unit has a real owner, lifecycle, boundary, test surface, or multiple production callers. Do not split a single page-owned helper into a standalone file just to make the page shorter.
+- Keep page-private, single-use logic colocated by default. A local helper inside the owning page/component is usually better than a one-function imported utility when no other production code owns the behavior.
 - Prefer explicit data flow and ownership over convenience coupling.
 - Keep shared abstractions stable, documented, and reusable across requests.
 - Before adding or changing business logic, scan the scoped feature chain and nearby modules for existing equivalent rules, validators, adapters, mappers, payload builders, formatters, status mapping, option builders, permission checks, and state-derivation helpers.
@@ -18,6 +19,7 @@ This policy defines stable frontend architecture standards that stage subskills 
 - Extract shared logic only when the same semantic rule is stable enough, appears in three or more real production use sites, or an already-approved architecture artifact proves a smaller extraction is safer than continued duplication.
 - Extract shared logic at the lowest stable ownership level that all real production callers can depend on without reversing dependency direction.
 - Do not create shared abstractions for incidental syntactic similarity, one-off formatting, or hypothetical reuse; the shared unit must represent the same domain rule or stable technical boundary.
+- Do not create a new file-level abstraction for one real production caller unless the architecture artifact records a non-reuse reason such as adapter/service boundary, cohesive component/hook lifecycle, independent testing need, framework-required module shape, generated/contract isolation, or unavoidable file-size/readability pressure.
 - Shared functions must keep behavior explicit, typed, and testable. Prefer pure functions for rules and transformations, and keep requests, state writes, navigation, analytics, cache writes, and UI side effects outside shared pure helpers.
 - When extracting common logic, migrate all in-scope production callers and update tests as consumers of the shared contract instead of leaving duplicate legacy paths behind.
 - A behavior-preserving shared extraction is allowed when it is code-fact-backed by existing duplicate production logic and inside the approved change chain; it does not require new product scope because it changes structure, not behavior.
@@ -66,6 +68,7 @@ Block these patterns in architecture design, execution, verification, and review
 - Environment side effects in shared utilities: direct reads or writes of browser, storage, network, routing, stores, analytics, or process globals.
 - Merging interfaces for reuse: broad union types, optional mega-interfaces, or compatibility shapes created only to make unrelated modules call one helper.
 - Premature abstractions: shared APIs created from two unstable call sites, MVP-only behavior, or unclear variation axes.
+- Single-use file abstractions: one-function files, catch-all local `utils.ts`, page-private mapper files, or hook files that have only one production caller and no approved boundary reason.
 
 ## Promotion Flow
 
@@ -87,6 +90,7 @@ For every candidate repeated rule or helper, record:
 - evidence that the logic is semantically equivalent or intentionally different
 - extraction decision: extract now, keep separate, reuse existing helper, or defer
 - target owner path and dependency direction if extracted
+- single-use locality decision when the candidate has only one real production owner
 - inputs, outputs, type ownership, and side-effect boundary
 - migration plan for callers, tests, mocks, and imports
 - behavior-equivalence verification method
@@ -98,6 +102,7 @@ Default decision:
 - Reuse an existing helper when it already has the right semantic owner, API, dependency direction, and behavior contract.
 - Keep separate when the rules look similar but have different domain owners, different lifecycle, different layers, different permissions, different API semantics, fewer than three stable use sites, uncertain change points, or expected independent evolution.
 - Defer only when the duplicate is outside the approved change chain and touching it would create unsafe collateral scope; record the follow-up instead of silently ignoring it.
+- Colocate when a helper is page-private with one production caller and no approved layer, lifecycle, testability, framework, generated-code, or readability boundary. Same-file local functions are the default for this case.
 
 ## Senior-Engineer Architecture Bar
 
@@ -108,6 +113,7 @@ Architecture is not senior just because it has more layers. Senior-quality front
 - keep adapters and mappers responsible for data semantics
 - make dependency direction easy to reason about
 - make shared units small enough to test and stable enough to reuse
+- keep single-page rules close enough that a reviewer can understand the page without chasing unnecessary one-function imports
 - tolerate intentional duplication when abstraction would couple different semantics, layers, or unstable change points
 - prefer injected strategy / adapter boundaries over shared code that knows feature-specific fields
 - avoid broad utility dumping grounds such as `utils.ts` when a domain-specific module name is clearer

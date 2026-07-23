@@ -10,15 +10,18 @@
 Required top-level sections:
 
 - delivery unit identifier
+- workflow efficiency evidence
 - acceptance coverage
 - user intent compliance
 - change-chain integrity
 - removal cleanup compliance
 - spec constraint compliance
 - source grounding compliance
+- design-pattern compliance
 - expert frontend engineering compliance
 - architecture reuse compliance
 - production code quality compliance
+- human review readiness compliance
 - functional-programming compliance
 - frontend styling compliance
 - API contract conformance
@@ -33,6 +36,14 @@ Required fields for each acceptance item:
 - evidence reference
 - follow-up if failed
 - handoff status
+
+`workflow efficiency evidence` must include:
+
+- `speed_profile.level`
+- verification scope used
+- scoped commands run
+- broader commands skipped with reason and substitute evidence
+- any profile upgrade found necessary during verification
 
 `user intent compliance` is required when the spec contains a user intent contract. It must include:
 
@@ -70,6 +81,7 @@ Required fields for each acceptance item:
 
 - result (`pass` or `fail`)
 - checked constraints
+- locality and file-extraction checks for new helper / hook / mapper / utility files, including real production caller count and approved boundary reason for any single-caller separate file
 - evidence reference
 - follow-up if failed
 
@@ -82,6 +94,20 @@ Required fields for each acceptance item:
 - evidence reference
 - follow-up if failed
 
+`design-pattern compliance` is required for every delivery unit. It must include:
+
+- result (`pass` or `fail`)
+- pattern-fit decision from spec and plan: `direct code`, `reuse existing pattern`, `adapt lightweight pattern`, or `introduce pattern`
+- decision depth verified: Level 0, Level 1, Level 2, or Level 3
+- triggered candidate signals verified; if none were triggered, confirm the artifact did not mechanically enumerate unrelated patterns
+- direct-code no-signal rationale checked when no pattern was selected
+- triggered rejected alternatives checked
+- implementation conformance to the approved decision
+- frontend syntax shape conformance checked for the current stack; backend-style class hierarchy, abstract base, manager, factory, handler, or one-method wrapper ceremony found or ruled out
+- overbuilt pattern ceremony, fake extensibility, unapproved pattern introduction, missed lightweight pattern, or downgraded approved pattern found or ruled out
+- evidence reference
+- follow-up if failed
+
 `architecture reuse compliance` is required when the scoped work touches business rules, validation, filtering, sorting, option building, permission checks, payload construction, status mapping, adapter / mapper normalization, view-model construction, helper logic, or state derivation. It must include:
 
 - result (`pass` or `fail`)
@@ -89,6 +115,7 @@ Required fields for each acceptance item:
 - Anti-DRY matrix verified: semantic owner, layer, production use-site count, change stability, and variation axes
 - extraction / reuse / keep-separate / defer decisions verified
 - shared owner, dependency direction, public API, and side-effect boundary checks
+- single-use locality decisions checked; one-caller helper files found or ruled out
 - commonality classification and target owner checks
 - dependency injection / strategy / adapter boundary checks for business-specific variation
 - migrated production callers, tests, mocks, imports, and exports
@@ -134,6 +161,16 @@ Required fields for each acceptance item:
 - pure function / immutable data checks, including any approved exception for classes or mutable owners
 - boundary UI state checks for list empty states, async loading states, and form input error states
 - evidence reference
+- follow-up if failed
+
+`human review readiness compliance` is required when production code, tests, mocks, contracts, or generated-facing files were changed. It must include:
+
+- result (`pass` or `fail`)
+- changed files checked against approved scope
+- every changed hunk mapped to an approved task, cleanup obligation, or test adaptation
+- local convention conformance checked
+- unrelated changes, formatting churn, debug code, dead code, commented-out code, stale comments, temporary names, unused imports / exports, stale tests, and stale mocks found or ruled out
+- reviewer-ready evidence checked: tests, type checks, lint checks, manual checks, commands not run with reason, and accepted risks
 - follow-up if failed
 
 `frontend styling compliance` is required when the scoped work adds or changes authored styling. It must include:
