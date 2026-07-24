@@ -8,6 +8,7 @@ This policy defines durable component and interaction standards for frontend imp
 
 - Prefer established templates and existing shared components before building page-local variants.
 - Keep component names and responsibilities explicit.
+- For Vue SFC extraction / keep-inline decisions, use `vue-component-extraction.md`; this policy owns general component consistency and styling mechanics only.
 - Keep form, list, modal, and drawer patterns consistent within the product.
 - Avoid inline styling when a shared style system or utility class can express the same intent.
 - Author new or changed styles only with Tailwind CSS-style utility classes.

@@ -83,8 +83,9 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
    - 如果存在候选信号但仍选择 direct code，必须只针对被触发的候选模式或项目既有模式写拒绝理由。
    - 如果选择 pattern，必须写明具体问题、最小可行模式、前端语法实现形态、拒绝的更简单方案、隔离的变化轴 / 依赖边界 / 副作用协调点，以及未来判定 overbuilt 的信号。
    - 模式实现形态必须符合当前前端栈语法特点：优先函数、对象映射、typed record、discriminated union、hook / composable、component boundary、store action、request module、adapter / mapper、higher-order function；只有项目惯例或已批准生命周期 / 多态 / 依赖边界理由成立时才允许 class / abstract class / manager / factory / handler 层。
-   - 新增 helper、hook、mapper、adapter、constant group 或 utility file 时，必须写明 locality decision：是否同页 / 同组件就近放置，还是抽到单独文件；只有存在多个真实生产调用方、明确 adapter / service 边界、独立测试需要、独立生命周期、框架约束、生成 / 合同隔离，或同文件可读性无法接受时，才允许单独文件。
+   - 新增 helper、hook、mapper、adapter、constant group、Vue SFC 或 utility file 时，必须写明 locality decision：是否同页 / 同组件就近放置，还是抽到单独文件；只有存在多个真实生产调用方、明确 adapter / service 边界、独立测试需要、独立生命周期、框架约束、生成 / 合同隔离，或同文件可读性无法接受时，才允许单独文件。
    - 单页面、单真实生产调用方的函数默认写成 owning page / component 内的 local helper；不能仅因为函数是纯函数、想让页面短一点、或“以后可能复用”就抽成独立文件。
+   - 如涉及 Vue 组件抽取，必须记录 `vue-component-extraction.md` 决策：候选名、抽取 / 复用 / 保持内联 / 暂缓、真实生产调用方数量（`1`、`2+ 同语义`、`2+ 不同语义`）、触发条件或阻断条件、单调用方抽取例外（如有）、props / emits / slots 合同、状态 owner、数据归一边界、样式边界和验证面。
 15. 如 scoped work 添加或修改生产代码，spec 必须记录 production code quality constraints：
    - 先类型契约后实现：需要新增、复用或收窄的 `type` / `interface`，以及是否需要 branded type 或等价名义区分来避免传错 ID / token
    - fail-fast：空值、异常、非法值、超时、请求失败、部分成功和不可能状态如何显式处理
@@ -190,7 +191,8 @@ description: Stage subskill for specification. Turn intake artifacts into the fo
 - 如存在 user intent contract，spec 已保留 practical goal、forbidden interpretations、success criteria 和 intent-level verification checks。
 - spec 已记录 responsibility boundaries、side-effect placement、duplication ownership、complexity guardrails、pattern use / rejection。
 - spec 已记录 pattern-fit evaluation、pattern depth level 和前端语法实现形态；如选择 direct code，已按信号粒度写明无信号理由或被触发候选的拒绝理由，没有机械枚举无关模式。
-- spec 已记录新增 helper / hook / mapper / utility file 的 locality decision；单页面单调用方逻辑没有被无理由批准抽到独立文件。
+- spec 已记录新增 helper / hook / mapper / Vue SFC / utility file 的 locality decision；单页面单调用方逻辑没有被无理由批准抽到独立文件。
+- 如涉及 Vue 组件拆分，spec 已明确每个候选在什么条件下抽取或不抽取，并记录 props / emits / slots、状态 owner、数据归一边界、样式边界和验证面。
 - 如添加或修改生产代码，spec 已记录 type-first、fail-fast、strict null、naming、no magic variables、maintainability-first、pure functions over classes、boundary UI states 约束。
 - 如修改生产代码、测试、mock、契约或生成类型可见文件，spec 已记录 human review readiness constraints，包括 diff scope、局部惯例、禁止无关改动和 reviewer-ready evidence。
 - 如新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，spec 已记录 expert frontend engineering constraints。

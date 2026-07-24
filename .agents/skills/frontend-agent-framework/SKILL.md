@@ -51,6 +51,7 @@ Keep the repository-local workflow in control through one default entry skill th
 - Enforce frontend/backend responsibility separation during requirement analysis so downstream frontend work does not absorb server-owned changes or hide backend dependencies.
 - Enforce TypeScript context discipline so TS-affecting work reads the governing `tsconfig` and relevant declaration sources before coding, without falling into repository-wide declaration-file sweeps.
 - Enforce frontend styling discipline so authored styles use Tailwind CSS-style utility classes, keep class values reviewable inline, and do not hide overlong class strings behind constants or computed values.
+- Enforce Vue component extraction discipline so Vue SFC boundaries are extracted only for concrete UI / business ownership, interaction lifecycle, composition, styling, testability, reuse, or readability reasons, and kept inline when extraction would create pass-through, generic, or misleading components.
 - Enforce workflow-efficiency discipline so each request uses the lowest safe speed profile, scoped context, compact artifacts, and safe parallelism without weakening quality gates.
 
 ## Built-In Constitution
@@ -83,6 +84,7 @@ This skill carries its own workflow constitution and does not require `.agents/A
 - Never let code-architecture-sensitive work enter `spec` without a durable `architecture-design` artifact.
 - Never let repeated semantic logic across production modules proceed as local copy-paste when the approved change touches that logic; first record an extract / reuse / keep-separate / defer decision with evidence.
 - Never extract a page-private function, hook, mapper, helper, or constant group into a standalone file when it has only one real production caller unless the approved artifacts record a concrete boundary reason.
+- Never extract a Vue component just because a page is long, code looks componentizable, or future reuse is imagined; the approved artifacts must record the concrete extraction trigger or the reason to keep the section inline.
 - Never enter `spec` for a PRD-driven request when any requirement-splitting module that needed Markdown normalization is missing either its raw snapshot or its Markdown-normalized snapshot.
 - Never allow ambiguous or fuzzy requirement content to pass into `spec` or `plan` as an implementation assumption when it affects scope, behavior, data semantics, permissions, state flow, API contract meaning, validation rules, acceptance criteria, or user intent; confirm it in the front-loaded gate first.
 - Never request user approval for `spec` or `plan`; if those stages expose a decision that truly needs a person, roll back to `requirement-analysis` or the appropriate source-normalization gate instead of pausing inside `spec` or `plan`.
@@ -433,6 +435,7 @@ Non-bypassable gate categories:
 - Code-quality gates: apply the relevant policies for production-code-quality, code-review-checklist, clean-code, human-review-readiness, functional-programming, frontend-architecture, design-patterns, frontend-components, api-contracts, and typescript-context.
 - Code-quality gates: pattern-fit evaluation is required for every delivery unit; missing pattern decision, unjustified pattern ceremony, or unexamined direct code is a blocker.
 - Code-quality gates: single-caller file extraction without an approved boundary reason is a blocker, even when the extracted function is pure or makes the owning page shorter.
+- Code-quality gates: Vue component extraction must satisfy `vue-component-extraction.md`; one-caller pass-through components, generic wrappers, DTO passthrough components, broad optional-prop components, and components extracted only to shorten a file are blockers.
 - Review blocker gates: do not pass review with missing required verdicts, unresolved blockers, misleading names, hidden side effects, wrong abstraction, hidden mutation, contract drift, styling violations, failed code-review checklist, unauthorized technology-stack changes, or skipped TypeScript context recovery.
 - Efficiency gates: keep the lowest safe `speed_profile`, use compact artifacts for `S0` / `S1`, prefer scoped reads and checks, and upgrade the profile immediately when wider impact appears; do not downgrade quality verdicts for speed.
 - Completion gates: do not complete until verification and review artifacts exist and every applicable verdict in the constraint-model registry explicitly records `pass`.

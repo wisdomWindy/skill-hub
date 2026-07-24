@@ -94,6 +94,7 @@ description: Stage subskill for verification. Validate the implementation agains
    - render scope、大列表、昂贵派生、bundle、响应式 fan-out 风险是否被验证
    - migration、兼容边界、回滚面、清理触发器或双路径 owner 是否清楚
    - 测试与诊断证据是否足以支撑该前端链路
+   - 如涉及 Vue 组件抽取，验证是否按 spec / plan 的 `vue-component-extraction.md` 决策执行：应抽取的候选已抽取或复用，不应抽取的候选保持内联；真实生产调用方数量、`2+ 同语义`或单调用方例外、props / emits / slots、状态 owner、数据归一边界、Tailwind class 边界和测试面均符合计划
 19. 如 scoped work 触碰业务规则、校验、筛选排序、option 构造、权限判断、payload 构造、状态派生、状态映射、adapter / mapper、view-model 构造或 helper 逻辑，验证 architecture reuse compliance：
    - 是否检查了 spec / plan / architecture-design 中的复用候选
    - 是否验证了 Anti-DRY 矩阵：业务语义、分层、真实生产使用点数量、变化稳定性、变因数量
@@ -169,6 +170,7 @@ description: Stage subskill for verification. Validate the implementation agains
 - 如存在行为移除，当前交付单元 `verification/verification.md` 已明确写出删除依赖闭包清理结论。
 - 如测试文件引用待改或待删代码，当前交付单元 `verification/verification.md` 已明确写出测试适配结论，且未把测试引用当成生产代码保留依据。
 - 如新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，当前交付单元 `verification/verification.md` 已明确写出 expert frontend engineering compliance pass/fail。
+- 如涉及 Vue 组件拆分，当前交付单元 `verification/verification.md` 已明确写出抽取 / 不抽取决策是否落实、真实生产调用方数量和单调用方例外是否成立、组件接口是否清晰、是否存在单调用方透传组件、泛 wrapper、DTO / form-model passthrough 或只为隐藏长 class 的组件。
 - 如添加或修改生产代码，当前交付单元 `verification/verification.md` 已明确写出 production code quality compliance pass/fail。
 - 如修改生产代码、测试、mock、契约或生成类型可见文件，当前交付单元 `verification/verification.md` 已明确写出 human review readiness compliance pass/fail。
 - 如涉及样式变更，当前交付单元 `verification/verification.md` 已明确写出 Tailwind CSS-style styling 与 class 值长度检查结论。

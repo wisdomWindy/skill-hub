@@ -86,6 +86,7 @@ description: Stage subskill for review. Review correctness, standards compliance
    - 性能改动没有真实瓶颈，或大列表、昂贵派生、响应式 fan-out 没有边界
    - dual path、migration、兼容层、feature flag 或 fallback 没有 owner、清理触发器或回滚面
    - 缺少能证明端到端前端链路的测试或诊断证据
+   - Vue 组件抽取不符合 `vue-component-extraction.md`：没有抽取决策记录、没有真实生产调用方数量、单调用方缺少批准例外、只因页面长或 class 长而抽取、抽出单调用方透传组件、泛 wrapper、DTO / form-model passthrough 组件、宽 optional props 组件、prop / emit 链比原本更长，或把 adapter / request / permission / 数据归一逻辑移入展示组件
 15. 检查 production-code-quality policy 是否被正确应用；以下情况按 blocker 处理：
    - 缺少先行类型契约，类型过宽，滥用 `any` / 类型断言，或应区分的 ID / token 没有 branded / nominal 区分且无合理拒绝理由
    - silent failure、吞错、忽略 rejected promise、无上下文错误提示、用默认成功掩盖失败
@@ -197,6 +198,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 如存在既有代码修改或移除，已明确说明操作前链路审查是否充分、操作后链路是否干净、是否存在缺环或多余环节、是否影响邻近功能。
 - 已明确说明 changed area 是否仍有 clean-code blocker。
 - 如新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，已明确说明 expert frontend engineering assessment pass/fail。
+- 如涉及 Vue 组件拆分，已明确说明哪些候选应抽取、哪些应保持内联，且错误抽取或漏抽已作为 blocker 处理。
 - 如添加或修改生产代码，已明确说明 production code quality assessment pass/fail。
 - 如添加或修改生产代码，已明确说明 code review checklist assessment pass/fail，覆盖健壮性、可维护性、性能与内存、项目规范一致性。
 - 如修改生产代码、测试、mock、契约或生成类型可见文件，已明确说明 human review readiness assessment pass/fail。
@@ -231,6 +233,7 @@ description: Stage subskill for review. Review correctness, standards compliance
 - 不能因为“功能能跑”就忽略严重的可维护性问题。
 - 不能因为自动化验证通过就忽略人工评审可读性、diff scope、局部惯例、证据质量或 reviewer trust。
 - 不能接受局部实现正确但端到端用户旅程、状态生命周期、异步正确性、交互韧性、性能边界、演进安全或证据不足的前端改动。
+- 不能接受无明确条件的 Vue 组件抽取；不能接受单调用方透传组件、泛 wrapper、DTO passthrough、宽 optional props、隐藏简单本地规则，或只为缩短文件而抽出的 Vue SFC。
 - 不能接受缺少类型契约、silent failure、空值语义混淆、命名违规、magic variables、无理由微优化、无批准 class / mutable owner，或缺少边界 UI 状态的生产代码。
 - 不能接受未通过 code-review checklist 的生产代码：plan 缺少预检合同、execute 未按合同实现、外部数据缺少判空 / 可选链、API 缺少异常处理、巨型混责函数、魔法数字无语义常量、高频事件缺少合适防抖 / 节流 / 取消 / 去重决策、副作用缺少 cleanup，或组件库 / 样式方案 / 目录引用方式 / 技术栈锚定不一致。
 - 不能接受擅自更改技术栈、替换组件库、绕过既有样式方案、改变目录引用方式或引入未批准框架 / 库；这类问题必须标 ❌、说明不应接受，并回流重写。

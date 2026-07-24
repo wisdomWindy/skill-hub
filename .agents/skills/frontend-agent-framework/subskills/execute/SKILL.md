@@ -111,6 +111,8 @@ description: Stage subskill for execution. Implement only framework-approved tas
    - 所有 pattern 实现必须符合当前前端栈语法特点，优先使用 TypeScript 类型、discriminated union、typed record、函数、闭包、hook / composable、组件边界、store action、request module、adapter / mapper 或 higher-order function。
    - 不得把前端 pattern 落成 Java / C# 式 abstract class、one-method interface、manager、factory、handler 或 class hierarchy，除非 spec / plan 已批准项目惯例、生命周期、多态或依赖边界理由。
    - 如果执行中发现新的选择逻辑、适配边界、流程编排、副作用协调、状态分支、树结构、访问控制、缓存、懒加载、请求去重或横切关注点，先回退到 `spec` 或 `plan` 补 pattern-fit decision，不能现场发明模式。
+   - 如果执行中发现新的 Vue 组件抽取候选或发现已批准抽取 / 不抽取决策不符合实际代码，先回退到 `spec` 或 `plan` 补 `vue-component-extraction.md` 决策，不能现场拆 SFC 或合并组件。
+   - 实现 Vue 组件抽取时，必须按计划落实真实生产调用方数量、`2+ 同语义`或单调用方例外、props / emits / slots、状态 owner、数据归一边界、Tailwind class 边界和验证面；不得抽出单调用方透传组件、泛 wrapper、DTO / form-model passthrough 组件、prop / emit 链更长的组件，或只为缩短文件 / 隐藏长 class 的组件。
 17. 如 scoped work 新增或修改用户可见行为、状态流、数据流、组件组合、前端架构或生产集成，必须按 expert-frontend-engineering policy 落地：
    - 保持用户旅程从入口到成功/失败/重试/取消/交接完整
    - 明确 source state、derived state、form state、server state、route state、cache state、持久化边界各自 owner
@@ -231,6 +233,7 @@ description: Stage subskill for execution. Implement only framework-approved tas
 - 新增独立 helper / mapper / hook / utility 文件均能说明多个真实生产调用方或已批准边界理由；不存在单页面单调用方函数被无理由外置。
 - 改动区域可读性仍然达标，必要的 clean-code 重构已完成或显式记录。
 - pattern-fit decision 已按 spec / plan 落地；direct code 没有被现场升级成未批准模式，已批准模式没有被降级或替换。
+- Vue 组件抽取 / 保持内联决策已按 spec / plan 落地；没有现场新增未批准组件边界，也没有抽出无真实边界的透传组件、单调用方无例外组件、泛 wrapper、DTO / form-model passthrough 组件或只为隐藏长 class 的组件。
 - pattern 实现形态符合当前前端栈语法特点，没有无批准地引入后端式 class hierarchy、manager、factory、handler 或 one-method wrapper ceremony。
 - 当前交付单元 `plan/task-board.md` 已反映完成状态。
 - `state.json.stage=verify`，且保留原有 `loop`。
@@ -276,6 +279,7 @@ description: Stage subskill for execution. Implement only framework-approved tas
 - 不能通过 mutate props、backend DTO、共享 store snapshot、函数参数或导入常量来完成数据转换。
 - 不能把本应属于 adapter / mapper / `fromDetail` 的数据语义归一挪到 computed、watch 或模板兜底中。
 - 不能在编码时私自发明新 pattern layer。
+- 不能在编码时私自抽取 Vue 组件；新增或移动 Vue SFC 必须已有 spec / plan 的具体抽取条件和接口边界。
 - 不能因为执行中发现模式候选信号就现场套模式；必须回退到 spec / plan 记录 pattern-fit decision。
 - 不能把前端设计模式机械实现成后端式 class hierarchy、abstract base、manager、factory、handler 或 one-method class wrapper。
 - 不能绕过已批准的 direct-code 决策引入 manager、strategy、adapter、facade、proxy、command 等抽象层。

@@ -75,7 +75,9 @@ Required sections:
 - findings for constants introduced or moved to a broader scope, including the domain meaning, constraint, snapshot, simplification, or real reuse that justifies each non-obvious declaration
 - unnecessary one-off aliases, speculative module or exported constants, synonym constants, and over-broad constant scope found or ruled out
 - findings for helper / hook / mapper / utility files introduced or moved out of their owner, including real production caller count and approved boundary reason
+- findings for Vue SFC / page-local component extraction, including extraction trigger, non-extraction blocker, real production caller count (`1`, `2+ same semantics`, or `2+ different semantics`), single-caller exception if any, props / emits / slots contract, state owner, and whether the boundary improved or harmed readability
 - single-page single-caller one-function files, local catch-all `utils.ts` / `helpers.ts`, or single-caller mapper files found or ruled out
+- one-caller components without an approved exception, one-caller pass-through Vue components, generic wrappers, broad optional-prop components, DTO / form-model passthrough components, prop / emit chains longer than the original local markup, and components extracted only to shorten a file or hide long classes found or ruled out
 - required follow-up if failed
 
 `source grounding assessment` must include:

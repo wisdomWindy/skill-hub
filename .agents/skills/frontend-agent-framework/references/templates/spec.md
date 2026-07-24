@@ -34,6 +34,7 @@ Required sections:
 - functional-programming constraints
 - architecture reuse and shared ownership constraints
 - locality and file-extraction constraints
+- Vue component extraction constraints
 - design constraints
 - project bootstrap and scaffold decision
 - change axes and pattern decision
@@ -228,6 +229,32 @@ Rules:
 - Single-page, single-caller logic defaults to same-file local helper.
 - A separate file requires a concrete boundary reason: multiple production owners, adapter/service/request layer, cohesive component or hook lifecycle, independent test surface, framework-required module shape, generated/contract isolation, or unavoidable file-size/readability pressure.
 - Do not approve one-function modules, local catch-all `utils.ts` / `helpers.ts`, or single-caller mapper files only to shorten the owning page or prepare for hypothetical reuse.
+
+## `Vue component extraction constraints`
+
+Required when Vue SFCs, page-local components, shared components, props / emits boundaries, slots, or component splitting decisions are added or changed.
+
+For each candidate, document:
+
+- candidate name and owning page / feature
+- decision: `extract`, `reuse existing`, `keep inline`, or `defer`
+- concrete extraction trigger or non-extraction blocker from `vue-component-extraction.md`
+- real production caller count: `1`, `2+ same semantics`, or `2+ different semantics`
+- if caller count is `1`, the exact approved single-caller exception: cohesive business section, interaction lifecycle boundary, slot / composition boundary, focused test boundary, page readability boundary, or project convention boundary
+- state owner before and after extraction
+- props contract, including whether inputs are view-model fields rather than backend DTO passthrough
+- emits contract, including which user intention each event represents
+- slot usage, if any, and why props are not enough
+- data normalization boundary, especially adapter / mapper / `fromDetail`
+- styling / Tailwind class-length impact
+- test or verification surface
+- why the decision is better than same-file markup or a same-file local section
+
+Rules:
+
+- Extract when the component owns a real UI / business concept and satisfies the `vue-component-extraction.md` decision algorithm: `2+` real same-semantics production callers, or one approved single-caller exception.
+- Keep inline when the candidate is one-off markup, one-caller pass-through, generic wrapper, DTO / form-model passthrough, broad optional-prop interface, different business semantics, simple local rule, longer prop / emit chain, or extraction only to make the file shorter.
+- Do not move adapter, request, permission, business normalization, or cross-section orchestration into a presentational Vue component.
 
 ## `change axes and pattern decision`
 

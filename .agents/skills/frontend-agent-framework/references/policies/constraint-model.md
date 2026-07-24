@@ -47,7 +47,7 @@ Use these families to decide where a new rule belongs. Use `policy-index.md` for
 - Existing-code modification: change-chain and removal-cleanup rules in templates and execute / verify / review.
 - Code quality: clean-code, production-code-quality, functional-programming, design-patterns, expert-frontend-engineering.
 - Architecture: frontend-architecture, architecture-design, code-context.
-- Styling and components: frontend-components, page-design, spec / plan / execute / verify / review.
+- Styling and components: frontend-components, vue-component-extraction, page-design, spec / plan / execute / verify / review.
 - API and types: api-contracts, typescript-context, spec / plan / execute / verify / review.
 
 If a rule spans multiple families, put the detailed definition in the most specific policy and add only cross-family hooks elsewhere.
@@ -82,13 +82,14 @@ When constraints appear to conflict:
 - User intent blocks technically compliant work that relocates complexity, risk, ambiguity, or responsibility.
 - Architecture reuse can require extraction only after Anti-DRY criteria pass; wrong abstraction is a blocker.
 - Locality-first can block file extraction even when a helper is pure or makes an owning file shorter; a single-caller helper needs an approved boundary reason before it becomes a separate file.
+- Vue component extraction requires a concrete UI / business boundary: repeated same-semantics UI, cohesive business section, interaction lifecycle, slot / composition variation, styling readability, focused test surface, or unavoidable page readability pressure. A one-caller pass-through component or a generic wrapper is a wrong abstraction.
 - Design-pattern discipline requires pattern-fit evaluation for every delivery unit, but direct code remains valid when the artifact records why pattern candidates are heavier than the current problem.
 - Workflow efficiency can choose compact artifacts, scoped reads, scoped checks, and fast paths for low-risk work, but it cannot override source grounding, business-logic completeness, approval gates, verification, review, or any applicable verdict in this registry.
 - Human-review-readiness can reject technically correct code when the diff is unreviewable, unrelated changes are mixed in, local conventions were ignored, or evidence is insufficient for a reviewer to trust the change.
 - Production-code-quality sets baseline implementation discipline; functional-programming provides the detailed rule for transformations and side-effect boundaries.
 - Code-review checklist assessment is planned before execution, followed during execution, and finalized in review for robustness, maintainability, performance / memory, and technology-stack anchoring; it can fail code that otherwise passes implementation-level policies when reviewer-facing production risks remain or when execute did not follow the approved plan contract.
 - Expert-frontend-engineering coordinates end-to-end frontend concerns across state ownership, async correctness, interaction resilience, performance boundaries, evolution safety, and evidence. It should reference specific policies instead of duplicating them.
-- Frontend-components owns styling mechanics; production-code-quality owns boundary UI states.
+- Frontend-components owns styling mechanics; vue-component-extraction owns Vue SFC extraction criteria and props / emits / slots boundaries; production-code-quality owns boundary UI states.
 - API-contracts and TypeScript-context own contract/type sources; production-code-quality owns local type precision and null/failure handling.
 
 If a conflict materially changes behavior, scope, data semantics, API meaning, permissions, or user intent, roll back to the front-loaded confirmation gate instead of resolving it in `execute`.

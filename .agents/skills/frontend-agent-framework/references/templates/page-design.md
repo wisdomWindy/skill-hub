@@ -94,6 +94,13 @@ Document:
 Document:
 
 - existing shared components or templates to prefer
-- page-local components that should be extracted
+- page-local components that should be extracted, including the exact trigger: `2+` same-semantics production use, or one single-caller exception such as cohesive business section, interaction lifecycle boundary, slot / composition variation, focused test surface, page readability boundary, or project convention boundary
+- page-local sections that must stay inline, including the exact blocker: one-off markup, one-caller pass-through, generic wrapper, broad optional props, DTO / form-model passthrough, different business semantics, local rule hiding, prop / emit chain longer than local markup, or extraction only to make the file shorter
 - component boundaries needed to keep Tailwind class values short and readable
 - boundaries that should not be extracted because they would hide simple local behavior
+- for each Vue extraction candidate: candidate name, owning page / feature, real production caller count (`1`, `2+ same semantics`, or `2+ different semantics`), single-caller exception if any, state owner, props contract, emits contract, slot usage if any, data normalization boundary, styling impact, and verification surface
+
+Vue extraction rules:
+
+- Extract only after `vue-component-extraction.md` decision algorithm passes: real concept name, valid ownership, real caller count, approved `2+` same-semantics reuse or a concrete single-caller exception.
+- Do not extract when the component would only pass props / emits through, wrap an existing component without new semantics, accept parent DTO / form model as a passthrough, hide a short local rule, move adapter / request / permission logic into a presentational SFC, or serve unrelated callers through broad flags.

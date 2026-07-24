@@ -25,6 +25,7 @@
 - 变更链路审查（修改或移除既有代码适用）
 - 整洁性与复杂度控制
 - 局部性与文件抽取决策
+- Vue 组件抽取决策（如适用）
 - 前端专家级工程约束（如适用）
 - 生产代码质量约束（如适用）
 - 代码评审预检合同（生产代码改动适用）
@@ -339,6 +340,24 @@ plan 必须证明 execute 可以直接按计划实施，不需要补猜。至少
 - execute 不得现场改用的模式或抽象
 
 小需求、局部修改和 bugfix 不得省略本节。它们可以选择 Level 0 direct code；当没有真实模式信号时，只需记录无结构性变化轴、无适配 / 选择 / 编排 / 副作用协调 / 跨文件协作问题，以及 direct code 为什么最安全。不得机械枚举所有未触发模式。
+
+### `Vue 组件抽取决策`
+
+当任务新增、移动、拆分或复用 Vue SFC / page-local component / shared component 时，至少写清：
+
+- 候选组件名和 owning page / feature
+- 决策：`extract` / `reuse existing` / `keep inline` / `defer`
+- 真实生产调用方数量：`1`、`2+ 同语义` 或 `2+ 不同语义`；测试、story、示例和假想未来调用方不计入
+- 抽取触发条件：`2+ 同语义` 真实生产使用，或单调用方例外中的一个：内聚业务区块、交互生命周期边界、slot / composition 变化点、独立测试面、页面可读性边界、项目约定边界
+- 不抽取阻断条件：一次性 markup、单调用方透传组件、泛 wrapper、后端 DTO / form model 透传、宽 optional props、业务语义不同、隐藏简单本地规则、prop / emit 链比原本更长、只为了让文件变短
+- 抽取前后状态 owner
+- props 合同、emits 合同、slot 使用理由
+- adapter / mapper / `fromDetail` 数据归一边界
+- Tailwind class 长度和结构拆分影响
+- 测试 / 验证方式
+- 为什么该决策比 same-file markup 或 same-file local section 更清晰
+
+禁止让 execute 现场决定是否抽 Vue 组件。禁止用“组件化更好”“页面太长”“以后可能复用”作为唯一理由；单调用方组件必须写明具体例外，否则计划为 `keep inline`。
 
 ### `生产代码质量约束`
 

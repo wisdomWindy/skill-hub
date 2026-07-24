@@ -82,6 +82,7 @@ Required fields for each acceptance item:
 - result (`pass` or `fail`)
 - checked constraints
 - locality and file-extraction checks for new helper / hook / mapper / utility files, including real production caller count and approved boundary reason for any single-caller separate file
+- Vue component extraction checks when applicable: approved candidate decision, extraction trigger or non-extraction blocker, real production caller count (`1`, `2+ same semantics`, or `2+ different semantics`), single-caller exception if any, props / emits / slots contract, state owner, data normalization boundary, Tailwind class impact, and test surface
 - evidence reference
 - follow-up if failed
 

@@ -183,6 +183,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
    - 每个任务都必须承接 spec 的 pattern-fit decision；若任务内新增了选择、适配、创建、编排、副作用协调、状态分支、树处理、访问控制或横切关注点，必须再次确认是否仍适合 direct code。
    - 计划中必须明确 pattern depth level，以及选用 `direct code` / `reuse existing pattern` / `adapt lightweight pattern` / `introduce pattern` 的执行方式。
    - 计划中必须明确前端语法实现形态：function、typed record、discriminated union、object map、hook / composable、component boundary、store action、request module、adapter / mapper、higher-order function，或有批准理由的 class。
+   - 如涉及 Vue SFC / 组件拆分，必须把 `vue-component-extraction.md` 决策拆成任务：抽取 / 复用 / 保持内联 / 暂缓、真实生产调用方数量、`2+ 同语义`或单调用方例外、触发条件或阻断条件、props / emits / slots 合同、状态 owner、数据归一边界、样式边界、测试和验证面。
    - 对 bugfix 和局部修改，也要执行 pattern-fit decision；无真实信号时选择 Level 0 direct code 并写短理由即可，不得机械枚举所有未触发模式。
    - 只有出现具体候选信号时，才写被触发的 Adapter、Strategy、State、Command、Chain、Observer / Pub-Sub、Decorator、Facade、Proxy、Composite、Builder 或项目既有模式是否采用及拒绝理由。
    - 不能把 pattern fit 留给 execute 现场判断。
@@ -271,6 +272,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
 - 每个任务已承接或细化 pattern-fit decision 和 pattern depth level；direct code、复用既有模式、轻量模式或引入模式的理由明确且与候选信号匹配。
 - 每个涉及 pattern 的任务已说明符合当前前端栈的语法实现形态，没有把前端代码规划成后端式 class hierarchy 或 manager / factory ceremony。
 - 新增文件级 helper / hook / mapper / utility 的调用方数量和 locality decision 已记录；单调用方逻辑没有被无理由规划为独立文件。
+- Vue 组件抽取任务已明确什么情况下抽取、什么情况下不抽取；没有把“文件太长”“以后可能复用”“看起来像组件”作为抽取理由。
 - 如添加或修改生产代码，计划已把 type-first、fail-fast、strict null、naming、no magic variables、maintainability-first、pure functions over classes、boundary UI states 拆成执行和验证任务。
 - 如添加或修改生产代码，计划已把 code-review checklist 预检结果写成 execute 合同，覆盖健壮性、可维护性、性能与内存、项目规范一致性，并明确 execute 不得擅自更改技术栈。
 - 如修改生产代码、测试、mock、契约或生成类型可见文件，计划已把 diff scope、局部惯例、pre-review self-check 和 reviewer-ready evidence 拆成执行与验证任务。
@@ -297,6 +299,7 @@ description: Stage subskill for planning. Convert the framework-approved spec in
 - 对可测试行为，不能把测试设计拖到实现之后。
 - 不能把明显的复杂度、重复、混责问题留成未规划状态。
 - 不能把重复语义逻辑的抽取 / 复用 / 保持分离决策留给 execute 自行判断。
+- 不能把 Vue 组件是否抽取留给 execute 自行判断；必须在 spec / plan 中先记录具体条件和接口边界。
 - 不能用“不同模块”作为拒绝公共逻辑抽取的唯一理由。
 - 不能因为两处代码相似就规划抽取；必须先通过 Anti-DRY 矩阵。
 - 不能规划 God Utils、shared 导入业务私有 entity、shared 内部直接读写环境副作用，或为了复用合并接口。
